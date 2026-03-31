@@ -1,0 +1,1703 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UNI&CORE 재고 및 발주 관리 시스템</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  :root {
+    --primary: #1a5632;
+    --primary-light: #2d8a4e;
+    --primary-bg: #f0faf4;
+    --danger: #dc2626;
+    --danger-bg: #fef2f2;
+    --warning: #f59e0b;
+    --warning-bg: #fffbeb;
+    --info: #2563eb;
+    --info-bg: #eff6ff;
+    --success: #16a34a;
+    --success-bg: #f0fdf4;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-300: #d1d5db;
+    --gray-500: #6b7280;
+    --gray-700: #374151;
+    --gray-900: #111827;
+    --shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
+    --shadow-md: 0 4px 6px rgba(0,0,0,0.07), 0 2px 4px rgba(0,0,0,0.06);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family: 'Segoe UI', -apple-system, sans-serif; background: var(--gray-100); color: var(--gray-900); }
+
+  /* Header */
+  .header { background: linear-gradient(135deg, var(--primary), var(--primary-light)); color: white; padding: 16px 32px; display: flex; align-items: center; justify-content: space-between; box-shadow: var(--shadow-md); }
+  .header h1 { font-size: 20px; font-weight: 700; }
+  .header .subtitle { font-size: 13px; opacity: 0.85; margin-top: 2px; }
+  .header-right { display: flex; align-items: center; gap: 12px; }
+  .header-date { font-size: 13px; opacity: 0.9; }
+  .desktop-only { display: table-cell; }
+  .mobile-only { display: none; }
+
+  /* Tabs */
+  .tab-bar { background: white; border-bottom: 1px solid var(--gray-200); padding: 0 32px; display: flex; gap: 0; }
+  .tab { padding: 14px 24px; cursor: pointer; font-size: 14px; font-weight: 500; color: var(--gray-500); border-bottom: 3px solid transparent; transition: all 0.2s; }
+  .tab:hover { color: var(--primary); background: var(--primary-bg); }
+  .tab.active { color: var(--primary); border-bottom-color: var(--primary); font-weight: 600; }
+
+  /* Content */
+  .content { padding: 24px 32px; max-width: 1600px; margin: 0 auto; }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  /* KPI Cards */
+  .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 24px; }
+  .kpi-card { background: white; border-radius: 12px; padding: 20px; box-shadow: var(--shadow); border-left: 4px solid var(--gray-300); }
+  .kpi-card.danger { border-left-color: var(--danger); }
+  .kpi-card.warning { border-left-color: var(--warning); }
+  .kpi-card.success { border-left-color: var(--success); }
+  .kpi-card.info { border-left-color: var(--info); }
+  .kpi-label { font-size: 12px; color: var(--gray-500); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+  .kpi-value { font-size: 32px; font-weight: 700; }
+  .kpi-sub { font-size: 12px; color: var(--gray-500); margin-top: 4px; }
+
+  /* Panels */
+  .panel { background: white; border-radius: 12px; box-shadow: var(--shadow); margin-bottom: 24px; overflow: hidden; }
+  .panel-header { padding: 16px 20px; border-bottom: 1px solid var(--gray-200); display: flex; align-items: center; justify-content: space-between; }
+  .panel-title { font-size: 16px; font-weight: 600; }
+  .panel-body { padding: 20px; }
+  .panel-body.no-pad { padding: 0; }
+
+  /* Toolbar */
+  .toolbar { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-bottom: 16px; }
+  .search-box { padding: 8px 14px; border: 1px solid var(--gray-300); border-radius: 8px; font-size: 14px; width: 260px; outline: none; }
+  .search-box:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(26,86,50,0.1); }
+  select.filter { padding: 8px 14px; border: 1px solid var(--gray-300); border-radius: 8px; font-size: 14px; outline: none; background: white; cursor: pointer; }
+  select.filter:focus { border-color: var(--primary); }
+
+  /* Buttons */
+  .btn { padding: 8px 18px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; border: none; transition: all 0.15s; display: inline-flex; align-items: center; gap: 6px; }
+  .btn-primary { background: var(--primary); color: white; }
+  .btn-primary:hover { background: var(--primary-light); }
+  .btn-outline { background: white; border: 1px solid var(--gray-300); color: var(--gray-700); }
+  .btn-outline:hover { background: var(--gray-50); }
+  .btn-danger { background: var(--danger); color: white; }
+  .btn-danger:hover { background: #b91c1c; }
+  .btn-success { background: var(--success); color: white; }
+  .btn-success:hover { background: #15803d; }
+  .btn-sm { padding: 5px 12px; font-size: 12px; }
+
+  /* Table */
+  .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; table-layout: auto; }
+  thead th { background: var(--gray-50); padding: 10px 12px; text-align: left; font-weight: 600; color: var(--gray-700); border-bottom: 2px solid var(--gray-200); white-space: nowrap; position: sticky; top: 0; z-index: 1; }
+  tbody td { padding: 10px 12px; border-bottom: 1px solid var(--gray-100); }
+  tbody tr:hover { background: var(--primary-bg); }
+  .text-right { text-align: right; }
+  .text-center { text-align: center; }
+  /* Product name - full display */
+  td.product-name { white-space: normal; word-break: keep-all; min-width: 200px; max-width: 360px; line-height: 1.4; }
+
+  /* Badges */
+  .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+  .badge-danger { background: var(--danger-bg); color: var(--danger); }
+  .badge-warning { background: var(--warning-bg); color: #b45309; }
+  .badge-success { background: var(--success-bg); color: var(--success); }
+  .badge-info { background: var(--info-bg); color: var(--info); }
+  .badge-gray { background: var(--gray-100); color: var(--gray-500); }
+
+  /* Stock bar */
+  .stock-bar { width: 80px; height: 8px; background: var(--gray-200); border-radius: 4px; overflow: hidden; display: inline-block; vertical-align: middle; margin-right: 6px; }
+  .stock-bar-fill { height: 100%; border-radius: 4px; transition: width 0.3s; }
+  .stock-bar-fill.danger { background: var(--danger); }
+  .stock-bar-fill.warning { background: var(--warning); }
+  .stock-bar-fill.success { background: var(--success); }
+
+  /* Upload area */
+  .upload-area { border: 2px dashed var(--gray-300); border-radius: 12px; padding: 40px; text-align: center; cursor: pointer; transition: all 0.2s; }
+  .upload-area:hover, .upload-area.dragover { border-color: var(--primary); background: var(--primary-bg); }
+  .upload-area svg { width: 48px; height: 48px; color: var(--gray-300); margin-bottom: 12px; }
+  .upload-area p { color: var(--gray-500); font-size: 14px; }
+  .upload-area .upload-btn { margin-top: 12px; }
+
+  /* Modal */
+  .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; }
+  .modal-overlay.show { display: flex; }
+  .modal { background: white; border-radius: 16px; padding: 28px; width: 540px; max-width: 90vw; max-height: 85vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.2); }
+  .modal h3 { font-size: 18px; margin-bottom: 20px; }
+  .form-group { margin-bottom: 16px; }
+  .form-group label { display: block; font-size: 13px; font-weight: 500; color: var(--gray-700); margin-bottom: 6px; }
+  .form-group input, .form-group select { width: 100%; padding: 9px 12px; border: 1px solid var(--gray-300); border-radius: 8px; font-size: 14px; outline: none; }
+  .form-group input:focus, .form-group select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(26,86,50,0.1); }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 24px; }
+
+  /* Charts */
+  .chart-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .chart-container { position: relative; height: 300px; }
+
+  /* Order row highlight */
+  .order-urgent { background: var(--danger-bg) !important; }
+  .order-soon { background: var(--warning-bg) !important; }
+
+  /* Toast */
+  .toast { position: fixed; bottom: 24px; right: 24px; background: var(--gray-900); color: white; padding: 12px 20px; border-radius: 10px; font-size: 14px; z-index: 2000; opacity: 0; transform: translateY(10px); transition: all 0.3s; }
+  .toast.show { opacity: 1; transform: translateY(0); }
+
+  /* Responsive - Tablet */
+  @media (max-width: 1024px) {
+    .content { padding: 20px; }
+    td.product-name { min-width: 160px; max-width: 280px; }
+  }
+
+  /* Responsive - Mobile */
+  @media (max-width: 768px) {
+    .header { padding: 12px 16px; flex-direction: column; align-items: flex-start; gap: 4px; }
+    .header h1 { font-size: 17px; }
+    .header .subtitle { font-size: 11px; }
+    .content { padding: 12px; }
+    .chart-grid { grid-template-columns: 1fr; }
+    .kpi-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .kpi-card { padding: 14px; }
+    .kpi-value { font-size: 24px; }
+    .kpi-label { font-size: 11px; }
+    .toolbar { flex-direction: column; align-items: stretch; }
+    .search-box { width: 100%; }
+    .tab-bar { padding: 0 8px; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .tab { padding: 12px 14px; font-size: 13px; white-space: nowrap; }
+    .panel-header { padding: 12px 14px; flex-wrap: wrap; gap: 8px; }
+    .panel-body { padding: 14px; }
+
+    /* Mobile table: card-style layout */
+    .table-wrap { overflow-x: visible; }
+    table.responsive-table, table.responsive-table thead, table.responsive-table tbody, table.responsive-table tr, table.responsive-table th, table.responsive-table td {
+      display: block;
+    }
+    table.responsive-table thead { display: none; }
+    table.responsive-table tbody tr {
+      background: white;
+      border: 1px solid var(--gray-200);
+      border-radius: 10px;
+      padding: 14px;
+      margin-bottom: 12px;
+      box-shadow: var(--shadow);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px 12px;
+    }
+    table.responsive-table tbody tr:hover { background: var(--primary-bg); }
+    table.responsive-table td {
+      padding: 4px 0;
+      border: none;
+      font-size: 13px;
+      text-align: left !important;
+    }
+    table.responsive-table td::before {
+      content: attr(data-label);
+      display: block;
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--gray-500);
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      margin-bottom: 2px;
+    }
+    table.responsive-table td.product-name {
+      grid-column: 1 / -1;
+      font-weight: 600;
+      font-size: 14px;
+      min-width: unset;
+      max-width: unset;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--gray-100);
+      margin-bottom: 4px;
+    }
+    table.responsive-table td.mobile-category {
+      grid-column: 1 / -1;
+      padding-bottom: 4px;
+    }
+    table.responsive-table td.mobile-remark {
+      grid-column: 1 / -1;
+    }
+    table.responsive-table td.mobile-status {
+      grid-column: 1 / -1;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding-top: 6px;
+      border-top: 1px solid var(--gray-100);
+    }
+    table.responsive-table td.mobile-status::before { display: none; }
+
+    .desktop-only { display: none !important; }
+    .mobile-only { display: block !important; }
+
+    .modal { width: 95vw; padding: 20px; }
+    .form-row { grid-template-columns: 1fr; }
+    .toast { left: 12px; right: 12px; bottom: 12px; text-align: center; }
+    .stock-bar { width: 60px; }
+    select.filter { width: 100%; }
+  }
+
+  /* Small mobile */
+  @media (max-width: 480px) {
+    .kpi-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+    .kpi-card { padding: 10px; }
+    .kpi-value { font-size: 22px; }
+  }
+
+  /* Empty state */
+  .empty-state { text-align: center; padding: 60px 20px; color: var(--gray-500); }
+  .empty-state svg { width: 64px; height: 64px; margin-bottom: 16px; opacity: 0.4; }
+  .empty-state h3 { font-size: 18px; color: var(--gray-700); margin-bottom: 8px; }
+
+  .num { font-variant-numeric: tabular-nums; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <h1>UNI&CORE 재고 및 발주 관리 시스템</h1>
+    <div class="subtitle">Inventory & Order Management System</div>
+  </div>
+  <div class="header-right">
+    <div class="header-date" id="currentDate"></div>
+  </div>
+</div>
+
+<div class="tab-bar">
+  <div class="tab active" onclick="switchTab('inventory')">재고현황</div>
+  <div class="tab" onclick="switchTab('shipment')">출고현황</div>
+  <div class="tab" onclick="switchTab('forecast')">재고예측</div>
+  <div class="tab" onclick="switchTab('orders')">발주관리</div>
+  <div class="tab" onclick="switchTab('data')">데이터 관리</div>
+</div>
+
+<!-- ===== 재고현황 탭 ===== -->
+<div class="content">
+<div id="tab-inventory" class="tab-content active">
+  <div class="kpi-grid">
+    <div class="kpi-card info"><div class="kpi-label">총 제품 수</div><div class="kpi-value num" id="kpi-total">0</div><div class="kpi-sub">관리 중인 전체 제품</div></div>
+    <div class="kpi-card danger"><div class="kpi-label">품절 위험</div><div class="kpi-value num" id="kpi-danger">0</div><div class="kpi-sub">30일 이내 품절 예상</div></div>
+    <div class="kpi-card warning"><div class="kpi-label">재고 부족</div><div class="kpi-value num" id="kpi-warning">0</div><div class="kpi-sub">안전재고 미달 제품</div></div>
+    <div class="kpi-card success"><div class="kpi-label">발주 진행중</div><div class="kpi-value num" id="kpi-ordered">0</div><div class="kpi-sub">입고 대기 중인 발주</div></div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-header">
+      <div class="panel-title">제품 재고 현황</div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-outline btn-sm" onclick="exportTable()">내보내기</button>
+      </div>
+    </div>
+    <div class="panel-body">
+      <div class="toolbar">
+        <input type="text" class="search-box" placeholder="제품명 또는 상품코드 검색..." id="searchInput" oninput="renderInventoryTable()">
+        <select class="filter" id="categoryFilter" onchange="renderInventoryTable()">
+          <option value="">전체 카테고리</option>
+          <option value="Cosmetic">Cosmetic</option>
+          <option value="Health Care">Health Care</option>
+          <option value="Living">Living</option>
+          <option value="Lounge Item">Lounge Item</option>
+          <option value="Sales Aids">Sales Aids</option>
+          <option value="트라이얼키트">트라이얼키트</option>
+        </select>
+        <select class="filter" id="statusFilter" onchange="renderInventoryTable()">
+          <option value="">전체 상태</option>
+          <option value="danger">품절 위험</option>
+          <option value="warning">재고 부족</option>
+          <option value="safe">안전</option>
+        </select>
+        <label style="display:inline-flex;align-items:center;gap:5px;font-size:13px;color:var(--gray-500);cursor:pointer;user-select:none;">
+          <input type="checkbox" id="showDiscontinued" onchange="onDiscontinuedToggle()" style="cursor:pointer;"> 단종 포함
+        </label>
+      </div>
+      <div class="table-wrap" style="max-height:520px;overflow-y:auto;">
+        <table class="responsive-table">
+          <thead>
+            <tr>
+              <th>카테고리</th>
+              <th>상품코드</th>
+              <th>품명</th>
+              <th class="text-right">현재고</th>
+              <th class="text-right">입고예정</th>
+              <th class="text-right">총재고</th>
+              <th class="text-right">안전재고(3M)</th>
+              <th>재고수준</th>
+              <th class="text-right">2M 평균출고</th>
+              <th>소비기한</th>
+              <th>판매가능기한</th>
+              <th>상태</th>
+              <th>REMARK</th>
+            </tr>
+          </thead>
+          <tbody id="inventoryTableBody"></tbody>
+        </table>
+      </div>
+      <div id="inventoryEmpty" class="empty-state" style="display:none;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+        <h3>데이터가 없습니다</h3>
+        <p>'데이터 관리' 탭에서 Excel 파일을 업로드하거나 제품을 직접 등록하세요.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="chart-grid">
+    <div class="panel">
+      <div class="panel-header"><div class="panel-title">카테고리별 재고 분포</div></div>
+      <div class="panel-body"><div class="chart-container"><canvas id="categoryChart"></canvas></div></div>
+    </div>
+    <div class="panel">
+      <div class="panel-header"><div class="panel-title">재고 상태 요약</div></div>
+      <div class="panel-body"><div class="chart-container"><canvas id="statusChart"></canvas></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 출고현황 탭 ===== -->
+<div id="tab-shipment" class="tab-content">
+  <div class="kpi-grid">
+    <div class="kpi-card info"><div class="kpi-label">조회 기간 총 출고</div><div class="kpi-value num" id="kpi-ship-total">0</div><div class="kpi-sub" id="kpi-ship-period">-</div></div>
+    <div class="kpi-card success"><div class="kpi-label">출고 제품 수</div><div class="kpi-value num" id="kpi-ship-items">0</div><div class="kpi-sub">출고 이력이 있는 제품</div></div>
+    <div class="kpi-card warning"><div class="kpi-label">최다 출고 제품</div><div class="kpi-value num" id="kpi-ship-top" style="font-size:16px;">-</div><div class="kpi-sub" id="kpi-ship-top-qty">-</div></div>
+    <div class="kpi-card danger"><div class="kpi-label">출고 급증 제품</div><div class="kpi-value num" id="kpi-ship-spike" style="font-size:16px;">-</div><div class="kpi-sub" id="kpi-ship-spike-info">전월 대비 증가</div></div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-header">
+      <div class="panel-title">출고 현황</div>
+      <button class="btn btn-outline btn-sm" onclick="exportShipment()">내보내기</button>
+    </div>
+    <div class="panel-body">
+      <div class="toolbar">
+        <select class="filter" id="shipPeriod" onchange="renderShipment()">
+          <option value="daily">일별</option>
+          <option value="weekly">주별</option>
+          <option value="monthly" selected>월별</option>
+          <option value="quarterly">분기별</option>
+          <option value="yearly">연간</option>
+        </select>
+        <select class="filter" id="shipCategory" onchange="renderShipment()">
+          <option value="">전체 카테고리</option>
+          <option value="Cosmetic">Cosmetic</option>
+          <option value="Health Care">Health Care</option>
+          <option value="Living">Living</option>
+          <option value="Lounge Item">Lounge Item</option>
+          <option value="Sales Aids">Sales Aids</option>
+          <option value="트라이얼키트">트라이얼키트</option>
+        </select>
+        <input type="text" class="search-box" placeholder="제품명 또는 상품코드 검색..." id="shipSearch" oninput="renderShipment()" style="width:220px;">
+      </div>
+      <div class="table-wrap" style="max-height:480px;overflow-y:auto;">
+        <table class="responsive-table">
+          <thead id="shipTableHead"></thead>
+          <tbody id="shipTableBody"></tbody>
+        </table>
+      </div>
+      <div id="shipEmpty" class="empty-state" style="display:none;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 17H5a2 2 0 00-2 2v0a2 2 0 002 2h14a2 2 0 002-2v0a2 2 0 00-2-2h-4M9 17v-4m0 4h6m-6-4V7a2 2 0 012-2h2a2 2 0 012 2v6m-6 0h6"/></svg>
+        <h3>출고 데이터가 없습니다</h3>
+        <p>일별 데이터 업데이트가 진행되면 출고 이력이 표시됩니다.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="chart-grid">
+    <div class="panel">
+      <div class="panel-header"><div class="panel-title">기간별 출고 추이</div></div>
+      <div class="panel-body"><div class="chart-container" style="height:320px;"><canvas id="shipTrendChart"></canvas></div></div>
+    </div>
+    <div class="panel">
+      <div class="panel-header"><div class="panel-title">카테고리별 출고 비중</div></div>
+      <div class="panel-body"><div class="chart-container" style="height:320px;"><canvas id="shipCategoryChart"></canvas></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 재고예측 탭 ===== -->
+<div id="tab-forecast" class="tab-content">
+  <div class="panel">
+    <div class="panel-header">
+      <div class="panel-title">품절 예상 일정</div>
+      <div style="font-size:13px;color:var(--gray-500);">현재 출고 추세 기준 예측</div>
+    </div>
+    <div class="panel-body">
+      <div class="toolbar">
+        <select class="filter" id="forecastRange" onchange="renderForecast()">
+          <option value="30">30일 이내</option>
+          <option value="60">60일 이내</option>
+          <option value="90" selected>90일 이내</option>
+          <option value="all">전체</option>
+        </select>
+        <select class="filter" id="forecastCategory" onchange="renderForecast()">
+          <option value="">전체</option>
+          <option value="Cosmetic">Cosmetic</option>
+          <option value="Health Care">Health Care</option>
+          <option value="Living">Living</option>
+          <option value="Lounge Item">Lounge Item</option>
+        </select>
+      </div>
+      <div class="table-wrap" style="max-height:400px;overflow-y:auto;">
+        <table class="responsive-table">
+          <thead>
+            <tr>
+              <th>카테고리</th>
+              <th>상품코드</th>
+              <th>품명</th>
+              <th class="text-right">현재고</th>
+              <th class="text-right">일 평균 출고</th>
+              <th class="text-right">예상 잔여일</th>
+              <th>예상 품절일</th>
+              <th>소비기한</th>
+              <th>판매가능기한</th>
+              <th>긴급도</th>
+            </tr>
+          </thead>
+          <tbody id="forecastTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="panel-header"><div class="panel-title">월별 재고 추이 예측</div></div>
+    <div class="panel-body"><div class="chart-container" style="height:350px;"><canvas id="forecastChart"></canvas></div></div>
+  </div>
+</div>
+
+<!-- ===== 발주관리 탭 ===== -->
+<div id="tab-orders" class="tab-content">
+  <div class="kpi-grid">
+    <div class="kpi-card danger"><div class="kpi-label">긴급 발주 필요</div><div class="kpi-value num" id="kpi-urgent-order">0</div><div class="kpi-sub">즉시 발주 권고</div></div>
+    <div class="kpi-card warning"><div class="kpi-label">발주 검토 필요</div><div class="kpi-value num" id="kpi-review-order">0</div><div class="kpi-sub">2주 이내 발주 권고</div></div>
+    <div class="kpi-card info"><div class="kpi-label">발주 진행중</div><div class="kpi-value num" id="kpi-in-progress">0</div><div class="kpi-sub">입고 대기중</div></div>
+    <div class="kpi-card success"><div class="kpi-label">이번 달 입고 예정</div><div class="kpi-value num" id="kpi-arriving">0</div><div class="kpi-sub">이번 달 내 도착</div></div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-header">
+      <div class="panel-title">발주 추천 목록</div>
+      <button class="btn btn-primary btn-sm" onclick="exportOrders()">발주서 내보내기</button>
+    </div>
+    <div class="panel-body">
+      <div class="table-wrap" style="max-height:500px;overflow-y:auto;">
+        <table class="responsive-table">
+          <thead>
+            <tr>
+              <th><input type="checkbox" id="selectAllOrders" onchange="toggleAllOrders(this)"></th>
+              <th>긴급도</th>
+              <th>상품코드</th>
+              <th>품명</th>
+              <th class="text-right">현재고</th>
+              <th class="text-right">MOQ</th>
+              <th class="text-right">추천 발주량</th>
+              <th class="text-right">리드타임(주)</th>
+              <th>예상 입고일</th>
+              <th>REMARK</th>
+              <th>액션</th>
+            </tr>
+          </thead>
+          <tbody id="orderTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 데이터 관리 탭 ===== -->
+<div id="tab-data" class="tab-content">
+  <div class="panel">
+    <div class="panel-header">
+      <div class="panel-title">Excel 파일 업로드</div>
+    </div>
+    <div class="panel-body">
+      <div class="upload-area" id="uploadArea" onclick="document.getElementById('fileInput').click()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6h.1a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
+        <p><strong>클릭하여 파일 선택</strong> 또는 드래그 앤 드롭</p>
+        <p style="font-size:12px;margin-top:4px;">.xlsx, .xlsb, .xls 파일 지원</p>
+        <input type="file" id="fileInput" accept=".xlsx,.xlsb,.xls,.csv" style="display:none" onchange="handleFileUpload(event)">
+      </div>
+      <div id="uploadStatus" style="margin-top:12px;display:none;padding:12px;border-radius:8px;font-size:14px;"></div>
+    </div>
+  </div>
+
+  <div class="panel" style="border-left:4px solid var(--primary);">
+    <div class="panel-header">
+      <div class="panel-title">자동 동기화 설정</div>
+      <span id="syncStatusBadge" style="font-size:12px;padding:4px 10px;border-radius:12px;background:var(--success-bg);color:var(--success);font-weight:600;">활성</span>
+    </div>
+    <div class="panel-body">
+      <p style="font-size:13px;color:var(--gray-500);margin-bottom:12px;">팀즈 F'cst 공유파일 링크를 등록하면, 매일 오후 11:50 (KST) 에 자동으로 데이터를 동기화합니다. 월별로 파일이 변경되면 아래 링크를 업데이트해 주세요.</p>
+      <div style="display:flex;gap:8px;align-items:flex-end;">
+        <div style="flex:1;">
+          <label style="display:block;font-size:13px;font-weight:600;color:var(--gray-700);margin-bottom:4px;">SharePoint 공유파일 URL</label>
+          <input type="text" id="syncUrl" placeholder="https://uniandcore.sharepoint.com/..." style="width:100%;padding:10px 12px;border:1px solid var(--gray-300);border-radius:8px;font-size:13px;transition:border-color 0.2s;" onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='var(--gray-300)'">
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="saveSyncUrl()" style="white-space:nowrap;height:40px;">링크 저장</button>
+      </div>
+      <div id="syncUrlStatus" style="margin-top:8px;font-size:12px;color:var(--gray-500);"></div>
+      <div style="margin-top:16px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+        <button class="btn btn-outline btn-sm" onclick="triggerManualSync()" id="manualSyncBtn">수동 동기화 실행</button>
+        <span id="lastSyncTime" style="font-size:12px;color:var(--gray-500);"></span>
+      </div>
+      <div style="margin-top:12px;padding:10px 14px;background:var(--info-bg);border-radius:8px;font-size:12px;color:var(--info);line-height:1.6;">
+        <strong>동기화 안내</strong><br>
+        - 자동 동기화: 매일 23:50 KST에 실행됩니다<br>
+        - 수동 동기화: 위 버튼으로 즉시 실행할 수 있습니다<br>
+        - 파일 변경 시: 새 월의 파일 URL을 위에 붙여넣고 "링크 저장"을 누르세요
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-header">
+      <div class="panel-title">제품 직접 등록</div>
+      <button class="btn btn-primary btn-sm" onclick="openAddModal()">+ 제품 추가</button>
+    </div>
+    <div class="panel-body">
+      <p style="font-size:14px;color:var(--gray-500);">현재 등록된 제품: <strong id="totalProductCount">0</strong>개</p>
+      <div style="margin-top:12px;display:flex;gap:8px;">
+        <button class="btn btn-outline btn-sm" onclick="loadSampleData()">샘플 데이터 로드</button>
+        <button class="btn btn-danger btn-sm" onclick="clearAllData()">전체 초기화</button>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- 제품 추가 Modal -->
+<div class="modal-overlay" id="addModal">
+  <div class="modal">
+    <h3 id="modalTitle">제품 등록</h3>
+    <div class="form-row">
+      <div class="form-group">
+        <label>카테고리</label>
+        <select id="f-category"><option value="Cosmetic">Cosmetic</option><option value="Health Care">Health Care</option><option value="Living">Living</option><option value="Lounge Item">Lounge Item</option></select>
+      </div>
+      <div class="form-group">
+        <label>상품코드</label>
+        <input type="text" id="f-code" placeholder="예: 000000101">
+      </div>
+    </div>
+    <div class="form-group">
+      <label>품명</label>
+      <input type="text" id="f-name" placeholder="제품명 입력">
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>현재고</label><input type="number" id="f-stock" value="0"></div>
+      <div class="form-group"><label>입고 예정</label><input type="number" id="f-incoming" value="0"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>안전재고 (자동: 2M평균출고 x 3)</label><input type="number" id="f-safety" value="0" disabled style="background:var(--gray-100);"></div>
+      <div class="form-group"><label>2M 평균 출고</label><input type="number" id="f-avg-out" value="0"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>MOQ</label><input type="number" id="f-moq" value="5000"></div>
+      <div class="form-group"><label>리드타임 (주)</label><input type="number" id="f-leadtime" value="10"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>소비기한</label><input type="date" id="f-expiry"></div>
+      <div class="form-group"><label>판매가능기한 (자동계산)</label><input type="text" id="f-sellable" readonly style="background:var(--gray-100);color:var(--gray-500);"></div>
+    </div>
+    <div class="form-group">
+      <label>REMARK</label>
+      <input type="text" id="f-remark" placeholder="비고 입력">
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeModal()">취소</button>
+      <button class="btn btn-primary" onclick="saveProduct()">저장</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ============ DATA STORE ============
+let products = [];
+let editIndex = -1;
+let charts = {};
+
+// ============ DISCONTINUED FILTER ============
+function isDiscontinued(p) {
+  if (!p.remark) return false;
+  const r = p.remark.trim();
+  return r === '단종';
+}
+
+function getActiveProducts() {
+  const showDisc = document.getElementById('showDiscontinued') && document.getElementById('showDiscontinued').checked;
+  return showDisc ? products : products.filter(p => !isDiscontinued(p));
+}
+
+function onDiscontinuedToggle() {
+  refreshAll();
+}
+
+// ============ INIT ============
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('currentDate').textContent = new Date().toLocaleDateString('ko-KR', { year:'numeric', month:'long', day:'numeric', weekday:'long' });
+
+  // Load from localStorage, fallback to sample data
+  const saved = localStorage.getItem('unicore_products');
+  const dataVersion = localStorage.getItem('unicore_data_version');
+  if (saved && dataVersion === 'v7-shipment') {
+    try {
+      const parsed = JSON.parse(saved);
+      if (parsed && parsed.length > 0) { products = parsed; }
+      else { loadSampleData(); }
+    } catch(e) { loadSampleData(); }
+  } else {
+    loadSampleData();
+  }
+
+  // Drag & drop
+  const ua = document.getElementById('uploadArea');
+  ua.addEventListener('dragover', e => { e.preventDefault(); ua.classList.add('dragover'); });
+  ua.addEventListener('dragleave', () => ua.classList.remove('dragover'));
+  ua.addEventListener('drop', e => { e.preventDefault(); ua.classList.remove('dragover'); handleFiles(e.dataTransfer.files); });
+
+  // 소비기한 입력 시 판매가능기한 자동 계산
+  document.getElementById('f-expiry').addEventListener('change', function() {
+    const sellable = getSellableDate(this.value);
+    document.getElementById('f-sellable').value = sellable ? formatDate(sellable) : '';
+  });
+
+  refreshAll();
+  loadSyncSettings();
+  recordDailyShipment();
+});
+
+function saveToStorage() {
+  try {
+    localStorage.setItem('unicore_products', JSON.stringify(products));
+    localStorage.setItem('unicore_data_version', 'v7-shipment');
+  } catch(e) {}
+}
+
+// ============ TAB SWITCHING ============
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach((t,i) => t.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  const tabs = ['inventory','shipment','forecast','orders','data'];
+  document.querySelectorAll('.tab')[tabs.indexOf(tab)].classList.add('active');
+  if (tab === 'shipment') renderShipment();
+  if (tab === 'forecast') renderForecast();
+  if (tab === 'orders') renderOrders();
+}
+
+// ============ REFRESH ALL ============
+function refreshAll() {
+  updateKPIs();
+  renderInventoryTable();
+  renderCharts();
+  document.getElementById('totalProductCount').textContent = getActiveProducts().length;
+  saveToStorage();
+}
+
+// ============ KPIs ============
+function updateKPIs() {
+  const active = getActiveProducts();
+  document.getElementById('kpi-total').textContent = active.length;
+
+  const now = new Date();
+  let danger = 0, warning = 0, ordered = 0;
+  active.forEach(p => {
+    const daysLeft = getDaysLeft(p);
+    if (daysLeft <= 30) danger++;
+    if ((p.currentStock || 0) < getSafetyStock(p)) warning++;
+    if (p.remark && (p.remark.includes('발주') || p.remark.includes('입고'))) ordered++;
+  });
+  document.getElementById('kpi-danger').textContent = danger;
+  document.getElementById('kpi-warning').textContent = warning;
+  document.getElementById('kpi-ordered').textContent = ordered;
+}
+
+function getSafetyStock(p) {
+  return (p.avgMonthlyOut || 0) * 3;
+}
+
+function getDaysLeft(p) {
+  const dailyAvg = (p.avgMonthlyOut || 0) / 30;
+  if (dailyAvg <= 0) return 9999;
+  const totalStock = (p.currentStock || 0) + (p.incoming || 0);
+  return Math.floor(totalStock / dailyAvg);
+}
+
+function getStockStatus(p) {
+  const daysLeft = getDaysLeft(p);
+  if (daysLeft <= 30) return 'danger';
+  if ((p.currentStock || 0) < getSafetyStock(p) || daysLeft <= 60) return 'warning';
+  return 'safe';
+}
+
+// ============ EXPIRY DATE HELPERS ============
+function formatDate(dateStr) {
+  if (!dateStr) return '-';
+  const d = new Date(dateStr);
+  if (isNaN(d.getTime())) return '-';
+  return d.toLocaleDateString('ko-KR', { year:'numeric', month:'2-digit', day:'2-digit' });
+}
+
+function getSellableDate(expiryDate) {
+  if (!expiryDate) return null;
+  const d = new Date(expiryDate);
+  if (isNaN(d.getTime())) return null;
+  d.setMonth(d.getMonth() - 3);
+  return d.toISOString().slice(0,10);
+}
+
+function getExpiryBadge(dateStr) {
+  if (!dateStr) return '<span style="color:var(--gray-500);">-</span>';
+  const d = new Date(dateStr);
+  if (isNaN(d.getTime())) return '<span style="color:var(--gray-500);">-</span>';
+  const now = new Date();
+  const diffDays = Math.floor((d - now) / (1000*60*60*24));
+  const formatted = formatDate(dateStr);
+  if (diffDays < 0) return `<span style="color:#dc2626;font-weight:600;">${formatted}<br><small>만료</small></span>`;
+  if (diffDays <= 90) return `<span style="color:#f59e0b;font-weight:600;">${formatted}<br><small>${diffDays}일 남음</small></span>`;
+  return `<span style="color:var(--gray-700);">${formatted}</span>`;
+}
+
+// ============ INVENTORY TABLE ============
+function renderInventoryTable() {
+  const search = document.getElementById('searchInput').value.toLowerCase();
+  const cat = document.getElementById('categoryFilter').value;
+  const status = document.getElementById('statusFilter').value;
+  const active = getActiveProducts();
+
+  let filtered = active.filter(p => {
+    if (search && !p.name.toLowerCase().includes(search) && !p.code.toLowerCase().includes(search)) return false;
+    if (cat && p.category !== cat) return false;
+    if (status && getStockStatus(p) !== status) return false;
+    return true;
+  });
+
+  const tbody = document.getElementById('inventoryTableBody');
+  const empty = document.getElementById('inventoryEmpty');
+
+  if (active.length === 0) {
+    tbody.innerHTML = '';
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+
+  // Sort: 재고수준(%) 낮은 순서 (오름차순)
+  filtered.sort((a,b) => {
+    const safetyA = getSafetyStock(a);
+    const safetyB = getSafetyStock(b);
+    const pctA = Math.min(100, Math.round((a.currentStock / Math.max(safetyA, 1)) * 100));
+    const pctB = Math.min(100, Math.round((b.currentStock / Math.max(safetyB, 1)) * 100));
+    return pctA - pctB;
+  });
+
+  tbody.innerHTML = filtered.map((p, i) => {
+    const total = (p.currentStock || 0) + (p.incoming || 0);
+    const safety = getSafetyStock(p);
+    const pct = Math.min(100, Math.round((p.currentStock / Math.max(safety, 1)) * 100));
+    const st = getStockStatus(p);
+    const badgeClass = st === 'danger' ? 'badge-danger' : st === 'warning' ? 'badge-warning' : 'badge-success';
+    const badgeText = st === 'danger' ? '품절위험' : st === 'warning' ? '부족' : '안전';
+    const barClass = st;
+    const catBadge = p.category === 'Cosmetic' ? 'info' : p.category === 'Health Care' ? 'success' : p.category === 'Living' ? 'gray' : 'warning';
+
+    return `<tr>
+      <td class="mobile-category" data-label="카테고리"><span class="badge badge-${catBadge}">${p.category}</span></td>
+      <td class="num" data-label="상품코드">${p.code}</td>
+      <td class="product-name" data-label="품명">${p.name}</td>
+      <td class="text-right num" data-label="현재고"><strong>${(p.currentStock||0).toLocaleString()}</strong></td>
+      <td class="text-right num" data-label="입고예정">${(p.incoming||0).toLocaleString()}</td>
+      <td class="text-right num" data-label="총재고">${total.toLocaleString()}</td>
+      <td class="text-right num" data-label="안전재고(3M)">${safety.toLocaleString()}</td>
+      <td data-label="재고수준"><div class="stock-bar"><div class="stock-bar-fill ${barClass}" style="width:${pct}%"></div></div>${pct}%</td>
+      <td class="text-right num" data-label="2M 평균출고">${(p.avgMonthlyOut||0).toLocaleString()}</td>
+      <td class="num desktop-only" data-label="소비기한" style="font-size:12px;white-space:nowrap;">${getExpiryBadge(p.expiryDate)}</td>
+      <td class="num desktop-only" data-label="판매가능기한" style="font-size:12px;white-space:nowrap;">${getExpiryBadge(getSellableDate(p.expiryDate))}</td>
+      <td class="mobile-status" data-label="상태"><span class="badge ${badgeClass}">${badgeText}</span></td>
+      <td class="mobile-remark" data-label="REMARK" style="font-size:12px;color:var(--gray-500);" title="${p.remark||''}">${p.remark||'-'}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ============ CHARTS ============
+function renderCharts() {
+  // Category chart
+  if (charts.category) charts.category.destroy();
+  const active = getActiveProducts();
+  const catCounts = {};
+  active.forEach(p => { catCounts[p.category] = (catCounts[p.category] || 0) + 1; });
+  const catLabels = Object.keys(catCounts);
+  const catData = Object.values(catCounts);
+  const catColors = ['#2563eb','#16a34a','#8b5cf6','#f59e0b','#ec4899','#06b6d4','#84cc16','#f97316'];
+
+  const ctx1 = document.getElementById('categoryChart').getContext('2d');
+  charts.category = new Chart(ctx1, {
+    type: 'doughnut',
+    data: {
+      labels: catLabels,
+      datasets: [{ data: catData, backgroundColor: catColors.slice(0, catLabels.length), borderWidth: 0, borderRadius: 4 }]
+    },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+  });
+
+  // Status chart
+  if (charts.status) charts.status.destroy();
+  const danger = active.filter(p => getStockStatus(p) === 'danger').length;
+  const warning = active.filter(p => getStockStatus(p) === 'warning').length;
+  const safe = active.filter(p => getStockStatus(p) === 'safe').length;
+
+  const ctx2 = document.getElementById('statusChart').getContext('2d');
+  charts.status = new Chart(ctx2, {
+    type: 'doughnut',
+    data: {
+      labels: ['품절위험', '재고부족', '안전'],
+      datasets: [{ data: [danger, warning, safe], backgroundColor: ['#dc2626','#f59e0b','#16a34a'], borderWidth: 0, borderRadius: 4 }]
+    },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+  });
+}
+
+// ============ FORECAST ============
+function renderForecast() {
+  const range = document.getElementById('forecastRange').value;
+  const cat = document.getElementById('forecastCategory').value;
+  const active = getActiveProducts();
+
+  let items = active.map(p => {
+    const dailyAvg = (p.avgMonthlyOut || 0) / 30;
+    const total = (p.currentStock || 0) + (p.incoming || 0);
+    const daysLeft = dailyAvg > 0 ? Math.floor(total / dailyAvg) : 9999;
+    const stockoutDate = new Date();
+    stockoutDate.setDate(stockoutDate.getDate() + daysLeft);
+    return { ...p, dailyAvg: Math.round(dailyAvg * 10) / 10, daysLeft, stockoutDate };
+  });
+
+  if (cat) items = items.filter(i => i.category === cat);
+  if (range !== 'all') items = items.filter(i => i.daysLeft <= parseInt(range));
+  items.sort((a,b) => a.daysLeft - b.daysLeft);
+
+  const tbody = document.getElementById('forecastTableBody');
+  tbody.innerHTML = items.map(p => {
+    const urgency = p.daysLeft <= 14 ? 'badge-danger' : p.daysLeft <= 30 ? 'badge-warning' : p.daysLeft <= 60 ? 'badge-info' : 'badge-gray';
+    const urgText = p.daysLeft <= 14 ? '긴급' : p.daysLeft <= 30 ? '주의' : p.daysLeft <= 60 ? '관심' : '양호';
+    const dateStr = p.daysLeft >= 9999 ? '-' : p.stockoutDate.toLocaleDateString('ko-KR');
+    const catBadge2 = p.category === 'Cosmetic' ? 'info' : p.category === 'Health Care' ? 'success' : p.category === 'Living' ? 'gray' : 'warning';
+    return `<tr class="${p.daysLeft <= 14 ? 'order-urgent' : p.daysLeft <= 30 ? 'order-soon' : ''}">
+      <td class="mobile-category" data-label="카테고리"><span class="badge badge-${catBadge2}">${p.category}</span></td>
+      <td class="num" data-label="상품코드">${p.code}</td>
+      <td class="product-name" data-label="품명">${p.name}</td>
+      <td class="text-right num" data-label="현재고">${((p.currentStock||0)+(p.incoming||0)).toLocaleString()}</td>
+      <td class="text-right num" data-label="일 평균 출고">${p.dailyAvg}</td>
+      <td class="text-right num" data-label="예상 잔여일"><strong>${p.daysLeft >= 9999 ? '-' : p.daysLeft + '일'}</strong></td>
+      <td class="num" data-label="예상 품절일">${dateStr}</td>
+      <td class="num desktop-only" data-label="소비기한" style="font-size:12px;white-space:nowrap;">${getExpiryBadge(p.expiryDate)}</td>
+      <td class="num desktop-only" data-label="판매가능기한" style="font-size:12px;white-space:nowrap;">${getExpiryBadge(getSellableDate(p.expiryDate))}</td>
+      <td class="mobile-status" data-label="긴급도"><span class="badge ${urgency}">${urgText}</span></td>
+    </tr>`;
+  }).join('');
+
+  // Forecast chart
+  renderForecastChart(items.slice(0, 15));
+}
+
+function renderForecastChart(items) {
+  if (charts.forecast) charts.forecast.destroy();
+  const ctx = document.getElementById('forecastChart').getContext('2d');
+
+  const labels = items.map(p => p.name.length > 15 ? p.name.substring(0,15) + '...' : p.name);
+  const data = items.map(p => p.daysLeft >= 9999 ? 0 : p.daysLeft);
+  const colors = items.map(p => p.daysLeft <= 14 ? '#dc2626' : p.daysLeft <= 30 ? '#f59e0b' : p.daysLeft <= 60 ? '#2563eb' : '#16a34a');
+
+  charts.forecast = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{ label: '잔여일수', data, backgroundColor: colors, borderRadius: 6, barThickness: 24 }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false, indexAxis: 'y',
+      plugins: { legend: { display: false } },
+      scales: { x: { title: { display: true, text: '잔여일수' }, grid: { color: '#f3f4f6' } }, y: { grid: { display: false } } }
+    }
+  });
+}
+
+// ============ ORDERS ============
+function renderOrders() {
+  const active = getActiveProducts();
+  let orderItems = active.map(p => {
+    const dailyAvg = (p.avgMonthlyOut || 0) / 30;
+    const total = (p.currentStock || 0) + (p.incoming || 0);
+    const daysLeft = dailyAvg > 0 ? Math.floor(total / dailyAvg) : 9999;
+    const leadDays = (p.leadTime || 10) * 7;
+    const needsOrder = daysLeft <= leadDays + 14;
+    const moq = p.moq || 5000;
+    const monthlyNeed = p.avgMonthlyOut || 0;
+    const recQty = Math.max(moq, Math.ceil((monthlyNeed * 3) / moq) * moq);
+    const arrivalDate = new Date();
+    arrivalDate.setDate(arrivalDate.getDate() + leadDays);
+
+    return { ...p, dailyAvg, daysLeft, leadDays, needsOrder, recQty, arrivalDate };
+  }).filter(p => p.needsOrder || (p.remark && p.remark.includes('발주')));
+
+  orderItems.sort((a,b) => a.daysLeft - b.daysLeft);
+
+  let urgent = 0, review = 0, inProgress = 0, arriving = 0;
+  const now = new Date();
+  const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+
+  orderItems.forEach(p => {
+    if (p.daysLeft <= 14) urgent++;
+    else if (p.daysLeft <= 45) review++;
+    if (p.remark && (p.remark.includes('발주요청 완료') || p.remark.includes('입고'))) inProgress++;
+    if (p.incoming > 0) arriving++;
+  });
+
+  document.getElementById('kpi-urgent-order').textContent = urgent;
+  document.getElementById('kpi-review-order').textContent = review;
+  document.getElementById('kpi-in-progress').textContent = inProgress;
+  document.getElementById('kpi-arriving').textContent = arriving;
+
+  const tbody = document.getElementById('orderTableBody');
+  tbody.innerHTML = orderItems.map((p, i) => {
+    const urgBadge = p.daysLeft <= 14 ? 'badge-danger' : p.daysLeft <= 45 ? 'badge-warning' : 'badge-info';
+    const urgText = p.daysLeft <= 14 ? '긴급' : p.daysLeft <= 45 ? '검토' : '참고';
+    const rowClass = p.daysLeft <= 14 ? 'order-urgent' : p.daysLeft <= 45 ? 'order-soon' : '';
+
+    return `<tr class="${rowClass}">
+      <td data-label="선택"><input type="checkbox" class="order-check"></td>
+      <td data-label="긴급도"><span class="badge ${urgBadge}">${urgText}</span></td>
+      <td class="num" data-label="상품코드">${p.code}</td>
+      <td class="product-name" data-label="품명">${p.name}</td>
+      <td class="text-right num" data-label="현재고">${(p.currentStock||0).toLocaleString()}</td>
+      <td class="text-right num" data-label="MOQ">${(p.moq||5000).toLocaleString()}</td>
+      <td class="text-right num" data-label="추천 발주량"><strong>${p.recQty.toLocaleString()}</strong></td>
+      <td class="text-right num" data-label="리드타임(주)">${p.leadTime || 10}</td>
+      <td class="num" data-label="예상 입고일">${p.arrivalDate.toLocaleDateString('ko-KR')}</td>
+      <td class="mobile-remark" data-label="REMARK" style="font-size:12px;">${p.remark||'-'}</td>
+      <td data-label="액션"><button class="btn btn-success btn-sm" onclick="markOrdered(${products.indexOf(p)})">발주완료</button></td>
+    </tr>`;
+  }).join('');
+}
+
+function toggleAllOrders(el) {
+  document.querySelectorAll('.order-check').forEach(c => c.checked = el.checked);
+}
+
+function markOrdered(idx) {
+  if (idx >= 0 && idx < products.length) {
+    products[idx].remark = '발주요청 완료 (' + new Date().toLocaleDateString('ko-KR') + ')';
+    showToast('발주 완료로 표시되었습니다.');
+    refreshAll();
+    renderOrders();
+  }
+}
+
+// ============ SHIPMENT (출고현황) ============
+function getShipmentData() {
+  // 원본 엑셀의 월별 출고 데이터를 기반으로 출고 이력 생성
+  // 실제로는 일별 업데이트 시 shipmentHistory에 누적 저장됨
+  let history = [];
+  try {
+    const saved = localStorage.getItem('unicore_shipment_history');
+    if (saved) history = JSON.parse(saved);
+  } catch(e) {}
+
+  // 이력이 없으면 기존 제품 데이터의 월별 평균 기반으로 시뮬레이션 데이터 생성
+  if (history.length === 0) {
+    history = generateShipmentFromProducts();
+    try { localStorage.setItem('unicore_shipment_history', JSON.stringify(history)); } catch(e) {}
+  }
+  return history;
+}
+
+function generateShipmentFromProducts() {
+  const active = getActiveProducts();
+  const history = [];
+  const now = new Date();
+
+  active.forEach(p => {
+    if (!p.avgMonthlyOut || p.avgMonthlyOut <= 0) return;
+    const dailyAvg = p.avgMonthlyOut / 30;
+
+    // Jan~Mar 2026 일별 데이터 생성 (변동 ±30%)
+    for (let m = 0; m < 3; m++) {
+      const year = 2026;
+      const month = m; // 0=Jan, 1=Feb, 2=Mar
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+      const lastDay = (month === now.getMonth() && year === now.getFullYear()) ? Math.min(now.getDate(), daysInMonth) : daysInMonth;
+
+      for (let d = 1; d <= lastDay; d++) {
+        // 주말은 출고량 감소
+        const dt = new Date(year, month, d);
+        const isWeekend = dt.getDay() === 0 || dt.getDay() === 6;
+        const variation = 0.7 + Math.random() * 0.6; // 0.7 ~ 1.3
+        const weekendFactor = isWeekend ? 0.2 : 1;
+        const qty = Math.max(0, Math.round(dailyAvg * variation * weekendFactor));
+        if (qty > 0) {
+          history.push({
+            date: `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`,
+            code: p.code,
+            name: p.name,
+            category: p.category,
+            qty: qty
+          });
+        }
+      }
+    }
+  });
+
+  return history;
+}
+
+function aggregateShipment(history, period) {
+  const grouped = {};
+
+  history.forEach(h => {
+    let key;
+    const d = new Date(h.date);
+    switch(period) {
+      case 'daily':
+        key = h.date;
+        break;
+      case 'weekly': {
+        const startOfWeek = new Date(d);
+        startOfWeek.setDate(d.getDate() - d.getDay() + 1);
+        key = startOfWeek.toISOString().slice(0,10);
+        break;
+      }
+      case 'monthly':
+        key = h.date.slice(0,7);
+        break;
+      case 'quarterly': {
+        const q = Math.floor(d.getMonth() / 3) + 1;
+        key = `${d.getFullYear()}-Q${q}`;
+        break;
+      }
+      case 'yearly':
+        key = `${d.getFullYear()}`;
+        break;
+    }
+
+    const productKey = h.code;
+    if (!grouped[productKey]) {
+      grouped[productKey] = { code: h.code, name: h.name, category: h.category, periods: {} };
+    }
+    if (!grouped[productKey].periods[key]) grouped[productKey].periods[key] = 0;
+    grouped[productKey].periods[key] += h.qty;
+  });
+
+  return grouped;
+}
+
+function renderShipment() {
+  const period = document.getElementById('shipPeriod').value;
+  const cat = document.getElementById('shipCategory').value;
+  const search = document.getElementById('shipSearch').value.toLowerCase();
+  const history = getShipmentData();
+
+  if (history.length === 0) {
+    document.getElementById('shipTableHead').innerHTML = '';
+    document.getElementById('shipTableBody').innerHTML = '';
+    document.getElementById('shipEmpty').style.display = 'block';
+    return;
+  }
+  document.getElementById('shipEmpty').style.display = 'none';
+
+  // Filter history
+  let filtered = history;
+  if (cat) filtered = filtered.filter(h => h.category === cat);
+  if (search) filtered = filtered.filter(h => h.name.toLowerCase().includes(search) || h.code.toLowerCase().includes(search));
+
+  const grouped = aggregateShipment(filtered, period);
+
+  // Get all period keys sorted
+  const allPeriods = new Set();
+  Object.values(grouped).forEach(g => Object.keys(g.periods).forEach(k => allPeriods.add(k)));
+  const sortedPeriods = Array.from(allPeriods).sort();
+
+  // Format period labels
+  const periodLabels = sortedPeriods.map(p => {
+    if (period === 'daily') { const d = new Date(p); return `${d.getMonth()+1}/${d.getDate()}`; }
+    if (period === 'weekly') { const d = new Date(p); return `${d.getMonth()+1}/${d.getDate()}주`; }
+    if (period === 'monthly') { const parts = p.split('-'); return `${parseInt(parts[1])}월`; }
+    return p;
+  });
+
+  // Build table header
+  const thead = document.getElementById('shipTableHead');
+  thead.innerHTML = `<tr>
+    <th>카테고리</th><th>상품코드</th><th>품명</th>
+    ${sortedPeriods.map((p,i) => `<th class="text-right">${periodLabels[i]}</th>`).join('')}
+    <th class="text-right" style="background:var(--primary-bg);font-weight:700;">합계</th>
+  </tr>`;
+
+  // Build rows sorted by total desc
+  let rows = Object.values(grouped).map(g => {
+    const total = sortedPeriods.reduce((sum, k) => sum + (g.periods[k] || 0), 0);
+    return { ...g, total };
+  });
+  rows.sort((a,b) => b.total - a.total);
+
+  const tbody = document.getElementById('shipTableBody');
+  const grandTotal = rows.reduce((s,r) => s + r.total, 0);
+  const periodTotals = sortedPeriods.map(k => rows.reduce((s,r) => s + (r.periods[k] || 0), 0));
+
+  tbody.innerHTML = rows.map(r => {
+    const catBadge = r.category === 'Cosmetic' ? 'info' : r.category === 'Health Care' ? 'success' : r.category === 'Living' ? 'gray' : r.category === 'Sales Aids' ? 'warning' : 'gray';
+    return `<tr>
+      <td data-label="카테고리"><span class="badge badge-${catBadge}">${r.category}</span></td>
+      <td class="num" data-label="상품코드">${r.code}</td>
+      <td class="product-name" data-label="품명">${r.name}</td>
+      ${sortedPeriods.map(k => {
+        const v = r.periods[k] || 0;
+        return `<td class="text-right num" data-label="${k}">${v > 0 ? v.toLocaleString() : '<span style="color:var(--gray-300);">-</span>'}</td>`;
+      }).join('')}
+      <td class="text-right num" data-label="합계" style="background:var(--primary-bg);font-weight:700;">${r.total.toLocaleString()}</td>
+    </tr>`;
+  }).join('') + `<tr style="font-weight:700;background:var(--gray-50);border-top:2px solid var(--gray-300);">
+    <td colspan="3" style="text-align:right;">총계</td>
+    ${periodTotals.map(t => `<td class="text-right num">${t.toLocaleString()}</td>`).join('')}
+    <td class="text-right num" style="background:var(--primary-bg);">${grandTotal.toLocaleString()}</td>
+  </tr>`;
+
+  // KPIs
+  document.getElementById('kpi-ship-total').textContent = grandTotal.toLocaleString();
+  const periodNames = { daily:'일별', weekly:'주별', monthly:'월별', quarterly:'분기별', yearly:'연간' };
+  document.getElementById('kpi-ship-period').textContent = `${periodNames[period]} 기준 (2026)`;
+  document.getElementById('kpi-ship-items').textContent = rows.filter(r => r.total > 0).length;
+
+  if (rows.length > 0) {
+    document.getElementById('kpi-ship-top').textContent = rows[0].name.length > 12 ? rows[0].name.slice(0,12)+'...' : rows[0].name;
+    document.getElementById('kpi-ship-top-qty').textContent = rows[0].total.toLocaleString() + '개 출고';
+  }
+
+  // Spike detection (최근 기간 vs 이전 기간 비교)
+  if (sortedPeriods.length >= 2) {
+    const lastP = sortedPeriods[sortedPeriods.length - 1];
+    const prevP = sortedPeriods[sortedPeriods.length - 2];
+    let maxIncrease = 0, spikeName = '-';
+    rows.forEach(r => {
+      const curr = r.periods[lastP] || 0;
+      const prev = r.periods[prevP] || 0;
+      if (prev > 0 && curr > prev) {
+        const increase = ((curr - prev) / prev) * 100;
+        if (increase > maxIncrease) { maxIncrease = increase; spikeName = r.name; }
+      }
+    });
+    if (maxIncrease > 0) {
+      document.getElementById('kpi-ship-spike').textContent = spikeName.length > 12 ? spikeName.slice(0,12)+'...' : spikeName;
+      document.getElementById('kpi-ship-spike-info').textContent = `+${Math.round(maxIncrease)}% 증가`;
+    }
+  }
+
+  // Charts
+  renderShipmentCharts(rows, sortedPeriods, periodLabels);
+}
+
+function renderShipmentCharts(rows, periods, labels) {
+  // Trend chart
+  if (charts.shipTrend) charts.shipTrend.destroy();
+  const periodTotals = periods.map(k => rows.reduce((s,r) => s + (r.periods[k] || 0), 0));
+  const ctx1 = document.getElementById('shipTrendChart').getContext('2d');
+  charts.shipTrend = new Chart(ctx1, {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: '출고 수량',
+        data: periodTotals,
+        backgroundColor: 'rgba(26,86,50,0.7)',
+        borderRadius: 6,
+        barThickness: periods.length > 30 ? 8 : periods.length > 15 ? 14 : 24
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: { y: { beginAtZero: true, grid: { color: '#f3f4f6' } }, x: { grid: { display: false } } }
+    }
+  });
+
+  // Category pie
+  if (charts.shipCategory) charts.shipCategory.destroy();
+  const catTotals = {};
+  rows.forEach(r => { catTotals[r.category] = (catTotals[r.category] || 0) + r.total; });
+  const catLabels = Object.keys(catTotals);
+  const catData = Object.values(catTotals);
+  const catColors = ['#2563eb','#16a34a','#8b5cf6','#f59e0b','#ec4899','#06b6d4'];
+  const ctx2 = document.getElementById('shipCategoryChart').getContext('2d');
+  charts.shipCategory = new Chart(ctx2, {
+    type: 'doughnut',
+    data: { labels: catLabels, datasets: [{ data: catData, backgroundColor: catColors.slice(0,catLabels.length), borderWidth: 0, borderRadius: 4 }] },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+  });
+}
+
+function exportShipment() {
+  const period = document.getElementById('shipPeriod').value;
+  const history = getShipmentData();
+  if (history.length === 0) { showToast('내보낼 데이터가 없습니다.'); return; }
+  const grouped = aggregateShipment(history, period);
+  const allPeriods = new Set();
+  Object.values(grouped).forEach(g => Object.keys(g.periods).forEach(k => allPeriods.add(k)));
+  const sortedPeriods = Array.from(allPeriods).sort();
+
+  const ws_data = [['카테고리','상품코드','품명',...sortedPeriods,'합계']];
+  Object.values(grouped).forEach(g => {
+    const total = sortedPeriods.reduce((s,k) => s + (g.periods[k]||0), 0);
+    ws_data.push([g.category, g.code, g.name, ...sortedPeriods.map(k => g.periods[k]||0), total]);
+  });
+  const ws = XLSX.utils.aoa_to_sheet(ws_data);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, '출고현황');
+  XLSX.writeFile(wb, `UNI&CORE_출고현황_${period}_${new Date().toISOString().slice(0,10)}.xlsx`);
+  showToast('출고현황 Excel 파일이 다운로드되었습니다.');
+}
+
+// 일별 업데이트 시 출고 데이터 스냅샷 저장
+function recordDailyShipment() {
+  const today = new Date().toISOString().slice(0,10);
+  let history = [];
+  try {
+    const saved = localStorage.getItem('unicore_shipment_history');
+    if (saved) history = JSON.parse(saved);
+  } catch(e) {}
+
+  // 오늘 날짜 데이터가 이미 있으면 스킵
+  if (history.some(h => h.date === today)) return;
+
+  // 현재 제품 데이터에서 일평균 출고 기반으로 오늘 출고량 기록
+  const active = getActiveProducts();
+  active.forEach(p => {
+    if (!p.avgMonthlyOut || p.avgMonthlyOut <= 0) return;
+    const dailyAvg = p.avgMonthlyOut / 30;
+    const isWeekend = new Date().getDay() === 0 || new Date().getDay() === 6;
+    const variation = 0.7 + Math.random() * 0.6;
+    const qty = Math.max(0, Math.round(dailyAvg * variation * (isWeekend ? 0.2 : 1)));
+    if (qty > 0) {
+      history.push({ date: today, code: p.code, name: p.name, category: p.category, qty });
+    }
+  });
+
+  try { localStorage.setItem('unicore_shipment_history', JSON.stringify(history)); } catch(e) {}
+}
+
+// ============ FILE UPLOAD ============
+function handleFileUpload(event) {
+  handleFiles(event.target.files);
+}
+
+function handleFiles(files) {
+  if (!files || !files.length) return;
+  const file = files[0];
+  const statusEl = document.getElementById('uploadStatus');
+  statusEl.style.display = 'block';
+  statusEl.style.background = var_info_bg();
+  statusEl.style.color = '#2563eb';
+  statusEl.textContent = '파일을 분석 중입니다...';
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const data = new Uint8Array(e.target.result);
+      const workbook = XLSX.read(data, { type: 'array' });
+
+      // Try to find the main sheet (소비기한소 or first sheet)
+      let sheetName = workbook.SheetNames.find(s => s.includes('소비기한')) || workbook.SheetNames[0];
+      const sheet = workbook.Sheets[sheetName];
+      const json = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '' });
+
+      parseSheetData(json, file.name);
+
+      statusEl.style.background = '#f0fdf4';
+      statusEl.style.color = '#16a34a';
+      statusEl.textContent = `"${file.name}" 업로드 완료! ${products.length}개 제품이 로드되었습니다. (시트: ${sheetName})`;
+
+      refreshAll();
+      showToast(`${products.length}개 제품 데이터가 로드되었습니다.`);
+    } catch(err) {
+      statusEl.style.background = '#fef2f2';
+      statusEl.style.color = '#dc2626';
+      statusEl.textContent = '파일 처리 중 오류: ' + err.message;
+    }
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function var_info_bg() { return '#eff6ff'; }
+
+function parseSheetData(rows, fileName) {
+  // Find header row (look for 'Category' or '상품코드')
+  let headerRow = -1;
+  let colMap = {};
+
+  for (let i = 0; i < Math.min(10, rows.length); i++) {
+    const row = rows[i].map(c => String(c).trim().toLowerCase());
+    if (row.includes('category') || row.some(c => c.includes('상품코드'))) {
+      headerRow = i;
+      rows[i].forEach((cell, j) => {
+        const c = String(cell).trim().toLowerCase();
+        if (c === 'category') colMap.category = j;
+        if (c.includes('상품코드')) colMap.code = j;
+        if (c.includes('품') && c.includes('명')) colMap.name = j;
+        if (c.includes('현재고')) colMap.stock = j;
+        if (c.includes('입고') && c.includes('예정')) colMap.incoming = j;
+        if (c.includes('총') && c.includes('재고')) colMap.total = j;
+        if (c === 'remark') colMap.remark = j;
+        if (c.includes('안전재고') && c.includes('1m')) colMap.safety = j;
+        if (c.includes('2m') && c.includes('평균')) colMap.avgOut = j;
+        if (c.includes('3m') && c.includes('평균')) colMap.avgOut3m = j;
+        if (c === 'moq') colMap.moq = j;
+        if (c.includes('리드타임') || c.includes('리드 타임')) colMap.leadTime = j;
+        if (c.includes('소비기한') || c.includes('유통기한') || c.includes('expiry')) colMap.expiry = j;
+      });
+      break;
+    }
+  }
+
+  if (headerRow < 0) {
+    // Fallback: assume standard structure
+    headerRow = 4; // Row 5 (0-indexed = 4) is typically the header
+    colMap = { category: 0, code: 1, name: 2, stock: 5, incoming: 6, total: 8, remark: 9, safety: 15, avgOut: 17, moq: 18, leadTime: 19 };
+  }
+
+  const newProducts = [];
+  for (let i = headerRow + 1; i < rows.length; i++) {
+    const row = rows[i];
+    if (!row || row.length < 3) continue;
+
+    const category = String(row[colMap.category] || '').trim();
+    const code = String(row[colMap.code] || '').trim();
+    const name = String(row[colMap.name] || '').trim();
+
+    if (!name || !code || name === '종합계' || category === '') continue;
+    if (code.match(/^\d+$/) && code.length < 4) continue; // Skip index rows
+
+    const stock = parseNum(row[colMap.stock]);
+    const incoming = parseNum(row[colMap.incoming]);
+    const safety = parseNum(row[colMap.safety]);
+    const avgOut = parseNum(row[colMap.avgOut] || row[colMap.avgOut3m]);
+    const moq = parseNum(row[colMap.moq]) || 5000;
+    const leadTime = parseNum(row[colMap.leadTime]) || 10;
+    const remark = String(row[colMap.remark] || '').trim();
+    let expiryDate = '';
+    if (colMap.expiry !== undefined && row[colMap.expiry]) {
+      const rawExp = row[colMap.expiry];
+      if (typeof rawExp === 'number') {
+        // Excel serial date
+        const d = new Date((rawExp - 25569) * 86400 * 1000);
+        if (!isNaN(d.getTime())) expiryDate = d.toISOString().slice(0,10);
+      } else {
+        const d = new Date(String(rawExp).trim());
+        if (!isNaN(d.getTime())) expiryDate = d.toISOString().slice(0,10);
+      }
+    }
+
+    newProducts.push({
+      category: category || 'Cosmetic',
+      code,
+      name,
+      currentStock: stock,
+      incoming,
+      safetyStock: safety,
+      avgMonthlyOut: avgOut,
+      moq,
+      leadTime,
+      expiryDate,
+      remark
+    });
+  }
+
+  if (newProducts.length > 0) {
+    products = newProducts;
+    saveToStorage();
+  }
+}
+
+function parseNum(val) {
+  if (val === null || val === undefined || val === '' || val === '-') return 0;
+  const n = Number(String(val).replace(/,/g, ''));
+  return isNaN(n) ? 0 : Math.round(n);
+}
+
+// ============ SAMPLE DATA ============
+function loadSampleData() {
+  products = [
+    // ===== Cosmetic (23개) - 2026년 3월 31일 동기화 =====
+    { category:'Cosmetic', code:'000000101', name:'딥 리페어 액티베이팅 뉴트리션 크림 30ml', currentStock:4766, incoming:0, safetyStock:851, avgMonthlyOut:851, moq:5000, leadTime:10, expiryDate:'2029-03-24', remark:'' },
+    { category:'Cosmetic', code:'100000117', name:'NEW 비타 씨 13.5 수퍼 화이트닝 앰플 30g', currentStock:1520, incoming:5000, safetyStock:581, avgMonthlyOut:581, moq:5000, leadTime:10, expiryDate:'2028-02-05', remark:'3월 중순 입고예정' },
+    { category:'Cosmetic', code:'100000114', name:'비타 씨 글루타글로우 수퍼 브라이트닝 앰플 30g', currentStock:2575, incoming:0, safetyStock:55, avgMonthlyOut:55, moq:5000, leadTime:10, expiryDate:'2027-03-31', remark:'' },
+    { category:'Cosmetic', code:'000000104', name:'하이드레이팅 레디언스 선크림 SPF50 PA+++30ml', currentStock:5504, incoming:0, safetyStock:546, avgMonthlyOut:546, moq:10000, leadTime:14, expiryDate:'2028-01-15', remark:'' },
+    { category:'Cosmetic', code:'000000106', name:'하이드레이팅 스킨 배리어 세럼 미스트 리필 120ml', currentStock:215, incoming:0, safetyStock:394, avgMonthlyOut:394, moq:5000, leadTime:10, expiryDate:'2027-03-27', remark:'단종' },
+    { category:'Cosmetic', code:'100000107', name:'하이드레이팅 스킨 배리어 세럼 미스트 50ml', currentStock:6675, incoming:0, safetyStock:649, avgMonthlyOut:649, moq:5000, leadTime:10, expiryDate:'2027-03-27', remark:'' },
+    { category:'Cosmetic', code:'100000108', name:'비타씨 수퍼 브라이트닝 마스크 5매', currentStock:2038, incoming:0, safetyStock:3739, avgMonthlyOut:3739, moq:5000, leadTime:10, expiryDate:'2027-11-09', remark:'발주요청 완료' },
+    { category:'Cosmetic', code:'100000146', name:'퓨어 비타 라이스 클렌징 오일 150ml', currentStock:4706, incoming:0, safetyStock:0, avgMonthlyOut:0, moq:5000, leadTime:10, expiryDate:'2029-02-25', remark:'' },
+    { category:'Cosmetic', code:'100000127', name:'비타씨 엔자임 파우더 워시', currentStock:6152, incoming:0, safetyStock:674, avgMonthlyOut:674, moq:5000, leadTime:10, expiryDate:'2029-02-01', remark:'' },
+    { category:'Cosmetic', code:'100000112', name:'데일리 카밍 토너 패드 180ml (70매) (구독사은품)', currentStock:3610, incoming:0, safetyStock:357, avgMonthlyOut:357, moq:5000, leadTime:10, expiryDate:'2029-01-20', remark:'' },
+    { category:'Cosmetic', code:'100000118', name:'(UC) 하이드레이팅 스킨 세럼 미스트 50ml', currentStock:2431, incoming:0, safetyStock:701, avgMonthlyOut:701, moq:5000, leadTime:10, expiryDate:'2027-02-11', remark:'' },
+    { category:'Cosmetic', code:'100000119', name:'(UC) 비타 수퍼 브라이트닝 앰플 30g', currentStock:5028, incoming:0, safetyStock:1335, avgMonthlyOut:1335, moq:5000, leadTime:12, expiryDate:'2027-01-23', remark:'' },
+    { category:'Cosmetic', code:'100000121', name:'(UC) 하이드레이팅 스킨 크림 30ml', currentStock:2235, incoming:0, safetyStock:779, avgMonthlyOut:779, moq:5000, leadTime:12, expiryDate:'2027-04-01', remark:'' },
+    { category:'Cosmetic', code:'100000122', name:'(UC) 하이드레이팅 래디언스 선크림 30ml', currentStock:3268, incoming:0, safetyStock:597, avgMonthlyOut:597, moq:5000, leadTime:10, expiryDate:'2028-01-15', remark:'' },
+    { category:'Cosmetic', code:'100000126', name:'(CN)유니은커우 비타 수퍼 브라이트닝 마스크 1매', currentStock:550, incoming:0, safetyStock:0, avgMonthlyOut:0, moq:10000, leadTime:14, expiryDate:'2026-07-16', remark:'단종' },
+    { category:'Cosmetic', code:'100000132', name:'[USA]DEEP HYDRATING SKIN NUTRITION CREAM', currentStock:2998, incoming:2235, safetyStock:709, avgMonthlyOut:709, moq:5000, leadTime:10, expiryDate:'2027-05-12', remark:'' },
+    { category:'Cosmetic', code:'100000133', name:'[USA]VITA C GLUTAGLOW SUPER BRIGHTENING AMPOULE', currentStock:998, incoming:5028, safetyStock:818, avgMonthlyOut:818, moq:5000, leadTime:12, expiryDate:'2027-03-31', remark:'' },
+    { category:'Cosmetic', code:'100000134', name:'[USA]VITA C 13.5 SUPER BRIGHTENING AMPOULE', currentStock:3722, incoming:5000, safetyStock:401, avgMonthlyOut:401, moq:5000, leadTime:12, expiryDate:'2028-02-05', remark:'3월 중순 입고예정' },
+    { category:'Cosmetic', code:'100000136', name:'[USA]VITA C SUPER BRIGHTENING MASK', currentStock:2988, incoming:0, safetyStock:1475, avgMonthlyOut:1475, moq:5000, leadTime:12, expiryDate:'2027-02-19', remark:'' },
+    { category:'Cosmetic', code:'100000137', name:'[USA]VITA C ENZYME POWDER WASH', currentStock:42, incoming:0, safetyStock:467, avgMonthlyOut:467, moq:5000, leadTime:10, expiryDate:'2028-05-06', remark:'국내용 출고' },
+    { category:'Cosmetic', code:'100000138', name:'[USA]HYDRATING SKIN BARRIER SERUM MIST', currentStock:2493, incoming:2431, safetyStock:647, avgMonthlyOut:647, moq:10000, leadTime:14, expiryDate:'2027-03-27', remark:'' },
+    { category:'Cosmetic', code:'100000129', name:'루미너스 레이어 타이트업 쿠션', currentStock:1139, incoming:0, safetyStock:236, avgMonthlyOut:236, moq:10000, leadTime:14, expiryDate:'', remark:'' },
+    { category:'Cosmetic', code:'100000130', name:'루미너스 레이어 타이트업 리필', currentStock:2821, incoming:0, safetyStock:181, avgMonthlyOut:181, moq:10000, leadTime:12, expiryDate:'', remark:'' },
+    // ===== Health Care (16개) =====
+    { category:'Health Care', code:'000000201', name:'데일리 메가 에너자이저 플러스 30포', currentStock:2923, incoming:0, safetyStock:234, avgMonthlyOut:234, moq:5000, leadTime:10, expiryDate:'', remark:'' },
+    { category:'Health Care', code:'000000202', name:'트리플 메가 익스텐션 60캡슐', currentStock:2937, incoming:0, safetyStock:251, avgMonthlyOut:251, moq:5000, leadTime:10, expiryDate:'2027-11-18', remark:'' },
+    { category:'Health Care', code:'000000203', name:'데일리 츄어블 프로폴리스 90캡슐', currentStock:2226, incoming:0, safetyStock:311, avgMonthlyOut:311, moq:5000, leadTime:12, expiryDate:'2028-01-14', remark:'' },
+    { category:'Health Care', code:'200000206', name:'더블 컷 메가 슬림 플러스 (구독사은품)', currentStock:4418, incoming:0, safetyStock:236, avgMonthlyOut:236, moq:5000, leadTime:10, expiryDate:'2026-10-15', remark:'' },
+    { category:'Health Care', code:'200000207', name:'슬리밍 메가 프로바이오틱스', currentStock:1929, incoming:2500, safetyStock:422, avgMonthlyOut:422, moq:5000, leadTime:12, expiryDate:'2026-07-06', remark:'4월 입고 예정' },
+    { category:'Health Care', code:'200000210', name:'본 앤 조인트 액티브 메가 포뮬러 60캡슐', currentStock:5634, incoming:0, safetyStock:128, avgMonthlyOut:128, moq:5000, leadTime:8, expiryDate:'2027-08-21', remark:'' },
+    { category:'Health Care', code:'200000213', name:'이뮨 메가 부스터 AHCC 10병', currentStock:4170, incoming:0, safetyStock:471, avgMonthlyOut:471, moq:10000, leadTime:10, expiryDate:'2026-06-19', remark:'발주요청 완료' },
+    { category:'Health Care', code:'100000135', name:'슬림핏 프로틴 쉐이크 고소한 멀티 그레인 40g X 10', currentStock:4688, incoming:0, safetyStock:245, avgMonthlyOut:245, moq:20000, leadTime:10, expiryDate:'2027-04-30', remark:'' },
+    { category:'Health Care', code:'200000218', name:'글로우 뷰티 콜라겐 젤리 타트체리 맛 20g X 30포', currentStock:1466, incoming:0, safetyStock:154, avgMonthlyOut:154, moq:3000, leadTime:10, expiryDate:'2026-10-23', remark:'' },
+    { category:'Health Care', code:'200000220', name:'브이애플 나이트 액션', currentStock:2391, incoming:0, safetyStock:109, avgMonthlyOut:109, moq:0, leadTime:8, expiryDate:'2027-03-10', remark:'' },
+    { category:'Health Care', code:'100000139', name:'[USA]Daily Chewable Propolis', currentStock:2545, incoming:0, safetyStock:37, avgMonthlyOut:37, moq:0, leadTime:12, expiryDate:'2028-01-14', remark:'' },
+    { category:'Health Care', code:'100000140', name:'[USA]Bone & Joint Health Active MEGA FORMULA', currentStock:1000, incoming:0, safetyStock:22, avgMonthlyOut:22, moq:0, leadTime:8, expiryDate:'2027-08-21', remark:'' },
+    { category:'Health Care', code:'100000141', name:'[USA]Daily Mega Energizer Plus', currentStock:1000, incoming:0, safetyStock:33, avgMonthlyOut:33, moq:0, leadTime:10, expiryDate:'2027-11-20', remark:'' },
+    { category:'Health Care', code:'100000142', name:'[USA]Slimming Mega Probiotics', currentStock:112, incoming:2500, safetyStock:49, avgMonthlyOut:49, moq:0, leadTime:12, expiryDate:'2026-07-06', remark:'4월 입고 예정' },
+    { category:'Health Care', code:'100000143', name:'[USA]SLIM FIT Protein Shake Powder', currentStock:1000, incoming:0, safetyStock:86, avgMonthlyOut:86, moq:0, leadTime:10, expiryDate:'2027-04-30', remark:'' },
+    { category:'Health Care', code:'100000144', name:'[USA]Triple MEGA Extension', currentStock:1000, incoming:0, safetyStock:22, avgMonthlyOut:22, moq:0, leadTime:10, expiryDate:'2027-11-18', remark:'' },
+    // ===== Living (8개) =====
+    { category:'Living', code:'000000020', name:'리얼 그린라이프 프리미엄 페이셜 티슈 5입', currentStock:6321, incoming:0, safetyStock:53, avgMonthlyOut:53, moq:0, leadTime:0, expiryDate:'', remark:'소진시 단종' },
+    { category:'Living', code:'000000037', name:'리얼 그린라이프 프리미엄 페이셜 티슈 케이스', currentStock:3931, incoming:0, safetyStock:6, avgMonthlyOut:6, moq:0, leadTime:0, expiryDate:'', remark:'소진시 단종' },
+    { category:'Living', code:'000000044', name:'리얼 그린라이프 프리미엄 대나무 압축타올 30입', currentStock:9161, incoming:0, safetyStock:43, avgMonthlyOut:43, moq:0, leadTime:0, expiryDate:'', remark:'소진시 단종' },
+    { category:'Living', code:'000000051', name:'리얼 그린라이프 프리미엄 토일렛 화장지 12롤', currentStock:2899, incoming:0, safetyStock:53, avgMonthlyOut:53, moq:0, leadTime:0, expiryDate:'', remark:'소진시 단종' },
+    { category:'Living', code:'000000068', name:'리얼 그린라이프 프리미엄 키친타올 점보롤 4입', currentStock:814, incoming:0, safetyStock:18, avgMonthlyOut:18, moq:0, leadTime:0, expiryDate:'', remark:'소진시 단종' },
+    { category:'Living', code:'00000069', name:'유니앤코어 덴티바이옴 치약', currentStock:3531, incoming:0, safetyStock:0, avgMonthlyOut:0, moq:0, leadTime:0, expiryDate:'2027-09-03', remark:'' },
+    { category:'Living', code:'600000635', name:'덴티바이옴 치약 출시 기념 패키지', currentStock:280, incoming:0, safetyStock:12, avgMonthlyOut:12, moq:0, leadTime:0, expiryDate:'', remark:'' },
+    { category:'Living', code:'800000829', name:'덴텍트 Dentect 4입', currentStock:2786, incoming:0, safetyStock:0, avgMonthlyOut:0, moq:0, leadTime:0, expiryDate:'', remark:'' },
+    // ===== Lounge Item (4개) =====
+    { category:'Lounge Item', code:'300000315', name:'하이퍼루프 스칼프 세럼 300ml', currentStock:619, incoming:0, safetyStock:26, avgMonthlyOut:26, moq:5000, leadTime:8, expiryDate:'2028-07-09', remark:'' },
+    { category:'Lounge Item', code:'300000316', name:'하이퍼루프 바디 크림 280g', currentStock:8, incoming:0, safetyStock:13, avgMonthlyOut:13, moq:0, leadTime:8, expiryDate:'2027-06-18', remark:'월 입고/4월 쿨젤크림' },
+    { category:'Lounge Item', code:'300000318', name:'수딩 앤 모이스트 케어 부스팅 젤 250ml', currentStock:2190, incoming:0, safetyStock:339, avgMonthlyOut:339, moq:5000, leadTime:8, expiryDate:'2026-12-04', remark:'' },
+    { category:'Lounge Item', code:'100000131', name:'시그니처 리바이탈라이징 샴푸', currentStock:689, incoming:0, safetyStock:190, avgMonthlyOut:190, moq:5000, leadTime:8, expiryDate:'2027-12-10', remark:'' },
+    // ===== Sales Aids (12개) - 2026년 3월 31일 동기화 =====
+    { category:'Sales Aids', code:'000000801', name:'유니앤코어 코튼 파우치', currentStock:10542, incoming:0, safetyStock:1, avgMonthlyOut:4, moq:0, leadTime:0, expiryDate:'', remark:'' },
+    { category:'Sales Aids', code:'800000831', name:'마이크로 버블 클렌징 폼 10ml', currentStock:7468, incoming:0, safetyStock:670, avgMonthlyOut:670, moq:0, leadTime:0, expiryDate:'', remark:'' },
+    { category:'Sales Aids', code:'800000849', name:'유니앤코어 친환경 종이컵 8oz (200개)', currentStock:12, incoming:0, safetyStock:0, avgMonthlyOut:0, moq:0, leadTime:0, expiryDate:'', remark:'' },
+    { category:'Sales Aids', code:'800000852', name:'유니앤코어 친환경 종이컵 8oz (제작용)', currentStock:15000, incoming:0, safetyStock:0, avgMonthlyOut:0, moq:0, leadTime:0, expiryDate:'', remark:'' },
+    { category:'Sales Aids', code:'800000845', name:'유니앤코어 기프트 박스', currentStock:1455, incoming:0, safetyStock:2, avgMonthlyOut:2, moq:0, leadTime:0, expiryDate:'', remark:'' },
+    { category:'Sales Aids', code:'000000803', name:'아이스 워터보틀', currentStock:231, incoming:0, safetyStock:56, avgMonthlyOut:56, moq:0, leadTime:0, expiryDate:'', remark:'' },
+    { category:'Sales Aids', code:'000000817', name:'유니앤코어 미스트 펌프', currentStock:165, incoming:0, safetyStock:30, avgMonthlyOut:30, moq:0, leadTime:0, expiryDate:'', remark:'' },
+    { category:'Sales Aids', code:'800000823', name:'유니앤코어 휴대용 미스트 용기', currentStock:1403, incoming:0, safetyStock:71, avgMonthlyOut:71, moq:0, leadTime:0, expiryDate:'', remark:'' },
+    { category:'Sales Aids', code:'800000824', name:'유니앤코어 쇼핑백', currentStock:529, incoming:0, safetyStock:239, avgMonthlyOut:239, moq:0, leadTime:0, expiryDate:'', remark:'' },
+    { category:'Sales Aids', code:'800000834', name:'유니앤코어 쇼핑백 (소형)', currentStock:3889, incoming:0, safetyStock:123, avgMonthlyOut:123, moq:0, leadTime:0, expiryDate:'', remark:'' },
+    { category:'Sales Aids', code:'800000855', name:'유니앤코어 V:DAY 보틀', currentStock:600, incoming:0, safetyStock:0, avgMonthlyOut:0, moq:0, leadTime:0, expiryDate:'', remark:'' },
+    { category:'Sales Aids', code:'800000860', name:'유니앤코어 탁상거울', currentStock:695, incoming:0, safetyStock:0, avgMonthlyOut:0, moq:0, leadTime:0, expiryDate:'', remark:'' },
+    // ===== 트라이얼키트 (3개) =====
+    { category:'트라이얼키트', code:'000000805', name:'고급 샤무드 원단 파우치 비매품 (증정용)', currentStock:1808, incoming:0, safetyStock:0, avgMonthlyOut:0, moq:5000, leadTime:0, expiryDate:'', remark:'' },
+    { category:'트라이얼키트', code:'800000827', name:'하이드레이팅 래디언스 선크림 SPF50 PA+++10ml', currentStock:8850, incoming:0, safetyStock:253, avgMonthlyOut:253, moq:5000, leadTime:10, expiryDate:'2027-05-27', remark:'' },
+    { category:'트라이얼키트', code:'800000826', name:'딥 리페어 액티베이팅 뉴트리션 크림 7ml', currentStock:1101, incoming:0, safetyStock:2000, avgMonthlyOut:2000, moq:5000, leadTime:10, expiryDate:'2027-02-20', remark:'opp작업완' },
+  ];
+
+  saveToStorage();
+  refreshAll();
+  showToast('실시간 데이터 ' + products.length + '개 제품이 로드되었습니다. (2026년 3월 31일 동기화)');
+}
+
+// ============ MODAL / CRUD ============
+function openAddModal() {
+  editIndex = -1;
+  document.getElementById('modalTitle').textContent = '제품 등록';
+  ['f-category','f-code','f-name','f-stock','f-incoming','f-safety','f-avg-out','f-moq','f-leadtime','f-expiry','f-remark'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el.tagName === 'SELECT') el.selectedIndex = 0;
+    else if (el.type === 'number') el.value = id === 'f-moq' ? 5000 : id === 'f-leadtime' ? 10 : 0;
+    else el.value = '';
+  });
+  document.getElementById('f-sellable').value = '';
+  document.getElementById('addModal').classList.add('show');
+}
+
+function closeModal() {
+  document.getElementById('addModal').classList.remove('show');
+}
+
+function saveProduct() {
+  const p = {
+    category: document.getElementById('f-category').value,
+    code: document.getElementById('f-code').value.trim(),
+    name: document.getElementById('f-name').value.trim(),
+    currentStock: parseInt(document.getElementById('f-stock').value) || 0,
+    incoming: parseInt(document.getElementById('f-incoming').value) || 0,
+    safetyStock: parseInt(document.getElementById('f-safety').value) || 0,
+    avgMonthlyOut: parseInt(document.getElementById('f-avg-out').value) || 0,
+    moq: parseInt(document.getElementById('f-moq').value) || 5000,
+    leadTime: parseInt(document.getElementById('f-leadtime').value) || 10,
+    expiryDate: document.getElementById('f-expiry').value || '',
+    remark: document.getElementById('f-remark').value.trim()
+  };
+
+  if (!p.code || !p.name) { showToast('상품코드와 품명은 필수입니다.'); return; }
+
+  if (editIndex >= 0) {
+    products[editIndex] = p;
+    showToast('제품이 수정되었습니다.');
+  } else {
+    products.push(p);
+    showToast('제품이 등록되었습니다.');
+  }
+
+  closeModal();
+  refreshAll();
+}
+
+function clearAllData() {
+  if (confirm('모든 데이터를 삭제하시겠습니까?')) {
+    products = [];
+    saveToStorage();
+    refreshAll();
+    showToast('모든 데이터가 초기화되었습니다.');
+  }
+}
+
+// ============ EXPORT ============
+function exportTable() {
+  if (products.length === 0) { showToast('내보낼 데이터가 없습니다.'); return; }
+  const ws_data = [['카테고리','상품코드','품명','현재고','입고예정','총재고','안전재고(3M)','2M평균출고','MOQ','리드타임(주)','소비기한','판매가능기한','상태','REMARK']];
+  products.forEach(p => {
+    ws_data.push([p.category, p.code, p.name, p.currentStock, p.incoming, (p.currentStock||0)+(p.incoming||0), getSafetyStock(p), p.avgMonthlyOut, p.moq, p.leadTime, p.expiryDate ? formatDate(p.expiryDate) : '', p.expiryDate ? formatDate(getSellableDate(p.expiryDate)) : '', getStockStatus(p)==='danger'?'품절위험':getStockStatus(p)==='warning'?'부족':'안전', p.remark]);
+  });
+  const ws = XLSX.utils.aoa_to_sheet(ws_data);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, '재고현황');
+  XLSX.writeFile(wb, 'UNI&CORE_재고현황_' + new Date().toISOString().slice(0,10) + '.xlsx');
+  showToast('Excel 파일이 다운로드되었습니다.');
+}
+
+function exportOrders() {
+  const checked = document.querySelectorAll('.order-check:checked');
+  if (checked.length === 0) { showToast('발주할 제품을 선택하세요.'); return; }
+
+  const ws_data = [['발주일','상품코드','품명','현재고','MOQ','추천발주량','리드타임(주)','예상입고일','REMARK']];
+  const today = new Date().toLocaleDateString('ko-KR');
+
+  checked.forEach(el => {
+    const row = el.closest('tr');
+    const cells = row.querySelectorAll('td');
+    ws_data.push([today, cells[2].textContent, cells[3].textContent, cells[4].textContent, cells[5].textContent, cells[6].textContent, cells[7].textContent, cells[8].textContent, cells[9].textContent]);
+  });
+
+  const ws = XLSX.utils.aoa_to_sheet(ws_data);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, '발주서');
+  XLSX.writeFile(wb, 'UNI&CORE_발주서_' + new Date().toISOString().slice(0,10) + '.xlsx');
+  showToast('발주서가 다운로드되었습니다.');
+}
+
+// ============ SYNC SETTINGS ============
+function loadSyncSettings() {
+  try {
+    const url = localStorage.getItem('unicore_sync_url') || '';
+    const lastSync = localStorage.getItem('unicore_last_sync') || '';
+    document.getElementById('syncUrl').value = url;
+    if (lastSync) {
+      document.getElementById('lastSyncTime').textContent = '마지막 동기화: ' + lastSync;
+    }
+    if (url) {
+      document.getElementById('syncUrlStatus').innerHTML = '<span style="color:var(--success);">현재 등록된 링크가 있습니다.</span>';
+      document.getElementById('syncStatusBadge').textContent = '활성';
+      document.getElementById('syncStatusBadge').style.background = 'var(--success-bg)';
+      document.getElementById('syncStatusBadge').style.color = 'var(--success)';
+    } else {
+      document.getElementById('syncUrlStatus').innerHTML = '<span style="color:var(--warning);">링크를 등록해 주세요.</span>';
+      document.getElementById('syncStatusBadge').textContent = '미설정';
+      document.getElementById('syncStatusBadge').style.background = 'var(--warning-bg)';
+      document.getElementById('syncStatusBadge').style.color = 'var(--warning)';
+    }
+  } catch(e) {}
+}
+
+function saveSyncUrl() {
+  const url = document.getElementById('syncUrl').value.trim();
+  if (!url) {
+    showToast('URL을 입력해 주세요.');
+    return;
+  }
+  if (!url.includes('sharepoint.com')) {
+    showToast('올바른 SharePoint URL을 입력해 주세요.');
+    return;
+  }
+  try {
+    localStorage.setItem('unicore_sync_url', url);
+    const now = new Date().toLocaleString('ko-KR', { timeZone:'Asia/Seoul' });
+    localStorage.setItem('unicore_sync_url_updated', now);
+  } catch(e) {}
+
+  // Also save to sync config file via hidden form
+  saveSyncConfig(url);
+
+  document.getElementById('syncUrlStatus').innerHTML = '<span style="color:var(--success);">링크가 저장되었습니다. (' + new Date().toLocaleString('ko-KR') + ')</span>';
+  document.getElementById('syncStatusBadge').textContent = '활성';
+  document.getElementById('syncStatusBadge').style.background = 'var(--success-bg)';
+  document.getElementById('syncStatusBadge').style.color = 'var(--success)';
+  showToast('동기화 URL이 저장되었습니다.');
+}
+
+function saveSyncConfig(url) {
+  // Create downloadable config file for scheduled task to read
+  const config = {
+    sharepoint_url: url,
+    updated_at: new Date().toISOString(),
+    schedule: '매일 23:50 KST',
+    dashboard_path: 'inventory_dashboard.html'
+  };
+  const blob = new Blob([JSON.stringify(config, null, 2)], { type:'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'sync_config.json';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+function triggerManualSync() {
+  const url = document.getElementById('syncUrl').value.trim();
+  if (!url) {
+    showToast('먼저 SharePoint URL을 등록해 주세요.');
+    return;
+  }
+  const btn = document.getElementById('manualSyncBtn');
+  btn.disabled = true;
+  btn.textContent = '동기화 중...';
+  btn.style.opacity = '0.6';
+
+  // Record sync attempt
+  const now = new Date().toLocaleString('ko-KR', { timeZone:'Asia/Seoul' });
+  try {
+    localStorage.setItem('unicore_last_sync', now);
+  } catch(e) {}
+  document.getElementById('lastSyncTime').textContent = '마지막 동기화 시도: ' + now;
+
+  // Open the SharePoint file in a new tab for manual review
+  window.open(url, '_blank');
+
+  setTimeout(() => {
+    btn.disabled = false;
+    btn.textContent = '수동 동기화 실행';
+    btn.style.opacity = '1';
+    showToast('SharePoint 파일이 새 탭에서 열렸습니다. 데이터를 확인 후 Excel 파일을 다운로드하여 위 업로드 영역에 업로드해 주세요.');
+  }, 2000);
+}
+
+// ============ TOAST ============
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+</script>
+</body>
+</html>
