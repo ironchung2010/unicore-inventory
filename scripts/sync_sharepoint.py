@@ -1,5 +1,5 @@
 """
-UNI&CORE 재고 대시볰드 - SharePoint 데이터 자동 동기화 스크립트
+UNI&CORE 재고 대시보드 - SharePoint 데이터 자동 동기화 스크립트
 GitHub Actions에서 매일 실행되어 SharePoint의 엑셀 파일을 읽고
 대시보드 HTML의 샘플 데이터를 최신 데이터로 업데이트합니다.
 
@@ -11,6 +11,7 @@ import sys
 import json
 import re
 from datetime import datetime
+from urllib.parse import quote
 
 import msal
 import requests
@@ -22,7 +23,7 @@ CLIENT_SECRET = os.environ.get("AZURE_CLIENT_SECRET", "")
 SITE_NAME = "msteams_b2be8e"
 SHAREPOINT_HOST = "uniandcore.sharepoint.com"
 FILE_PATH = os.environ.get("SHAREPOINT_FILE_PATH",
-    "/General/12. SC/F'cst/UNI&CORE Inventory Report_(3월).xlsb")
+    "General/12. SC/F'cst/UNI&CORE Inventory Report_(3월).xlsb")
 DASHBOARD_HTML = os.path.join(os.path.dirname(__file__), '..', 'index.html')
 HISTORY_JSON = os.path.join(os.path.dirname(__file__), '..', 'data', 'shipment_history.json')
 
@@ -61,36 +62,75 @@ def download_excel():
     if resp.status_code != 200:
         print(f"ERROR: 사이트 조회 실패 ({resp.status_code}): {resp.text}")
         sys.exit(1)
-    site_id = resp.json()["id"]
+    site_data = resp.json()
+    site_id = site_data["id"]
+    print(f"사이트 ID: {site_id}")
+    print(f"사이트 이름: {site_data.get('displayName', 'N/A')}")
 
     # 드라이브 (문서 라이브러리) 조회
     drives_url = f"https://graph.microsoft.com/v1.0/sites/{site_id}/drives"
     resp = requests.get(drives_url, headers=headers)
+    if resp.status_code != 200:
+        print(f"ERROR: 드라이브 조회 실패 ({resp.status_code}): {resp.text}")
+        sys.exit(1)
     drives = resp.json().get("value", [])
+
+    print(f"발견된 드라이브 수: {len(drives)}")
+    for i, d in enumerate(drives):
+        print(f"  드라이브[{i}]: name='{d.get('name')}', id='{d.get('id', '')[:20]}...', webUrl='{d.get('webUrl', 'N/A')}'")
 
     drive_id = None
     for d in drives:
         if d.get("name") in ["Documents", "Shared Documents", "문서"]:
             drive_id = d["id"]
+            print(f"매칭된 드라이브: '{d.get('name')}' (id: {drive_id[:20]}...)")
             break
     if not drive_id and drives:
         drive_id = drives[0]["id"]
+        print(f"기본 드라이브 사용: '{drives[0].get('name')}' (id: {drive_id[:20]}...)")
 
     if not drive_id:
         print("ERROR: 문서 라이브러리를 찾을 수 없습니다.")
         sys.exit(1)
 
-    # 파일 다운로드
-    file_path = FILE_PATH.lstrip("/")
-    download_url = f"https://graph.microsoft.com/v1.0/drives/{drive_id}/root:/{file_path}:/content"
-    print(f"파일 다운로드 중... ({file_path})")
+    # 파일 경로 정리 및 URL 인코딩
+    file_path = FILE_PATH.strip().lstrip("/")
+    if not file_path:
+        print("ERROR: SHAREPOINT_FILE_PATH가 비어있습니다.")
+        print(f"  FILE_PATH 원본값 길이: {len(FILE_PATH)}")
+        print(f"  FILE_PATH repr: {repr(FILE_PATH[:50])}")
+        sys.exit(1)
+
+    # 경로의 각 세그먼트를 개별적으로 URL 인코딩
+    path_segments = file_path.split("/")
+    encoded_segments = [quote(seg, safe='') for seg in path_segments]
+    encoded_path = "/".join(encoded_segments)
+
+    download_url = f"https://graph.microsoft.com/v1.0/drives/{drive_id}/root:/{encoded_path}:/content"
+    print(f"파일 경로 (원본): {file_path}")
+    print(f"파일 경로 (인코딩): {encoded_path}")
+    print(f"다운로드 URL: {download_url[:80]}...")
+
     resp = requests.get(download_url, headers=headers)
 
     if resp.status_code != 200:
         print(f"ERROR: 파일 다운로드 실패 ({resp.status_code}): {resp.text}")
+        # 드라이브 루트의 파일/폴더 목록을 표시하여 디버깅
+        print("\n--- 드라이브 루트 내용 확인 ---")
+        root_url = f"https://graph.microsoft.com/v1.0/drives/{drive_id}/root/children?$select=name,folder,file&$top=20"
+        root_resp = requests.get(root_url, headers=headers)
+        if root_resp.status_code == 200:
+            items = root_resp.json().get("value", [])
+            for item in items:
+                item_type = "📁" if "folder" in item else "📄"
+                print(f"  {item_type} {item['name']}")
+        else:
+            print(f"  루트 조회 실패: {root_resp.status_code}")
         sys.exit(1)
 
-    local_path = "/tmp/inventory_report.xlsb"
+    # 파일 확장자에 따라 저장
+    ext = os.path.splitext(file_path)[1].lower()
+    local_path = f"/tmp/inventory_report{ext}"
     with open(local_path, "wb") as f:
         f.write(resp.content)
 
@@ -99,23 +139,49 @@ def download_excel():
 
 
 def parse_excel(file_path):
-    """엑셀 파일에서 재고 데이터 추출"""
-    import openpyxl
+    """엑셀 파일에서 재고 데이터 추출 (.xlsx 및 .xlsb 지원)"""
+    ext = os.path.splitext(file_path)[1].lower()
+    print(f"엑셀 파일 파싱 중... (형식5 {ext})")
 
-    print("엑셀 파일 파싱 중...")
-    wb = openpyxl.load_workbook(file_path, read_only=True, data_only=True)
+    if ext == '.xlsb':
+        # .xlsb (바이너리 형식) - pyxlsb 사용
+        from pyxlsb import open_workbook
+        wb = open_workbook(file_path)
+        sheet_names = wb.sheets
 
-    # 메인 시트 찾기
-    sheet_name = None
-    for name in wb.sheetnames:
-        if '소비기한' in name:
-            sheet_name = name
-            break
-    if not sheet_name:
-        sheet_name = wb.sheetnames[0]
+        sheet_name = None
+        for name in sheet_names:
+            if '소비기한' in name:
+                sheet_name = name
+                break
+        if not sheet_name:
+            sheet_name = sheet_names[0]
 
-    ws = wb[sheet_name]
-    rows = list(ws.iter_rows(values_only=True))
+        print(f"시트: {sheet_name} (전체: {sheet_names})")
+        rows = []
+        with wb.get_sheet(sheet_name) as ws:
+            for row in ws.rows():
+                rows.append(tuple(c.v for c in row))
+        wb.close()
+    else:
+        # .xlsx 형식 - openpyxl 사용
+        import openpyxl
+        wb = openpyxl.load_workbook(file_path, read_only=True, data_only=True)
+
+        sheet_name = None
+        for name in wb.sheetnames:
+            if '소비기한' in name:
+                sheet_name = name
+                break
+        if not sheet_name:
+            sheet_name = wb.sheetnames[0]
+
+        print(f"시트: {sheet_name} (전체: {wb.sheetnames})")
+        ws = wb[sheet_name]
+        rows = list(ws.iter_rows(values_only=True))
+        wb.close()
+
+    print(f"총 행 수: {len(rows)}")
 
     # 헤더 행 찾기
     header_row = -1
@@ -200,7 +266,6 @@ def parse_excel(file_path):
         })
 
     print(f"파싱 완료: {len(products)}개 제품")
-    wb.close()
     return products
 
 
