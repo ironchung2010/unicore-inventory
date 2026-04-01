@@ -26,8 +26,9 @@ jobs:
 
       - name: SharePoint 데이터 동기화
         env:
-          SHAREPOINT_USERNAME: ${{ secrets.SHAREPOINT_USERNAME }}
-          SHAREPOINT_PASSWORD: ${{ secrets.SHAREPOINT_PASSWORD }}
+          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
           SHAREPOINT_FILE_PATH: ${{ secrets.SHAREPOINT_FILE_PATH }}
         run: python scripts/sync_sharepoint.py
 
@@ -38,3 +39,4 @@ jobs:
           git add index.html data/
           git diff --staged --quiet || git commit -m "자동 동기화: $(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M KST')"
           git push
+
