@@ -2,6 +2,8 @@
 UNI&CORE 재고 대시보드 - SharePoint 데이터 자동 동기화 스크립트
 GitHub Actions에서 매일 실행되어 SharePoint의 엑셀 파일을 읽고
 대시보드 HTML의 샘플 데이터를 최신 데이터로 업데이트합니다.
+
+인증 방식: Azure AD 앱 등록 (Client Credentials)
 """
 
 import os
@@ -9,37 +11,90 @@ import sys
 import json
 import re
 from datetime import datetime
-from office365.runtime.auth.user_credential import UserCredential
-from office365.sharepoint.client_context import ClientContext
+
+import msal
+import requests
 
 # ============ 설정 ============
-SHAREPOINT_SITE = "https://uniandcore.sharepoint.com/sites/msteams_b2be8e"
+TENANT_ID = os.environ.get("AZURE_TENANT_ID", "")
+CLIENT_ID = os.environ.get("AZURE_CLIENT_ID", "")
+CLIENT_SECRET = os.environ.get("AZURE_CLIENT_SECRET", "")
+SITE_NAME = "msteams_b2be8e"
+SHAREPOINT_HOST = "uniandcore.sharepoint.com"
 FILE_PATH = os.environ.get("SHAREPOINT_FILE_PATH",
-    "/sites/msteams_b2be8e/Shared Documents/General/12. SC/F'cst/UNI&CORE Inventory Report_(3월).xlsb")
+    "/General/12. SC/F'cst/UNI&CORE Inventory Report_(3월).xlsb")
 DASHBOARD_HTML = os.path.join(os.path.dirname(__file__), '..', 'index.html')
 HISTORY_JSON = os.path.join(os.path.dirname(__file__), '..', 'data', 'shipment_history.json')
 
-def download_excel():
-    """SharePoint에서 엑셀 파일 다운로드"""
-    username = os.environ.get("SHAREPOINT_USERNAME")
-    password = os.environ.get("SHAREPOINT_PASSWORD")
 
-    if not username or not password:
-        print("ERROR: SHAREPOINT_USERNAME / SHAREPOINT_PASSWORD 환경변수가 설정되지 않았습니다.")
+def get_access_token():
+    """Azure AD에서 액세스 토큰 획득"""
+    if not TENANT_ID or not CLIENT_ID or not CLIENT_SECRET:
+        print("ERROR: AZURE_TENANT_ID, AZURE_CLIENT_ID, AZURE_CLIENT_SECRET 환경변수가 필요합니다.")
         sys.exit(1)
 
-    print(f"SharePoint 연결 중... ({SHAREPOINT_SITE})")
-    ctx = ClientContext(SHAREPOINT_SITE).with_credentials(
-        UserCredential(username, password)
+    authority = f"https://login.microsoftonline.com/{TENANT_ID}"
+    app = msal.ConfidentialClientApplication(
+        CLIENT_ID,
+        authority=authority,
+        client_credential=CLIENT_SECRET
     )
+    result = app.acquire_token_for_client(scopes=["https://graph.microsoft.com/.default"])
+
+    if "access_token" in result:
+        print("Azure AD 인증 성공")
+        return result["access_token"]
+    else:
+        print(f"ERROR: 인증 실패 - {result.get('error_description', result.get('error'))}")
+        sys.exit(1)
+
+
+def download_excel():
+    """Microsoft Graph API로 SharePoint 엑셀 파일 다운로드"""
+    token = get_access_token()
+    headers = {"Authorization": f"Bearer {token}"}
+
+    # 사이트 ID 조회
+    print(f"SharePoint 사이트 조회 중... ({SHAREPOINT_HOST}:/sites/{SITE_NAME})")
+    site_url = f"https://graph.microsoft.com/v1.0/sites/{SHAREPOINT_HOST}:/sites/{SITE_NAME}"
+    resp = requests.get(site_url, headers=headers)
+    if resp.status_code != 200:
+        print(f"ERROR: 사이트 조회 실패 ({resp.status_code}): {resp.text}")
+        sys.exit(1)
+    site_id = resp.json()["id"]
+
+    # 드라이브 (문서 라이브러리) 조회
+    drives_url = f"https://graph.microsoft.com/v1.0/sites/{site_id}/drives"
+    resp = requests.get(drives_url, headers=headers)
+    drives = resp.json().get("value", [])
+
+    drive_id = None
+    for d in drives:
+        if d.get("name") in ["Documents", "Shared Documents", "문서"]:
+            drive_id = d["id"]
+            break
+    if not drive_id and drives:
+        drive_id = drives[0]["id"]
+
+    if not drive_id:
+        print("ERROR: 문서 라이브러리를 찾을 수 없습니다.")
+        sys.exit(1)
+
+    # 파일 다운로드
+    file_path = FILE_PATH.lstrip("/")
+    download_url = f"https://graph.microsoft.com/v1.0/drives/{drive_id}/root:/{file_path}:/content"
+    print(f"파일 다운로드 중... ({file_path})")
+    resp = requests.get(download_url, headers=headers)
+
+    if resp.status_code != 200:
+        print(f"ERROR: 파일 다운로드 실패 ({resp.status_code}): {resp.text}")
+        sys.exit(1)
 
     local_path = "/tmp/inventory_report.xlsb"
-    print(f"파일 다운로드 중... ({FILE_PATH})")
-
     with open(local_path, "wb") as f:
-        ctx.web.get_file_by_server_relative_url(FILE_PATH).download(f).execute_query()
+        f.write(resp.content)
 
-    print(f"다운로드 완료: {local_path}")
+    print(f"다운로드 완료: {local_path} ({len(resp.content)} bytes)")
     return local_path
 
 
@@ -148,94 +203,3 @@ def parse_excel(file_path):
     wb.close()
     return products
 
-
-def update_dashboard(products):
-    """대시보드 HTML 파일의 샘플 데이터를 업데이트"""
-    print(f"대시보드 업데이트 중... ({DASHBOARD_HTML})")
-
-    with open(DASHBOARD_HTML, 'r', encoding='utf-8') as f:
-        html = f.read()
-
-    # JavaScript 배열 문자열 생성
-    today = datetime.now().strftime('%Y년 %m월 %d일')
-    js_products = json.dumps(products, ensure_ascii=False, indent=4)
-
-    # loadSampleData 함수 내의 products 배열을 교체
-    pattern = r'(function loadSampleData\(\) \{\s*products = )\[[\s\S]*?\](;\s*saveToStorage)'
-    replacement = f'\\1{js_products}\\2'
-
-    new_html = re.sub(pattern, replacement, html)
-
-    # 동기화 날짜 업데이트
-    new_html = re.sub(
-        r"showToast\('.*?동기화'\);",
-        f"showToast('실시간 데이터 ' + products.length + '개 제품이 로드되었습니다. ({today} 동기화)');",
-        new_html
-    )
-
-    # 데이터 버전 업데이트 (캐시 무효화)
-    version = f"v-auto-{datetime.now().strftime('%Y%m%d%H%M')}"
-    new_html = re.sub(r"'v7-shipment'", f"'{version}'", new_html)
-
-    with open(DASHBOARD_HTML, 'w', encoding='utf-8') as f:
-        f.write(new_html)
-
-    print(f"대시보드 업데이트 완료 (버전: {version})")
-
-
-def record_shipment(products):
-    """출고 이력 JSON 파일에 오늘 데이터 추가"""
-    import random
-
-    os.makedirs(os.path.dirname(HISTORY_JSON), exist_ok=True)
-
-    history = []
-    if os.path.exists(HISTORY_JSON):
-        with open(HISTORY_JSON, 'r', encoding='utf-8') as f:
-            history = json.load(f)
-
-    today = datetime.now().strftime('%Y-%m-%d')
-    if any(h['date'] == today for h in history):
-        print("오늘 출고 데이터가 이미 기록되어 있습니다.")
-        return
-
-    is_weekend = datetime.now().weekday() >= 5
-    for p in products:
-        avg = p.get('avgMonthlyOut', 0)
-        if avg <= 0:
-            continue
-        daily_avg = avg / 30
-        variation = 0.7 + random.random() * 0.6
-        weekend_factor = 0.2 if is_weekend else 1.0
-        qty = max(0, round(daily_avg * variation * weekend_factor))
-        if qty > 0:
-            history.append({
-                'date': today,
-                'code': p['code'],
-                'name': p['name'],
-                'category': p['category'],
-                'qty': qty
-            })
-
-    # 최근 180일만 유지
-    cutoff = (datetime.now() - __import__('datetime').timedelta(days=180)).strftime('%Y-%m-%d')
-    history = [h for h in history if h['date'] >= cutoff]
-
-    with open(HISTORY_JSON, 'w', encoding='utf-8') as f:
-        json.dump(history, f, ensure_ascii=False)
-
-    print(f"출고 이력 기록 완료 ({today})")
-
-
-if __name__ == '__main__':
-    try:
-        excel_path = download_excel()
-        products = parse_excel(excel_path)
-        update_dashboard(products)
-        record_shipment(products)
-        print("\n=== 동기화 완료 ===")
-    except Exception as e:
-        print(f"\nERROR: {e}")
-        import traceback
-        traceback.print_exc()
-        sys.exit(1)
