@@ -892,7 +892,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Load from localStorage, fallback to sample data
   const saved = localStorage.getItem('unicore_products');
   const dataVersion = localStorage.getItem('unicore_data_version');
-  if (saved && dataVersion === 'v7-shipment') {
+  if (saved && dataVersion === 'v8-april') {
     try {
       const parsed = JSON.parse(saved);
       if (parsed && parsed.length > 0) { products = parsed; }
@@ -928,7 +928,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function saveToStorage() {
   try {
     localStorage.setItem('unicore_products', JSON.stringify(products));
-    localStorage.setItem('unicore_data_version', 'v7-shipment');
+    localStorage.setItem('unicore_data_version', 'v8-april');
   } catch(e) {}
 }
 
@@ -1745,127 +1745,7 @@ function parseNum(val) {
 
 // ============ SAMPLE DATA ============
 function loadSampleData() {
-  products = [
-    { category:'Cosmetic', code:'000000101', name:'딥 리페어 액티베이팅 뉴트리션 크림 30ml', currentStock:4742, incoming:0, safetyStock:587, avgMonthlyOut:587, moq:5000, leadTime:10, expiryDate:'2027-05-12', remark:'' },
-    { category:'Cosmetic', code:'100000117', name:'NEW 비타 씨 13.5 수퍼 화이트닝 앰플 30g', currentStock:1503, incoming:5000, safetyStock:1050, avgMonthlyOut:1050, moq:5000, leadTime:10, expiryDate:'2028-02-05', remark:'3월 중순 입고예정' },
-    { category:'Cosmetic', code:'100000114', name:'비타 씨 글루타글로우 수퍼 브라이트닝 앰플 30g', currentStock:2566, incoming:0, safetyStock:40, avgMonthlyOut:40, moq:5000, leadTime:10, expiryDate:'2027-03-31', remark:'' },
-    { category:'Cosmetic', code:'000000104', name:'하이드레이팅 래디언스 선크림 SPF50 PA+++30ml', currentStock:2211, incoming:0, safetyStock:278, avgMonthlyOut:278, moq:10000, leadTime:14, expiryDate:'2028-01-15', remark:'' },
-    { category:'Cosmetic', code:'000000106', name:'하이드레이팅 스킨 베리어 세럼 미스트 리필 120ml', currentStock:206, incoming:0, safetyStock:428, avgMonthlyOut:428, moq:5000, leadTime:10, expiryDate:'2027-03-27', remark:'단종' },
-    { category:'Cosmetic', code:'100000107', name:'하이드레이팅 스킨 베리어 세럼 미스트 50ml', currentStock:6647, incoming:0, safetyStock:2326, avgMonthlyOut:326, moq:5000, leadTime:10, expiryDate:'2027-03-27', remark:'' },
-    { category:'Cosmetic', code:'000000103', name:'비타씨 수퍼 브라이트닝 마스크 1매 -단종', currentStock:0, incoming:0, safetyStock:0, avgMonthlyOut:0, moq:5000, leadTime:10, expiryDate:'2026-05-14', remark:'단종' },
-    { category:'Cosmetic', code:'100000108', name:'비타씨 수퍼 브라이트닝 마스크 5매', currentStock:1700, incoming:0, safetyStock:3826, avgMonthlyOut:3826, moq:5000, leadTime:10, expiryDate:'2027-11-09', remark:'4월 10일 입고예정' },
-    { category:'Cosmetic', code:'100000146', name:'퓨어 비타 라이스 클렌징 오일 150ml', currentStock:4703, incoming:0, safetyStock:0, avgMonthlyOut:0, moq:5000, leadTime:10, expiryDate:'2029-02-25', remark:'' },
-    { category:'Cosmetic', code:'100000127', name:'비타씨 엔자임 파우더 워시', currentStock:6149, incoming:0, safetyStock:1270, avgMonthlyOut:1270, moq:5000, leadTime:10, expiryDate:'2029-02-01', remark:'' },
-    { category:'Cosmetic', code:'100000112', name:'데일리 카밍 토너 패드 180ml (70매) (구독사은품)', currentStock:3604, incoming:0, safetyStock:298, avgMonthlyOut:298, moq:5000, leadTime:10, expiryDate:'2029-01-20', remark:'' },
-    { category:'Cosmetic', code:'100000118', name:'(UC) 하이드레이팅 스킨 세럼 미스트 50ml', currentStock:2431, incoming:0, safetyStock:1352, avgMonthlyOut:1352, moq:5000, leadTime:10, expiryDate:'2027-02-11', remark:'단종' },
-    { category:'Cosmetic', code:'100000119', name:'(UC) 비타 수퍼 브라이트닝 앰플 30g', currentStock:5028, incoming:0, safetyStock:1418, avgMonthlyOut:1418, moq:5000, leadTime:12, expiryDate:'2027-01-23', remark:'단종' },
-    { category:'Cosmetic', code:'100000121', name:'(UC) 하이드레이팅 스킨 크림 30ml', currentStock:2235, incoming:0, safetyStock:1434, avgMonthlyOut:1434, moq:5000, leadTime:12, expiryDate:'2027-04-01', remark:'단종' },
-    { category:'Cosmetic', code:'100000122', name:'(UC) 하이드레이팅 래디언스 선크림 30ml', currentStock:3268, incoming:0, safetyStock:1216, avgMonthlyOut:1216, moq:5000, leadTime:10, expiryDate:'2028-01-15', remark:'단종' },
-    { category:'Cosmetic', code:'100000126', name:'(CN)유니은커우 비타 수퍼 브라이트닝 마스크 1매', currentStock:550, incoming:0, safetyStock:0, avgMonthlyOut:0, moq:10000, leadTime:14, expiryDate:'2026-07-16', remark:'단종' },
-    { category:'Cosmetic', code:'100000132', name:'[USA]DEEP HYDRATING SKIN NUTRITION CREAM', currentStock:2998, incoming:0, safetyStock:708, avgMonthlyOut:708, moq:5000, leadTime:10, expiryDate:'2027-05-12', remark:'' },
-    { category:'Cosmetic', code:'100000133', name:'[USA]VITA C GLUTAGLOW SUPER BRIGHTENING AMPOULE', currentStock:998, incoming:0, safetyStock:818, avgMonthlyOut:818, moq:5000, leadTime:12, expiryDate:'2027-03-31', remark:'' },
-    { category:'Cosmetic', code:'100000134', name:'[USA]VITA C 13.5 SUPER BRIGHTENING AMPOULE', currentStock:3722, incoming:0, safetyStock:401, avgMonthlyOut:401, moq:5000, leadTime:12, expiryDate:'2028-02-05', remark:'3월 중순 입고예정' },
-    { category:'Cosmetic', code:'100000136', name:'[USA]VITA C SUPER BRIGHTENING MASK', currentStock:2988, incoming:0, safetyStock:1474, avgMonthlyOut:1474, moq:5000, leadTime:12, expiryDate:'2027-02-19', remark:'' },
-    { category:'Cosmetic', code:'100000137', name:'[USA]VITA C ENZYME POWDER WASH', currentStock:42, incoming:0, safetyStock:466, avgMonthlyOut:466, moq:5000, leadTime:10, expiryDate:'2027-05-06', remark:'' },
-    { category:'Cosmetic', code:'100000138', name:'[USA]HYDRATING SKIN BARRIER SERUM MIST', currentStock:2493, incoming:0, safetyStock:646, avgMonthlyOut:646, moq:10000, leadTime:14, expiryDate:'2027-03-27', remark:'' },
-    { category:'Cosmetic', code:'100000129', name:'루미너스 레이어 타이트업 쿠션', currentStock:1134, incoming:0, safetyStock:274, avgMonthlyOut:274, moq:10000, leadTime:14, expiryDate:'2028-03-29', remark:'' },
-    { category:'Cosmetic', code:'100000130', name:'루미너스 레이어 타이트업 리필', currentStock:2819, incoming:0, safetyStock:222, avgMonthlyOut:222, moq:10000, leadTime:12, expiryDate:'2028-03-29', remark:'' },
-    { category:'Cosmetic', code:'100000131', name:'시그니처 리바이탈라이징 샴푸', currentStock:686, incoming:0, safetyStock:230, avgMonthlyOut:230, moq:5000, leadTime:8, expiryDate:'2027-12-10', remark:'' },
-    { category:'Health Care', code:'000000201', name:'데일리 메가 에너자이저 플러스 30포', currentStock:2908, incoming:0, safetyStock:200, avgMonthlyOut:200, moq:5000, leadTime:10, expiryDate:'2027-11-20', remark:'' },
-    { category:'Health Care', code:'000000202', name:'트리플 메가 익스텐션 60캡슐', currentStock:2927, incoming:0, safetyStock:994, avgMonthlyOut:994, moq:5000, leadTime:10, expiryDate:'2027-11-18', remark:'' },
-    { category:'Health Care', code:'000000203', name:'데일리 츄어블 프로폴리스 90캡슐', currentStock:2201, incoming:0, safetyStock:520, avgMonthlyOut:520, moq:5000, leadTime:12, expiryDate:'2028-01-14', remark:'' },
-    { category:'Health Care', code:'200000206', name:'더블 컷 메가 슬림 플러스 (구독사은품)', currentStock:4385, incoming:0, safetyStock:222, avgMonthlyOut:222, moq:5000, leadTime:10, expiryDate:'2026-10-15', remark:'' },
-    { category:'Health Care', code:'200000207', name:'슬리밍 메가 프로바이오틱스', currentStock:1925, incoming:2500, safetyStock:544, avgMonthlyOut:544, moq:5000, leadTime:12, expiryDate:'2026-07-06', remark:'4월 입고 예정' },
-    { category:'Health Care', code:'200000210', name:'본 앤 조인트 액티브 메가 포뮬러 60캡슐', currentStock:5626, incoming:0, safetyStock:644, avgMonthlyOut:644, moq:5000, leadTime:8, expiryDate:'2027-08-21', remark:'' },
-    { category:'Health Care', code:'200000213', name:'이뮨 메가 부스터 AHCC_10병', currentStock:4109, incoming:0, safetyStock:328, avgMonthlyOut:328, moq:10000, leadTime:10, expiryDate:'2026-06-19', remark:'발주요청 완료' },
-    { category:'Health Care', code:'100000135', name:'슬림핏 프로틴 쉐이크 고소한 멀티 그레인 40g X 10', currentStock:4680, incoming:0, safetyStock:760, avgMonthlyOut:760, moq:20000, leadTime:10, expiryDate:'2027-04-30', remark:'' },
-    { category:'Health Care', code:'200000218', name:'글로우 뷰티 콜라겐 젤리 타트체리 맛 20g X 30포', currentStock:1463, incoming:0, safetyStock:122, avgMonthlyOut:122, moq:3000, leadTime:10, expiryDate:'2026-10-23', remark:'' },
-    { category:'Health Care', code:'200000220', name:'브이애플 나이트 액션', currentStock:2386, incoming:0, safetyStock:130, avgMonthlyOut:130, moq:0, leadTime:8, expiryDate:'2027-03-10', remark:'' },
-    { category:'Health Care', code:'100000139', name:'[USA]Daily Chewable Propolis', currentStock:2545, incoming:0, safetyStock:37, avgMonthlyOut:37, moq:0, leadTime:12, expiryDate:'2028-01-14', remark:'' },
-    { category:'Health Care', code:'100000140', name:'[USA]Bone & Joint Health Active MEGA FORMULA', currentStock:1000, incoming:0, safetyStock:22, avgMonthlyOut:22, moq:0, leadTime:8, expiryDate:'2027-08-21', remark:'' },
-    { category:'Health Care', code:'100000141', name:'[USA]Daily Mega Energizer Plus', currentStock:1000, incoming:0, safetyStock:33, avgMonthlyOut:33, moq:0, leadTime:10, expiryDate:'2027-11-20', remark:'' },
-    { category:'Health Care', code:'100000142', name:'[USA]Slimming Mega Probiotics', currentStock:112, incoming:2500, safetyStock:48, avgMonthlyOut:48, moq:0, leadTime:12, expiryDate:'2026-07-06', remark:'4월 입고 예정' },
-    { category:'Health Care', code:'100000143', name:'[USA]SLIM FIT Protein Shake Powder', currentStock:1000, incoming:0, safetyStock:86, avgMonthlyOut:86, moq:0, leadTime:10, expiryDate:'2027-04-30', remark:'' },
-    { category:'Health Care', code:'100000144', name:'[USA]Triple MEGA Extension', currentStock:1000, incoming:0, safetyStock:22, avgMonthlyOut:22, moq:0, leadTime:10, expiryDate:'2027-11-18', remark:'' },
-    { category:'Living', code:'000000020', name:'리얼 그린라이프 프리미엄 페이셜 티슈 5입', currentStock:6321, incoming:0, safetyStock:70, avgMonthlyOut:70, moq:0, leadTime:0, expiryDate:'', remark:'소진시 단종' },
-    { category:'Living', code:'000000037', name:'리얼 그린라이프 프리미엄 페이셜 티슈 케이스', currentStock:3931, incoming:0, safetyStock:12, avgMonthlyOut:12, moq:0, leadTime:0, expiryDate:'', remark:'소진시 단종' },
-    { category:'Living', code:'000000044', name:'리얼 그린라이프 프리미엄 대나무 압축타올 30입', currentStock:9158, incoming:0, safetyStock:70, avgMonthlyOut:70, moq:0, leadTime:0, expiryDate:'', remark:'소진시 단종' },
-    { category:'Living', code:'000000051', name:'리얼 그린라이프 프리미엄 토일렛 화장지 12롤', currentStock:2898, incoming:0, safetyStock:58, avgMonthlyOut:58, moq:0, leadTime:0, expiryDate:'', remark:'소진시 단종' },
-    { category:'Living', code:'000000068', name:'리얼 그린라이프 프리미엄 키친타올 점보롤 4입', currentStock:812, incoming:0, safetyStock:13, avgMonthlyOut:13, moq:0, leadTime:0, expiryDate:'', remark:'소진시 단종' },
-    { category:'Living', code:'000000069', name:'유니앤코어 덴티바이옴 치약', currentStock:3531, incoming:0, safetyStock:5, avgMonthlyOut:5, moq:0, leadTime:0, expiryDate:'2027-09-03', remark:'' },
-    { category:'Living', code:'600000635', name:'덴티바이툴 치약 출시 기념 패키지', currentStock:280, incoming:0, safetyStock:8, avgMonthlyOut:8, moq:0, leadTime:0, expiryDate:'', remark:'' },
-    { category:'Living', code:'800000829', name:'덴텍트 Dentect 4입', currentStock:2786, incoming:0, safetyStock:0, avgMonthlyOut:0, moq:0, leadTime:0, expiryDate:'', remark:'' },
-    { category:'Lounge Item', code:'300000315', name:'하이퍼루프 스칼프 세럼 300ml', currentStock:619, incoming:0, safetyStock:23, avgMonthlyOut:23, moq:5000, leadTime:8, expiryDate:'2028-07-09', remark:'' },
-    { category:'Lounge Item', code:'300000316', name:'하이퍼루프 바디 크림 280g', currentStock:8, incoming:0, safetyStock:22, avgMonthlyOut:22, moq:0, leadTime:8, expiryDate:'2027-06-18', remark:'4월 입고/4월 쿨젤크림' },
-    { category:'Lounge Item', code:'300000318', name:'수딩 앤 모이스트 케어 뵠스팅 젤 250ml', currentStock:2189, incoming:0, safetyStock:198, avgMonthlyOut:198, moq:5000, leadTime:8, expiryDate:'2026-12-04', remark:'' },
-    { category:'Sales Aids', code:'000000801', name:'유니앤코어 코튼 파우치', currentStock:10542, incoming:0, safetyStock:8, avgMonthlyOut:8, moq:0, leadTime:213, expiryDate:'', remark:'' },
-    { category:'트라이얼키트', code:'000000805', name:'고급 샤무드 원단 파우치 비매품 (증정용)', currentStock:1808, incoming:0, safetyStock:0, avgMonthlyOut:0, moq:5000, leadTime:0, expiryDate:'', remark:'' },
-    { category:'트라이얼키트', code:'800000827', name:'하이드레이팅 래디언스 선크림 SPF50 PA+++10ml', currentStock:8610, incoming:0, safetyStock:125, avgMonthlyOut:125, moq:5000, leadTime:10, expiryDate:'2027-05-27', remark:'' },
-    { category:'트라이얼키트', code:'800000826', name:'딥 리페어 액티베이팅 뉴트리션 크림 7ml', currentStock:901, incoming:0, safetyStock:2000, avgMonthlyOut:0, moq:5000, leadTime:10, expiryDate:'2027-02-20', remark:'opp작업완료' },
-    { category:'Sales Aids', code:'800000831', name:'마이크로 버블 클렌징 폼 10ml', currentStock:7268, incoming:0, safetyStock:70, avgMonthlyOut:70, moq:0, leadTime:10, expiryDate:'', remark:'' },
-    { category:'Sales Aids', code:'800000849', name:'유니앤코어 친환경 종이컵 8oz (200개)', currentStock:12, incoming:0, safetyStock:2, avgMonthlyOut:2, moq:0, leadTime:2, expiryDate:'', remark:'' },
-    { category:'Sales Aids', code:'800000852', name:'유니앤코어 친환경 종이컵 8oz (제작용)', currentStock:15000, incoming:0, safetyStock:0, avgMonthlyOut:0, moq:0, leadTime:2, expiryDate:'', remark:'' },
-    { category:'Sales Aids', code:'800000845', name:'유니앤코어 기프트 박스', currentStock:1455, incoming:0, safetyStock:4, avgMonthlyOut:4, moq:0, leadTime:0, expiryDate:'', remark:'' },
-    { category:'Sales Aids', code:'000000803', name:'아이스 워터보틀', currentStock:230, incoming:0, safetyStock:90, avgMonthlyOut:90, moq:0, leadTime:0, expiryDate:'', remark:'' },
-    { category:'Sales Aids', code:'000000817', name:'유니앤코어 미스트 펌프', currentStock:165, incoming:0, safetyStock:25, avgMonthlyOut:25, moq:6000, leadTime:0, expiryDate:'', remark:'' },
-    { category:'Sales Aids', code:'800000823', name:'유니앤코어 휴대용 미스트 용기', currentStock:1403, incoming:0, safetyStock:114, avgMonthlyOut:114, moq:0, leadTime:0, expiryDate:'', remark:'' },
-    { category:'Sales Aids', code:'800000824', name:'유니앤코어 쇼핑백', currentStock:529, incoming:0, safetyStock:36, avgMonthlyOut:36, moq:1000, leadTime:0, expiryDate:'', remark:'' },
-    { category:'Sales Aids', code:'800000834', name:'유니앤코어 쇼핑백 (소형)', currentStock:3889, incoming:0, safetyStock:55, avgMonthlyOut:55, moq:0, leadTime:2, expiryDate:'', remark:'' },
-    { category:'Sales Aids', code:'800000855', name:'유니앤코어 V:DAY 보틀', currentStock:600, incoming:0, safetyStock:0, avgMonthlyOut:0, moq:1000, leadTime:0, expiryDate:'', remark:'' },
-    { category:'Sales Aids', code:'800000860', name:'유니앤코어 탁상거울', currentStock:695, incoming:0, safetyStock:0, avgMonthlyOut:0, moq:0, leadTime:0, expiryDate:'', remark:'' },
-    { category:'Sales Aids', code:'800000850', name:'유니앤코어 전제품 브로슈어', currentStock:0, incoming:0, safetyStock:0, avgMonthlyOut:0, moq:5000, leadTime:10, expiryDate:'', remark:'단종' },
-    { category:'Living', code:'800000848', name:'덴텍트 Dentect 1입', currentStock:0, incoming:0, safetyStock:0, avgMonthlyOut:0, moq:0, leadTime:0, expiryDate:'', remark:'단종' },
-    { category:'Cosmetic', code:'100000113', name:'비타씨 13.5 수퍼 화이트닝 앰플 15g', currentStock:0, incoming:0, safetyStock:0, avgMonthlyOut:0, moq:5000, leadTime:10, expiryDate:'', remark:'단종' },
-    { category:'Sales Aids', code:'000000822', name:'유니앤코어 코튼 파우치 (5매입)', currentStock:0, incoming:0, safetyStock:0, avgMonthlyOut:0, moq:0, leadTime:0, expiryDate:'', remark:'단종' },
-    { category:'Sales Aids', code:'000000812', name:'유니앤코어 휴대용 파우치', currentStock:0, incoming:0, safetyStock:0, avgMonthlyOut:0, moq:0, leadTime:0, expiryDate:'', remark:'단종' },
-    { category:'챌린지사은품', code:'600000683', name:'챌린지사은품(프로폴리스 30캡슐 15ea)', currentStock:0, incoming:0, safetyStock:0, avgMonthlyOut:0, moq:0, leadTime:10, expiryDate:'', remark:'단종' },
-    { category:'Cosmetic', code:'100000111', name:'엔자임 스킨 톤 파우더 워시 1g * 30EA-단종', currentStock:0, incoming:0, safetyStock:0, avgMonthlyOut:0, moq:5000, leadTime:10, expiryDate:'2028-01-01', remark:'단종' },
-    { category:'Cosmetic', code:'000000105', name:'하이드레이팅 스킨 베리어 세럼 미스트 30ml', currentStock:0, incoming:0, safetyStock:0, avgMonthlyOut:0, moq:5000, leadTime:10, expiryDate:'', remark:'단종' },
-    { category:'Cosmetic', code:'100000128', name:'비타씨 엔자임 파우더 워시(벌크) _new', currentStock:0, incoming:0, safetyStock:0, avgMonthlyOut:0, moq:5000, leadTime:10, expiryDate:'', remark:'단종' },
-    { category:'Cosmetic', code:'100000110', name:'라이트웨이트 딥 클렌징 오일 200ml', currentStock:0, incoming:0, safetyStock:418, avgMonthlyOut:418, moq:5000, leadTime:10, expiryDate:'2026-02-22', remark:'단종' },
-    { category:'Health Care', code:'200000204', name:'클렌즈 톡스 샷 1병', currentStock:0, incoming:0, safetyStock:0, avgMonthlyOut:0, moq:0, leadTime:0, expiryDate:'', remark:'단종' },
-    { category:'Health Care', code:'200000205', name:'클렌즈 톡스 샷 6병', currentStock:0, incoming:0, safetyStock:0, avgMonthlyOut:0, moq:10000, leadTime:10, expiryDate:'', remark:'단종' },
-    { category:'Health Care', code:'200000208', name:'데일리 츄어블 프로폴리스 30캡슐', currentStock:0, incoming:0, safetyStock:546, avgMonthlyOut:546, moq:5000, leadTime:12, expiryDate:'', remark:'단종' },
-    { category:'Cosmetic', code:'100000109', name:'마이크로 버블 클렌징 폼 120m', currentStock:0, incoming:0, safetyStock:496, avgMonthlyOut:496, moq:10000, leadTime:14, expiryDate:'', remark:'단종' },
-    { category:'Sales Aids', code:'000000815', name:'화장품 리플렛', currentStock:0, incoming:0, safetyStock:0, avgMonthlyOut:0, moq:5000, leadTime:10, expiryDate:'', remark:'단종' },
-    { category:'Health Care', code:'200000216', name:'슬림핏 프로틴 쉐이크 고소한 멀티 그레인 40g X 1', currentStock:0, incoming:0, safetyStock:0, avgMonthlyOut:0, moq:5000, leadTime:10, expiryDate:'', remark:'단종' },
-    { category:'Cosmetic', code:'800000836', name:'유니앤코어 7DAYS 브라이트닝 트라이얼 키트', currentStock:0, incoming:0, safetyStock:0, avgMonthlyOut:0, moq:0, leadTime:0, expiryDate:'', remark:'단종' },
-    { category:'Cosmetic', code:'000000102', name:'비타씨 13.5 수퍼 화이트닝 앰플 30g', currentStock:0, incoming:0, safetyStock:0, avgMonthlyOut:0, moq:0, leadTime:0, expiryDate:'', remark:'단종' },
-    { category:'Cosmetic', code:'000000107', name:'비타씨 수퍼 브라이트닝 마스크 4매', currentStock:0, incoming:0, safetyStock:0, avgMonthlyOut:0, moq:1000, leadTime:0, expiryDate:'', remark:'단종' },
-    { category:'Living', code:'000000052', name:'리얼 그린라이프 프리미엄 토일렛 화장지 1롤', currentStock:0, incoming:0, safetyStock:0, avgMonthlyOut:0, moq:5000, leadTime:0, expiryDate:'', remark:'단종' },
-    { category:'Sales Aids', code:'800000844', name:'유니앤코어 비즈니스 세미나 입장권', currentStock:0, incoming:0, safetyStock:0, avgMonthlyOut:0, moq:0, leadTime:0, expiryDate:'', remark:'단종' },
-    { category:'Sales Aids', code:'800000851', name:'본사방문_신규회원 사은품', currentStock:0, incoming:0, safetyStock:0, avgMonthlyOut:0, moq:0, leadTime:0, expiryDate:'', remark:'단종' },
-    { category:'Sales Aids', code:'000000806', name:'딥 리페어 액티베이팅 뉴트리션 크림 10g 비매품 (증정용)', currentStock:0, incoming:0, safetyStock:0, avgMonthlyOut:0, moq:5000, leadTime:0, expiryDate:'', remark:'단종' },
-    { category:'Sales Aids', code:'000000807', name:'비타씨 13.5 수퍼 화이트닝 앰플 10g 비매품 (증정용)', currentStock:0, incoming:0, safetyStock:0, avgMonthlyOut:0, moq:0, leadTime:0, expiryDate:'', remark:'단종' },
-    { category:'Sales Aids', code:'000000808', name:'데일리 메가 에너자이저 플러스 2포 비매품 (증정용)', currentStock:0, incoming:0, safetyStock:0, avgMonthlyOut:0, moq:0, leadTime:0, expiryDate:'', remark:'단종' },
-    { category:'Sales Aids', code:'000000809', name:'리얼 그린라이프 프리미엄 대나무 압축타올 1개 비매품 (증정용)', currentStock:0, incoming:0, safetyStock:0, avgMonthlyOut:0, moq:0, leadTime:0, expiryDate:'', remark:'단종' },
-    { category:'Sales Aids', code:'000000810', name:'M팩 구매용 사은품_트라이얼 키트', currentStock:0, incoming:0, safetyStock:0, avgMonthlyOut:0, moq:0, leadTime:0, expiryDate:'', remark:'단종' },
-    { category:'Health Care', code:'200000216', name:'슬림핏 프로틴 쉐이크 고소한 멀티 그레인 40g -1포', currentStock:0, incoming:0, safetyStock:0, avgMonthlyOut:0, moq:0, leadTime:0, expiryDate:'', remark:'단종' },
-    { category:'Sales Aids', code:'000000811', name:'샘플링용_트라이얼 키트', currentStock:0, incoming:0, safetyStock:0, avgMonthlyOut:0, moq:0, leadTime:0, expiryDate:'', remark:'단종' },
-    { category:'Sales Aids', code:'000000813', name:'비타씨 수퍼 브라이트닝 마스크 1매 비매품 (증정용)', currentStock:0, incoming:0, safetyStock:0, avgMonthlyOut:0, moq:0, leadTime:0, expiryDate:'', remark:'단종' },
-    { category:'Sales Aids', code:'000000814', name:'화장품 구독 패키지 사은품 (정품용량)', currentStock:0, incoming:0, safetyStock:0, avgMonthlyOut:0, moq:0, leadTime:0, expiryDate:'', remark:'단종' },
-    { category:'Sales Aids', code:'000000816', name:'건강기능식품 리플렛', currentStock:0, incoming:0, safetyStock:0, avgMonthlyOut:0, moq:0, leadTime:0, expiryDate:'', remark:'단종' },
-    { category:'3300사은품', code:'600000665', name:'USA Travel kit', currentStock:0, incoming:0, safetyStock:216, avgMonthlyOut:216, moq:0, leadTime:10, expiryDate:'', remark:'단종' },
-    { category:'3300사은품', code:'600000682', name:'USA Travel kit(single)', currentStock:0, incoming:0, safetyStock:0, avgMonthlyOut:0, moq:0, leadTime:10, expiryDate:'', remark:'단종' },
-    { category:'Sales Aids', code:'000000818', name:'유니앤코어 10일분 고급 트라이얼 키트 (4세트입)', currentStock:0, incoming:0, safetyStock:0, avgMonthlyOut:0, moq:0, leadTime:0, expiryDate:'', remark:'단종' },
-    { category:'Sales Aids', code:'000000819', name:'유니앤코어 리플렛 세트', currentStock:0, incoming:0, safetyStock:0, avgMonthlyOut:0, moq:0, leadTime:0, expiryDate:'', remark:'단종' },
-    { category:'Sales Aids', code:'000000820', name:'유니앤코어 샤무드 파우치 (5매입)', currentStock:0, incoming:0, safetyStock:0, avgMonthlyOut:0, moq:0, leadTime:0, expiryDate:'', remark:'단종' },
-    { category:'Sales Aids', code:'000000821', name:'유니앤코어 휴대용 파우치 (5매입)', currentStock:0, incoming:0, safetyStock:0, avgMonthlyOut:0, moq:0, leadTime:0, expiryDate:'', remark:'단종' },
-    { category:'Sales Aids', code:'000000823', name:'유니앤코어 10일분 고급 트라이얼 키트 (1세트입)', currentStock:0, incoming:0, safetyStock:0, avgMonthlyOut:0, moq:0, leadTime:0, expiryDate:'', remark:'단종' },
-    { category:'Sales Aids', code:'800000837', name:'유니앤코어 고무볼', currentStock:0, incoming:0, safetyStock:0, avgMonthlyOut:0, moq:0, leadTime:0, expiryDate:'', remark:'단종' },
-    { category:'Sales Aids', code:'800000838', name:'유니앤코어 스파츌러', currentStock:0, incoming:0, safetyStock:0, avgMonthlyOut:0, moq:0, leadTime:0, expiryDate:'', remark:'단종' },
-    { category:'Sales Aids', code:'800000839', name:'유니앤코어 해면', currentStock:0, incoming:0, safetyStock:0, avgMonthlyOut:0, moq:0, leadTime:0, expiryDate:'', remark:'단종' },
-    { category:'Sales Aids', code:'800000840', name:'유니앤코어 모델링팩 3종 세트', currentStock:0, incoming:0, safetyStock:0, avgMonthlyOut:9, moq:0, leadTime:0, expiryDate:'', remark:'단종' },
-    { category:'Sales Aids', code:'800000842', name:'유니앤코어 페이스 타올', currentStock:0, incoming:0, safetyStock:0, avgMonthlyOut:0, moq:0, leadTime:0, expiryDate:'', remark:'단종' },
-    { category:'Sales Aids', code:'800000843', name:'유니앤코어 바디 타올', currentStock:0, incoming:0, safetyStock:0, avgMonthlyOut:0, moq:0, leadTime:0, expiryDate:'', remark:'단종' },
-    { category:'Sales Aids', code:'8800000841', name:'유니앤코어 터번', currentStock:0, incoming:0, safetyStock:0, avgMonthlyOut:0, moq:0, leadTime:10, expiryDate:'', remark:'단종' },
-    { category:'Sales Aids', code:'999999999', name:'박스추가', currentStock:0, incoming:0, safetyStock:0, avgMonthlyOut:8, moq:0, leadTime:0, expiryDate:'', remark:'단종' },
-    { category:'Health Care', code:'990000000', name:'슬림핏 프로틴 쉐이크_인플루언서용', currentStock:0, incoming:0, safetyStock:0, avgMonthlyOut:0, moq:0, leadTime:10, expiryDate:'', remark:'단종' },
-    { category:'Sales Aids', code:'300000317', name:'라운지 전용 관리사 가운(상의)', currentStock:0, incoming:0, safetyStock:0, avgMonthlyOut:0, moq:0, leadTime:0, expiryDate:'', remark:'단종' },
-    { category:'Health Care', code:'200000209', name:'데일리 메가 에너자이저 플러스 10포-단종', currentStock:0, incoming:0, safetyStock:0, avgMonthlyOut:0, moq:5000, leadTime:10, expiryDate:'', remark:'단종' },
-    { category:'트라이얼키트', code:'800000828', name:'비타씨 13.5 수퍼 화이트닝 앰플 7g_단종', currentStock:0, incoming:0, safetyStock:0, avgMonthlyOut:0, moq:5000, leadTime:10, expiryDate:'', remark:'단종' },
-    { category:'Cosmetic', code:'100000120', name:'(UC) 비타 수퍼 브라이트닝 마스크 5매', currentStock:0, incoming:0, safetyStock:1712, avgMonthlyOut:1712, moq:5000, leadTime:12, expiryDate:'2026-07-16', remark:'단종' }
-  ];
+  // products already initialized with April 2026 data at declaration
 
   saveToStorage();
   refreshAll();
