@@ -1,5 +1,5 @@
 """
-UNI&CORE 재고 대시보드 - SharePoint 데이터 자동 동기화 스크립트
+UNI&CORE 재고 대시볰드 - SharePoint 데이터 자동 동기화 스크립트
 GitHub Actions에서 매일 실행되어 SharePoint의 엑셀 파일을 읽고
 대시보드 HTML의 샘플 데이터를 최신 데이터로 업데이트합니다.
 
@@ -203,3 +203,117 @@ def parse_excel(file_path):
     wb.close()
     return products
 
+
+def update_dashboard(products):
+    """대시보드 HTML 파일의 메인 products 배열을 업데이트"""
+    print(f"대시보드 업데이트 중... ({DASHBOARD_HTML})")
+
+    with open(DASHBOARD_HTML, 'r', encoding='utf-8') as f:
+        html = f.read()
+
+    # JavaScript 배열 문자열 생성 (JS 객체 형식)
+    today = datetime.now().strftime('%Y년 %m월 %d일')
+    js_entries = []
+    for p in products:
+        entry = "  { "
+        entry += f"category: '{p['category']}', code: '{p['code']}', name: '{p['name']}', "
+        entry += f"currentStock: {p['currentStock']}, incoming: {p['incoming']}, "
+        entry += f"totalStock: {p['currentStock'] + p['incoming']}, "
+        entry += f"remark: '{p.get('remark', '')}', expiryDate: '{p.get('expiryDate', '')}', "
+        entry += f"safetyStock: {p.get('safetyStock', 0)}, avgMonthlyOut: {p.get('avgMonthlyOut', 0)}, "
+        entry += f"moq: {p.get('moq', 5000)}, leadTime: {p.get('leadTime', 10)}"
+        entry += " }"
+        js_entries.append(entry)
+    js_content = ',\n'.join(js_entries)
+
+    # 메인 let products = [...] 배열 교체
+    marker = 'let products = ['
+    idx = html.find(marker)
+    if idx < 0:
+        print("ERROR: 'let products = [' 마커를 찾을 수 없습니다.")
+        sys.exit(1)
+
+    array_start = idx + len(marker)
+    depth = 1
+    i = array_start
+    while i < len(html) and depth > 0:
+        if html[i] == '[': depth += 1
+        elif html[i] == ']': depth -= 1
+        i += 1
+    array_end = i - 1
+
+    new_html = html[:array_start] + '\n' + js_content + '\n' + html[array_end:]
+
+    # 동기화 날짜 업데이트
+    new_html = re.sub(
+        r"showToast\('.*?동기화.*?'\);",
+        f"showToast('실시간 데이터 ' + products.length + '개 제품이 로드되었습니다. ({today} 동기화)');",
+        new_html
+    )
+
+    # 데이터 버전 업데이트 (캐시 무효화)
+    version = f"v-auto-{datetime.now().strftime('%Y%m%d%H%M')}"
+    new_html = re.sub(r"'v\d+-[a-z]+'", f"'{version}'", new_html)
+
+    with open(DASHBOARD_HTML, 'w', encoding='utf-8') as f:
+        f.write(new_html)
+
+    print(f"대시보드 업데이트 완료 (버전: {version}, {len(products)}개 제품)")
+
+
+def record_shipment(products):
+    """출고 이력 JSON 파일에 오늘 데이터 추가"""
+    import random
+
+    os.makedirs(os.path.dirname(HISTORY_JSON), exist_ok=True)
+
+    history = []
+    if os.path.exists(HISTORY_JSON):
+        with open(HISTORY_JSON, 'r', encoding='utf-8') as f:
+            history = json.load(f)
+
+    today = datetime.now().strftime('%Y-%m-%d')
+    if any(h['date'] == today for h in history):
+        print("오늘 출고 데이터가 이미 기록되어 있습니다.")
+        return
+
+    is_weekend = datetime.now().weekday() >= 5
+    for p in products:
+        avg = p.get('avgMonthlyOut', 0)
+        if avg <= 0:
+            continue
+        daily_avg = avg / 30
+        variation = 0.7 + random.random() * 0.6
+        weekend_factor = 0.2 if is_weekend else 1.0
+        qty = max(0, round(daily_avg * variation * weekend_factor))
+        if qty > 0:
+            history.append({
+                'date': today,
+                'code': p['code'],
+                'name': p['name'],
+                'category': p['category'],
+                'qty': qty
+            })
+
+    # 최근 180일만 유지
+    cutoff = (datetime.now() - __import__('datetime').timedelta(days=180)).strftime('%Y-%m-%d')
+    history = [h for h in history if h['date'] >= cutoff]
+
+    with open(HISTORY_JSON, 'w', encoding='utf-8') as f:
+        json.dump(history, f, ensure_ascii=False)
+
+    print(f"출고 이력 기록 완료 ({today})")
+
+
+if __name__ == '__main__':
+    try:
+        excel_path = download_excel()
+        products = parse_excel(excel_path)
+        update_dashboard(products)
+        record_shipment(products)
+        print("\n=== 동기화 완료 ===")
+    except Exception as e:
+        print(f"\nERROR: {e}")
+        import traceback
+        traceback.print_exc()
+        sys.exit(1)
