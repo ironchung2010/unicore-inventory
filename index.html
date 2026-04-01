@@ -642,6 +642,44 @@
     </div>
   </div>
 
+
+  <div class="panel" style="border-left:4px solid var(--info);">
+    <div class="panel-header">
+      <div class="panel-title">발주 액션 공유 설정</div>
+      <span id="ghSyncBadge" style="font-size:12px;padding:4px 10px;border-radius:12px;background:var(--warning-bg);color:#b45309;font-weight:600;">미설정</span>
+    </div>
+    <div class="panel-body">
+      <p style="font-size:13px;color:var(--gray-500);margin-bottom:12px;">발주관리에서 변경한 액션(발주완료, 발주대기 등)을 GitHub 저장소에 저장하여 모든 사용자가 동일한 내용을 볼 수 있도록 합니다.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
+        <div>
+          <label style="display:block;font-size:13px;font-weight:600;color:var(--gray-700);margin-bottom:4px;">GitHub 저장소 (owner/repo)</label>
+          <input type="text" id="ghRepo" placeholder="예: myorg/inventory-dashboard" style="width:100%;padding:9px 12px;border:1px solid var(--gray-300);border-radius:8px;font-size:13px;" onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='var(--gray-300)'">
+        </div>
+        <div>
+          <label style="display:block;font-size:13px;font-weight:600;color:var(--gray-700);margin-bottom:4px;">Personal Access Token</label>
+          <input type="password" id="ghToken" placeholder="ghp_xxxxxxxxxxxx" style="width:100%;padding:9px 12px;border:1px solid var(--gray-300);border-radius:8px;font-size:13px;" onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='var(--gray-300)'">
+        </div>
+      </div>
+      <div style="margin-bottom:8px;">
+        <label style="display:block;font-size:13px;font-weight:600;color:var(--gray-700);margin-bottom:4px;">파일 경로 (기본: github-deploy/order_actions.json)</label>
+        <input type="text" id="ghFilePath" placeholder="github-deploy/order_actions.json" value="github-deploy/order_actions.json" style="width:100%;padding:9px 12px;border:1px solid var(--gray-300);border-radius:8px;font-size:13px;" onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='var(--gray-300)'">
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+        <button class="btn btn-primary btn-sm" onclick="saveGitHubSettings()">설정 저장</button>
+        <button class="btn btn-outline btn-sm" onclick="pullOrderActionsFromGitHub()">공유 데이터 불러오기</button>
+        <button class="btn btn-success btn-sm" onclick="pushOrderActionsToGitHub()">현재 액션 공유 저장</button>
+        <span id="ghSyncStatus" style="font-size:12px;color:var(--gray-500);"></span>
+      </div>
+      <div style="margin-top:12px;padding:10px 14px;background:var(--info-bg);border-radius:8px;font-size:12px;color:var(--info);line-height:1.6;">
+        <strong>공유 저장 안내</strong><br>
+        - GitHub Personal Access Token은 Settings > Developer settings > Fine-grained tokens에서 생성합니다<br>
+        - 토큰 권한: Repository > Contents (Read and Write)<br>
+        - 발주 액션 변경 시 자동으로 GitHub에 저장되며, 다른 사용자가 페이지를 열면 최신 데이터가 반영됩니다<br>
+        - 토큰은 이 브라우저에만 저장되며 외부로 전송되지 않습니다
+      </div>
+    </div>
+  </div>
+
   <div class="panel">
     <div class="panel-header">
       <div class="panel-title">제품 직접 등록</div>
@@ -758,7 +796,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
   refreshAll();
   loadSyncSettings();
+  loadGitHubSettings();
   recordDailyShipment();
+
+  // GitHub에서 공유 발주 액션 자동 불러오기
+  if (isGitHubConfigured()) {
+    pullOrderActionsFromGitHub().catch(() => {});
+  }
 });
 
 function saveToStorage() {
@@ -1815,6 +1859,170 @@ function saveSyncConfig(url) {
   a.download = 'sync_config.json';
   a.click();
   URL.revokeObjectURL(a.href);
+}
+
+
+// ============ GITHUB SHARED ORDER ACTIONS ============
+function getGitHubConfig() {
+  try {
+    return {
+      repo: localStorage.getItem('unicore_gh_repo') || '',
+      token: localStorage.getItem('unicore_gh_token') || '',
+      filePath: localStorage.getItem('unicore_gh_filepath') || 'github-deploy/order_actions.json'
+    };
+  } catch(e) { return { repo: '', token: '', filePath: 'github-deploy/order_actions.json' }; }
+}
+
+function isGitHubConfigured() {
+  const cfg = getGitHubConfig();
+  return cfg.repo && cfg.token;
+}
+
+function saveGitHubSettings() {
+  const repo = document.getElementById('ghRepo').value.trim();
+  const token = document.getElementById('ghToken').value.trim();
+  const filePath = document.getElementById('ghFilePath').value.trim() || 'github-deploy/order_actions.json';
+  if (!repo || !token) { showToast('저장소와 토큰을 모두 입력해 주세요.'); return; }
+  try {
+    localStorage.setItem('unicore_gh_repo', repo);
+    localStorage.setItem('unicore_gh_token', token);
+    localStorage.setItem('unicore_gh_filepath', filePath);
+  } catch(e) {}
+  updateGitHubBadge();
+  showToast('GitHub 설정이 저장되었습니다.');
+  pullOrderActionsFromGitHub();
+}
+
+function loadGitHubSettings() {
+  const cfg = getGitHubConfig();
+  document.getElementById('ghRepo').value = cfg.repo;
+  document.getElementById('ghToken').value = cfg.token;
+  document.getElementById('ghFilePath').value = cfg.filePath;
+  updateGitHubBadge();
+}
+
+function updateGitHubBadge() {
+  const badge = document.getElementById('ghSyncBadge');
+  if (isGitHubConfigured()) {
+    badge.textContent = '연결됨';
+    badge.style.background = 'var(--success-bg)';
+    badge.style.color = 'var(--success)';
+  } else {
+    badge.textContent = '미설정';
+    badge.style.background = 'var(--warning-bg)';
+    badge.style.color = '#b45309';
+  }
+}
+
+function extractOrderActions() {
+  const actions = {};
+  products.forEach(p => {
+    const action = getOrderAction(p);
+    if (action) {
+      const match = (p.remark || '').match(/\[(발주완료|발주대기|별도조치|단종조치)\s*([^\]]*)\]/);
+      actions[p.code] = {
+        action: action,
+        date: match ? match[2].trim() : new Date().toLocaleDateString('ko-KR'),
+        name: p.name
+      };
+    }
+  });
+  return actions;
+}
+
+function applyOrderActions(actions) {
+  if (!actions || typeof actions !== 'object') return;
+  let changed = false;
+  Object.keys(actions).forEach(code => {
+    const idx = products.findIndex(p => p.code === code);
+    if (idx < 0) return;
+    const info = actions[code];
+    const currentAction = getOrderAction(products[idx]);
+    if (currentAction === info.action) return;
+    let baseRemark = (products[idx].remark || '').replace(/\s*\[(발주완료|발주대기|별도조치|단종조치)\s*[^\]]*\]\s*/g, '').trim();
+    baseRemark = baseRemark.replace(/\s*발주요청 완료\s*\([^)]*\)\s*/g, '').trim();
+    const tag = '[' + info.action + ' ' + info.date + ']';
+    products[idx].remark = baseRemark ? baseRemark + ' ' + tag : tag;
+    changed = true;
+  });
+  if (changed) { saveToStorage(); }
+  return changed;
+}
+
+async function pullOrderActionsFromGitHub() {
+  const cfg = getGitHubConfig();
+  if (!cfg.repo || !cfg.token) { showToast('GitHub 설정을 먼저 완료해 주세요.'); return; }
+  const statusEl = document.getElementById('ghSyncStatus');
+  statusEl.textContent = '불러오는 중...';
+  statusEl.style.color = 'var(--info)';
+  try {
+    const res = await fetch('https://api.github.com/repos/' + cfg.repo + '/contents/' + cfg.filePath, {
+      headers: { 'Authorization': 'Bearer ' + cfg.token, 'Accept': 'application/vnd.github.v3+json' }
+    });
+    if (res.status === 404) {
+      statusEl.textContent = '공유 파일이 없습니다. "현재 액션 공유 저장"을 먼저 실행해 주세요.';
+      statusEl.style.color = 'var(--warning)';
+      return;
+    }
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    const content = JSON.parse(atob(data.content));
+    const actions = content.actions || {};
+    const changed = applyOrderActions(actions);
+    if (changed) {
+      refreshAll();
+      const activeTab = document.querySelector('.tab-content.active');
+      if (activeTab && activeTab.id === 'tab-orders') renderOrders();
+    }
+    const count = Object.keys(actions).length;
+    const time = content.updatedAt ? new Date(content.updatedAt).toLocaleString('ko-KR') : '-';
+    statusEl.textContent = count + '개 액션 반영 완료 (마지막 저장: ' + time + ')';
+    statusEl.style.color = 'var(--success)';
+  } catch(e) {
+    statusEl.textContent = '불러오기 실패: ' + e.message;
+    statusEl.style.color = 'var(--danger)';
+  }
+}
+
+async function pushOrderActionsToGitHub() {
+  const cfg = getGitHubConfig();
+  if (!cfg.repo || !cfg.token) return;
+  const statusEl = document.getElementById('ghSyncStatus');
+  statusEl.textContent = '저장 중...';
+  statusEl.style.color = 'var(--info)';
+  try {
+    const actions = extractOrderActions();
+    const payload = { actions: actions, updatedAt: new Date().toISOString(), updatedBy: 'dashboard' };
+    const contentBase64 = btoa(unescape(encodeURIComponent(JSON.stringify(payload, null, 2))));
+    let sha = '';
+    try {
+      const getRes = await fetch('https://api.github.com/repos/' + cfg.repo + '/contents/' + cfg.filePath, {
+        headers: { 'Authorization': 'Bearer ' + cfg.token, 'Accept': 'application/vnd.github.v3+json' }
+      });
+      if (getRes.ok) { const existing = await getRes.json(); sha = existing.sha; }
+    } catch(e) {}
+    const body = { message: '발주 액션 업데이트 (' + new Date().toLocaleString('ko-KR') + ')', content: contentBase64 };
+    if (sha) body.sha = sha;
+    const putRes = await fetch('https://api.github.com/repos/' + cfg.repo + '/contents/' + cfg.filePath, {
+      method: 'PUT',
+      headers: { 'Authorization': 'Bearer ' + cfg.token, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    if (!putRes.ok) { const errData = await putRes.json(); throw new Error(errData.message || 'HTTP ' + putRes.status); }
+    const count = Object.keys(actions).length;
+    statusEl.textContent = count + '개 액션 저장 완료 (' + new Date().toLocaleString('ko-KR') + ')';
+    statusEl.style.color = 'var(--success)';
+  } catch(e) {
+    statusEl.textContent = '저장 실패: ' + e.message;
+    statusEl.style.color = 'var(--danger)';
+  }
+}
+
+let ghPushTimer = null;
+function schedulePushToGitHub() {
+  if (!isGitHubConfigured()) return;
+  if (ghPushTimer) clearTimeout(ghPushTimer);
+  ghPushTimer = setTimeout(() => { pushOrderActionsToGitHub(); }, 2000);
 }
 
 function triggerManualSync() {
