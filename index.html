@@ -61,6 +61,7 @@
   .kpi-card.info { border-left-color: var(--info); }
   .kpi-label { font-size: 12px; color: var(--gray-500); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
   .kpi-value { font-size: 32px; font-weight: 700; }
+  .kpi-value.kpi-text { font-size: 14px; word-break: keep-all; line-height: 1.4; overflow-wrap: break-word; white-space: normal; min-height: 38px; display: -webkit-box; -webkit-box-orient: vertical; }
   .kpi-sub { font-size: 12px; color: var(--gray-500); margin-top: 4px; }
 
   /* Panels */
@@ -141,6 +142,14 @@
   /* Order row highlight */
   .order-urgent { background: var(--danger-bg) !important; }
   .order-soon { background: var(--warning-bg) !important; }
+
+  /* Order action select */
+  .order-action-select { padding: 5px 8px; border: 1px solid var(--gray-300); border-radius: 6px; font-size: 12px; font-weight: 500; outline: none; cursor: pointer; background: white; min-width: 100px; }
+  .order-action-select:focus { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(26,86,50,0.1); }
+  .order-action-select.action-발주완료 { background: var(--success-bg); color: var(--success); border-color: var(--success); font-weight: 600; }
+  .order-action-select.action-발주대기 { background: var(--warning-bg); color: #b45309; border-color: var(--warning); font-weight: 600; }
+  .order-action-select.action-별도조치 { background: var(--info-bg); color: var(--info); border-color: var(--info); font-weight: 600; }
+  .order-action-select.action-단종조치 { background: var(--gray-100); color: var(--gray-500); border-color: var(--gray-300); font-weight: 600; }
 
   /* Toast */
   .toast { position: fixed; bottom: 24px; right: 24px; background: var(--gray-900); color: white; padding: 12px 20px; border-radius: 10px; font-size: 14px; z-index: 2000; opacity: 0; transform: translateY(10px); transition: all 0.3s; }
@@ -273,6 +282,7 @@
   <div class="tab" onclick="switchTab('shipment')">출고현황</div>
   <div class="tab" onclick="switchTab('forecast')">재고예측</div>
   <div class="tab" onclick="switchTab('orders')">발주관리</div>
+  <div class="tab" onclick="switchTab('risk')">위험재고</div>
   <div class="tab" onclick="switchTab('data')">데이터 관리</div>
 </div>
 
@@ -338,7 +348,7 @@
         </table>
       </div>
       <div id="inventoryEmpty" class="empty-state" style="display:none;">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
         <h3>데이터가 없습니다</h3>
         <p>'데이터 관리' 탭에서 Excel 파일을 업로드하거나 제품을 직접 등록하세요.</p>
       </div>
@@ -362,8 +372,8 @@
   <div class="kpi-grid">
     <div class="kpi-card info"><div class="kpi-label">조회 기간 총 출고</div><div class="kpi-value num" id="kpi-ship-total">0</div><div class="kpi-sub" id="kpi-ship-period">-</div></div>
     <div class="kpi-card success"><div class="kpi-label">출고 제품 수</div><div class="kpi-value num" id="kpi-ship-items">0</div><div class="kpi-sub">출고 이력이 있는 제품</div></div>
-    <div class="kpi-card warning"><div class="kpi-label">최다 출고 제품</div><div class="kpi-value num" id="kpi-ship-top" style="font-size:16px;">-</div><div class="kpi-sub" id="kpi-ship-top-qty">-</div></div>
-    <div class="kpi-card danger"><div class="kpi-label">출고 급증 제품</div><div class="kpi-value num" id="kpi-ship-spike" style="font-size:16px;">-</div><div class="kpi-sub" id="kpi-ship-spike-info">전월 대비 증가</div></div>
+    <div class="kpi-card warning"><div class="kpi-label">최다 출고 제품</div><div class="kpi-value kpi-text" id="kpi-ship-top" title="">-</div><div class="kpi-sub" id="kpi-ship-top-qty">-</div></div>
+    <div class="kpi-card danger"><div class="kpi-label">출고 급증 제품</div><div class="kpi-value kpi-text" id="kpi-ship-spike" title="">-</div><div class="kpi-sub" id="kpi-ship-spike-info">전월 대비 증가</div></div>
   </div>
 
   <div class="panel">
@@ -398,7 +408,7 @@
         </table>
       </div>
       <div id="shipEmpty" class="empty-state" style="display:none;">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 17H5a2 2 0 00-2 2v0a2 2 0 002 2h14a2 2 0 002-2v0a2 2 0 00-2-2h-4M9 17v-4m0 4h6m-6-4V7a2 2 0 012-2h2a2 2 0 012 2v6m-6 0h6"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 17H5a2 2 0 00-2 2v0a2 2 0 002 2h14a2 2 0 002-2v0a2 2 0 00-2-2h-4M9 17v-4m0 4h6m-6-4V7a2 2 0 012-2h2a2 2 0 012 2v6m-6 0h6"></path></svg>
         <h3>출고 데이터가 없습니다</h3>
         <p>일별 데이터 업데이트가 진행되면 출고 이력이 표시됩니다.</p>
       </div>
@@ -463,7 +473,7 @@
   </div>
   <div class="panel">
     <div class="panel-header"><div class="panel-title">월별 재고 추이 예측</div></div>
-    <div class="panel-body"><div class="chart-container" style="height:350px;"><canvas id="forecastChart"></canvas></div></div>
+    <div class="panel-body"><div class="chart-container" id="forecastChartContainer" style="height:350px;"><canvas id="forecastChart"></canvas></div></div>
   </div>
 </div>
 
@@ -506,6 +516,87 @@
   </div>
 </div>
 
+<!-- ===== 위험재고 탭 ===== -->
+<div id="tab-risk" class="tab-content">
+  <div class="kpi-grid">
+    <div class="kpi-card danger"><div class="kpi-label">판매가능기한 초과 예상</div><div class="kpi-value num" id="kpi-risk-over">0</div><div class="kpi-sub">기한 내 소진 불가 제품</div></div>
+    <div class="kpi-card warning"><div class="kpi-label">판매가능기한 임박</div><div class="kpi-value num" id="kpi-risk-near">0</div><div class="kpi-sub">60일 이내 판매가능기한 도래</div></div>
+    <div class="kpi-card info"><div class="kpi-label">예상 잔여수량 합계</div><div class="kpi-value num" id="kpi-risk-surplus">0</div><div class="kpi-sub">소진 불가 예상 수량</div></div>
+    <div class="kpi-card success"><div class="kpi-label">안전 제품</div><div class="kpi-value num" id="kpi-risk-safe">0</div><div class="kpi-sub">기한 내 소진 가능</div></div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-header">
+      <div class="panel-title">위험재고 목록</div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-outline btn-sm" onclick="exportRiskInventory()">내보내기</button>
+      </div>
+    </div>
+    <div class="panel-body">
+      <div class="toolbar">
+        <select class="filter" id="riskCategory" onchange="renderRiskInventory()">
+          <option value="">전체 카테고리</option>
+          <option value="Cosmetic">Cosmetic</option>
+          <option value="Health Care">Health Care</option>
+          <option value="Living">Living</option>
+          <option value="Lounge Item">Lounge Item</option>
+          <option value="Sales Aids">Sales Aids</option>
+          <option value="트라이얼키트">트라이얼키트</option>
+        </select>
+        <select class="filter" id="riskLevel" onchange="renderRiskInventory()">
+          <option value="">전체 위험도</option>
+          <option value="expired">기한 만료</option>
+          <option value="critical">소진 불가</option>
+          <option value="warning">주의 (60일 이내)</option>
+        </select>
+        <input type="text" class="search-box" placeholder="제품명 또는 상품코드 검색..." id="riskSearch" oninput="renderRiskInventory()" style="width:220px;">
+      </div>
+      <div style="margin-bottom:12px;padding:10px 14px;background:var(--info-bg);border-radius:8px;font-size:12px;color:var(--info);line-height:1.6;">
+        <strong>위험재고 판단 기준</strong><br>
+        - 현재 출고 속도(2M 평균출고 기준)로 현재고를 모두 소진하는 예상일이 판매가능기한(소비기한 - 3개월)을 초과하는 제품<br>
+        - 판매가능기한이 이미 만료되었거나, 60일 이내에 도래하는 제품을 포함합니다
+      </div>
+      <div class="table-wrap" style="max-height:480px;overflow-y:auto;">
+        <table class="responsive-table">
+          <thead>
+            <tr>
+              <th>카테고리</th>
+              <th>상품코드</th>
+              <th>품명</th>
+              <th class="text-right">현재고</th>
+              <th class="text-right">2M 평균출고</th>
+              <th class="text-right">일 평균출고</th>
+              <th class="text-right">예상 소진일수</th>
+              <th>판매가능기한</th>
+              <th class="text-right">남은 판매일수</th>
+              <th class="text-right">예상 잔여수량</th>
+              <th>위험도</th>
+              <th>REMARK</th>
+            </tr>
+          </thead>
+          <tbody id="riskTableBody"></tbody>
+        </table>
+      </div>
+      <div id="riskEmpty" class="empty-state" style="display:none;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        <h3>위험재고가 없습니다</h3>
+        <p>모든 제품이 판매가능기한 내에 소진 가능합니다.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="chart-grid">
+    <div class="panel">
+      <div class="panel-header"><div class="panel-title">카테고리별 위험재고 분포</div></div>
+      <div class="panel-body"><div class="chart-container"><canvas id="riskCategoryChart"></canvas></div></div>
+    </div>
+    <div class="panel">
+      <div class="panel-header"><div class="panel-title">위험재고 예상 잔여수량 TOP 10</div></div>
+      <div class="panel-body"><div class="chart-container"><canvas id="riskSurplusChart"></canvas></div></div>
+    </div>
+  </div>
+</div>
+
 <!-- ===== 데이터 관리 탭 ===== -->
 <div id="tab-data" class="tab-content">
   <div class="panel">
@@ -514,7 +605,7 @@
     </div>
     <div class="panel-body">
       <div class="upload-area" id="uploadArea" onclick="document.getElementById('fileInput').click()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6h.1a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6h.1a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
         <p><strong>클릭하여 파일 선택</strong> 또는 드래그 앤 드롭</p>
         <p style="font-size:12px;margin-top:4px;">.xlsx, .xlsb, .xls 파일 지원</p>
         <input type="file" id="fileInput" accept=".xlsx,.xlsb,.xls,.csv" style="display:none" onchange="handleFileUpload(event)">
@@ -682,11 +773,12 @@ function switchTab(tab) {
   document.querySelectorAll('.tab').forEach((t,i) => t.classList.remove('active'));
   document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
   document.getElementById('tab-' + tab).classList.add('active');
-  const tabs = ['inventory','shipment','forecast','orders','data'];
+  const tabs = ['inventory','shipment','forecast','orders','risk','data'];
   document.querySelectorAll('.tab')[tabs.indexOf(tab)].classList.add('active');
   if (tab === 'shipment') renderShipment();
   if (tab === 'forecast') renderForecast();
   if (tab === 'orders') renderOrders();
+  if (tab === 'risk') renderRiskInventory();
 }
 
 // ============ REFRESH ALL ============
@@ -906,9 +998,15 @@ function renderForecast() {
 
 function renderForecastChart(items) {
   if (charts.forecast) charts.forecast.destroy();
+
+  // 품목 수에 따라 차트 높이 동적 조절 (품목당 40px, 최소 300px)
+  const chartHeight = Math.max(300, items.length * 40 + 60);
+  const container = document.getElementById('forecastChartContainer');
+  container.style.height = chartHeight + 'px';
+
   const ctx = document.getElementById('forecastChart').getContext('2d');
 
-  const labels = items.map(p => p.name.length > 15 ? p.name.substring(0,15) + '...' : p.name);
+  const labels = items.map(p => p.name);
   const data = items.map(p => p.daysLeft >= 9999 ? 0 : p.daysLeft);
   const colors = items.map(p => p.daysLeft <= 14 ? '#dc2626' : p.daysLeft <= 30 ? '#f59e0b' : p.daysLeft <= 60 ? '#2563eb' : '#16a34a');
 
@@ -921,7 +1019,11 @@ function renderForecastChart(items) {
     options: {
       responsive: true, maintainAspectRatio: false, indexAxis: 'y',
       plugins: { legend: { display: false } },
-      scales: { x: { title: { display: true, text: '잔여일수' }, grid: { color: '#f3f4f6' } }, y: { grid: { display: false } } }
+      scales: {
+        x: { title: { display: true, text: '잔여일수' }, grid: { color: '#f3f4f6' } },
+        y: { grid: { display: false }, ticks: { autoSkip: false, font: { size: 12 } } }
+      },
+      layout: { padding: { left: 0 } }
     }
   });
 }
@@ -942,7 +1044,7 @@ function renderOrders() {
     arrivalDate.setDate(arrivalDate.getDate() + leadDays);
 
     return { ...p, dailyAvg, daysLeft, leadDays, needsOrder, recQty, arrivalDate };
-  }).filter(p => p.needsOrder || (p.remark && p.remark.includes('발주')));
+  }).filter(p => p.needsOrder || (p.remark && (p.remark.includes('발주') || p.remark.includes('별도조치') || p.remark.includes('단종조치'))));
 
   orderItems.sort((a,b) => a.daysLeft - b.daysLeft);
 
@@ -968,6 +1070,10 @@ function renderOrders() {
     const urgText = p.daysLeft <= 14 ? '긴급' : p.daysLeft <= 45 ? '검토' : '참고';
     const rowClass = p.daysLeft <= 14 ? 'order-urgent' : p.daysLeft <= 45 ? 'order-soon' : '';
 
+    const currentAction = getOrderAction(p);
+    const actionClass = currentAction ? 'action-' + currentAction : '';
+    const safeCode = p.code.replace(/'/g, "\\'");
+
     return `<tr class="${rowClass}">
       <td data-label="선택"><input type="checkbox" class="order-check"></td>
       <td data-label="긴급도"><span class="badge ${urgBadge}">${urgText}</span></td>
@@ -979,7 +1085,15 @@ function renderOrders() {
       <td class="text-right num" data-label="리드타임(주)">${p.leadTime || 10}</td>
       <td class="num" data-label="예상 입고일">${p.arrivalDate.toLocaleDateString('ko-KR')}</td>
       <td class="mobile-remark" data-label="REMARK" style="font-size:12px;">${p.remark||'-'}</td>
-      <td data-label="액션"><button class="btn btn-success btn-sm" onclick="markOrdered(${products.indexOf(p)})">발주완료</button></td>
+      <td data-label="액션">
+        <select class="order-action-select ${actionClass}" onchange="handleOrderAction('${safeCode}', this)">
+          <option value="">-- 선택 --</option>
+          <option value="발주완료"${currentAction === '발주완료' ? ' selected' : ''}>발주완료</option>
+          <option value="발주대기"${currentAction === '발주대기' ? ' selected' : ''}>발주대기</option>
+          <option value="별도조치"${currentAction === '별도조치' ? ' selected' : ''}>별도조치</option>
+          <option value="단종조치"${currentAction === '단종조치' ? ' selected' : ''}>단종조치</option>
+        </select>
+      </td>
     </tr>`;
   }).join('');
 }
@@ -988,13 +1102,49 @@ function toggleAllOrders(el) {
   document.querySelectorAll('.order-check').forEach(c => c.checked = el.checked);
 }
 
-function markOrdered(idx) {
-  if (idx >= 0 && idx < products.length) {
-    products[idx].remark = '발주요청 완료 (' + new Date().toLocaleDateString('ko-KR') + ')';
-    showToast('발주 완료로 표시되었습니다.');
-    refreshAll();
-    renderOrders();
+function getOrderAction(p) {
+  if (!p.remark) return '';
+  if (p.remark.includes('단종조치')) return '단종조치';
+  if (p.remark.includes('별도조치')) return '별도조치';
+  if (p.remark.includes('발주대기')) return '발주대기';
+  if (p.remark.includes('발주완료') || p.remark.includes('발주요청 완료')) return '발주완료';
+  return '';
+}
+
+function handleOrderAction(code, selectEl) {
+  const idx = products.findIndex(p => p.code === code);
+  if (idx < 0) return;
+
+  const action = selectEl.value;
+  const dateStr = new Date().toLocaleDateString('ko-KR');
+  const p = products[idx];
+
+  // 기존 remark에서 이전 액션 태그 제거
+  let baseRemark = (p.remark || '').replace(/\s*\[(발주완료|발주대기|별도조치|단종조치)\s*[^\]]*\]\s*/g, '').trim();
+  // 기존 '발주요청 완료 (...)' 패턴도 제거
+  baseRemark = baseRemark.replace(/\s*발주요청 완료\s*\([^)]*\)\s*/g, '').trim();
+
+  if (!action) {
+    products[idx].remark = baseRemark || '';
+    showToast('액션이 해제되었습니다.');
+  } else {
+    const tag = `[${action} ${dateStr}]`;
+    products[idx].remark = baseRemark ? `${baseRemark} ${tag}` : tag;
+
+    const actionMessages = {
+      '발주완료': '발주완료로 저장되었습니다.',
+      '발주대기': '발주대기로 저장되었습니다.',
+      '별도조치': '별도조치로 저장되었습니다.',
+      '단종조치': '단종조치로 저장되었습니다.'
+    };
+    showToast(actionMessages[action]);
   }
+
+  // 콤보박스 스타일 즉시 업데이트
+  selectEl.className = 'order-action-select' + (action ? ' action-' + action : '');
+
+  refreshAll();
+  renderOrders();
 }
 
 // ============ SHIPMENT (출고현황) ============
@@ -1172,7 +1322,9 @@ function renderShipment() {
   document.getElementById('kpi-ship-items').textContent = rows.filter(r => r.total > 0).length;
 
   if (rows.length > 0) {
-    document.getElementById('kpi-ship-top').textContent = rows[0].name.length > 12 ? rows[0].name.slice(0,12)+'...' : rows[0].name;
+    const topEl = document.getElementById('kpi-ship-top');
+    topEl.textContent = rows[0].name;
+    topEl.title = rows[0].name;
     document.getElementById('kpi-ship-top-qty').textContent = rows[0].total.toLocaleString() + '개 출고';
   }
 
@@ -1190,7 +1342,9 @@ function renderShipment() {
       }
     });
     if (maxIncrease > 0) {
-      document.getElementById('kpi-ship-spike').textContent = spikeName.length > 12 ? spikeName.slice(0,12)+'...' : spikeName;
+      const spikeEl = document.getElementById('kpi-ship-spike');
+      spikeEl.textContent = spikeName;
+      spikeEl.title = spikeName;
       document.getElementById('kpi-ship-spike-info').textContent = `+${Math.round(maxIncrease)}% 증가`;
     }
   }
@@ -1428,41 +1582,43 @@ function parseNum(val) {
 // ============ SAMPLE DATA ============
 function loadSampleData() {
   products = [
-    // ===== Cosmetic (23개) - 2026년 3월 31일 동기화 =====
-    { category:'Cosmetic', code:'000000101', name:'딥 리페어 액티베이팅 뉴트리션 크림 30ml', currentStock:4766, incoming:0, safetyStock:851, avgMonthlyOut:851, moq:5000, leadTime:10, expiryDate:'2029-03-24', remark:'' },
-    { category:'Cosmetic', code:'100000117', name:'NEW 비타 씨 13.5 수퍼 화이트닝 앰플 30g', currentStock:1520, incoming:5000, safetyStock:581, avgMonthlyOut:581, moq:5000, leadTime:10, expiryDate:'2028-02-05', remark:'3월 중순 입고예정' },
-    { category:'Cosmetic', code:'100000114', name:'비타 씨 글루타글로우 수퍼 브라이트닝 앰플 30g', currentStock:2575, incoming:0, safetyStock:55, avgMonthlyOut:55, moq:5000, leadTime:10, expiryDate:'2027-03-31', remark:'' },
-    { category:'Cosmetic', code:'000000104', name:'하이드레이팅 레디언스 선크림 SPF50 PA+++30ml', currentStock:5504, incoming:0, safetyStock:546, avgMonthlyOut:546, moq:10000, leadTime:14, expiryDate:'2028-01-15', remark:'' },
-    { category:'Cosmetic', code:'000000106', name:'하이드레이팅 스킨 배리어 세럼 미스트 리필 120ml', currentStock:215, incoming:0, safetyStock:394, avgMonthlyOut:394, moq:5000, leadTime:10, expiryDate:'2027-03-27', remark:'단종' },
-    { category:'Cosmetic', code:'100000107', name:'하이드레이팅 스킨 배리어 세럼 미스트 50ml', currentStock:6675, incoming:0, safetyStock:649, avgMonthlyOut:649, moq:5000, leadTime:10, expiryDate:'2027-03-27', remark:'' },
-    { category:'Cosmetic', code:'100000108', name:'비타씨 수퍼 브라이트닝 마스크 5매', currentStock:2038, incoming:0, safetyStock:3739, avgMonthlyOut:3739, moq:5000, leadTime:10, expiryDate:'2027-11-09', remark:'발주요청 완료' },
-    { category:'Cosmetic', code:'100000146', name:'퓨어 비타 라이스 클렌징 오일 150ml', currentStock:4706, incoming:0, safetyStock:0, avgMonthlyOut:0, moq:5000, leadTime:10, expiryDate:'2029-02-25', remark:'' },
-    { category:'Cosmetic', code:'100000127', name:'비타씨 엔자임 파우더 워시', currentStock:6152, incoming:0, safetyStock:674, avgMonthlyOut:674, moq:5000, leadTime:10, expiryDate:'2029-02-01', remark:'' },
-    { category:'Cosmetic', code:'100000112', name:'데일리 카밍 토너 패드 180ml (70매) (구독사은품)', currentStock:3610, incoming:0, safetyStock:357, avgMonthlyOut:357, moq:5000, leadTime:10, expiryDate:'2029-01-20', remark:'' },
-    { category:'Cosmetic', code:'100000118', name:'(UC) 하이드레이팅 스킨 세럼 미스트 50ml', currentStock:2431, incoming:0, safetyStock:701, avgMonthlyOut:701, moq:5000, leadTime:10, expiryDate:'2027-02-11', remark:'' },
-    { category:'Cosmetic', code:'100000119', name:'(UC) 비타 수퍼 브라이트닝 앰플 30g', currentStock:5028, incoming:0, safetyStock:1335, avgMonthlyOut:1335, moq:5000, leadTime:12, expiryDate:'2027-01-23', remark:'' },
-    { category:'Cosmetic', code:'100000121', name:'(UC) 하이드레이팅 스킨 크림 30ml', currentStock:2235, incoming:0, safetyStock:779, avgMonthlyOut:779, moq:5000, leadTime:12, expiryDate:'2027-04-01', remark:'' },
-    { category:'Cosmetic', code:'100000122', name:'(UC) 하이드레이팅 래디언스 선크림 30ml', currentStock:3268, incoming:0, safetyStock:597, avgMonthlyOut:597, moq:5000, leadTime:10, expiryDate:'2028-01-15', remark:'' },
+    // ===== Cosmetic (26개) - 2026년 4월 1일 동기화 =====
+    { category:'Cosmetic', code:'000000101', name:'딥 리페어 액티베이팅 뉴트리션 크림 30ml', currentStock:4742, incoming:0, safetyStock:587, avgMonthlyOut:587, moq:5000, leadTime:10, expiryDate:'2027-05-12', remark:'' },
+    { category:'Cosmetic', code:'100000117', name:'NEW 비타 씨 13.5 수퍼 화이트닝 앰플 30g', currentStock:1503, incoming:5000, safetyStock:1050, avgMonthlyOut:1050, moq:5000, leadTime:10, expiryDate:'2028-02-05', remark:'3월 중순 입고예정' },
+    { category:'Cosmetic', code:'100000114', name:'비타 씨 글루타글로우 수퍼 브라이트닝 앰플 30g', currentStock:2566, incoming:0, safetyStock:41, avgMonthlyOut:41, moq:5000, leadTime:10, expiryDate:'2027-03-31', remark:'' },
+    { category:'Cosmetic', code:'000000104', name:'하이드레이팅 레디언스 선크림 SPF50 PA+++30ml', currentStock:2211, incoming:0, safetyStock:278, avgMonthlyOut:278, moq:10000, leadTime:14, expiryDate:'2028-01-15', remark:'' },
+    { category:'Cosmetic', code:'000000106', name:'하이드레이팅 스킨 배리어 세럼 미스트 리필 120ml', currentStock:206, incoming:0, safetyStock:428, avgMonthlyOut:428, moq:5000, leadTime:10, expiryDate:'2027-03-27', remark:'단종' },
+    { category:'Cosmetic', code:'100000107', name:'하이드레이팅 스킨 배리어 세럼 미스트 50ml', currentStock:6647, incoming:0, safetyStock:327, avgMonthlyOut:327, moq:5000, leadTime:10, expiryDate:'2027-03-27', remark:'' },
+    { category:'Cosmetic', code:'000000103', name:'비타씨 수퍼 브라이트닝 마스크 1매', currentStock:0, incoming:0, safetyStock:0, avgMonthlyOut:0, moq:5000, leadTime:10, expiryDate:'2026-05-14', remark:'단종' },
+    { category:'Cosmetic', code:'100000108', name:'비타씨 수퍼 브라이트닝 마스크 5매', currentStock:1700, incoming:0, safetyStock:3826, avgMonthlyOut:3826, moq:5000, leadTime:10, expiryDate:'2027-11-09', remark:'4월 10일 입고예정' },
+    { category:'Cosmetic', code:'100000146', name:'퓨어 비타 라이스 클렌징 오일 150ml', currentStock:4703, incoming:0, safetyStock:1270, avgMonthlyOut:1270, moq:5000, leadTime:10, expiryDate:'2029-02-25', remark:'' },
+    { category:'Cosmetic', code:'100000127', name:'비타씨 엔자임 파우더 워시', currentStock:6149, incoming:0, safetyStock:298, avgMonthlyOut:298, moq:5000, leadTime:10, expiryDate:'2029-02-01', remark:'' },
+    { category:'Cosmetic', code:'100000112', name:'데일리 카밍 토너 패드 180ml (70매) (구독사은품)', currentStock:3604, incoming:0, safetyStock:298, avgMonthlyOut:298, moq:5000, leadTime:10, expiryDate:'2029-01-20', remark:'' },
+    { category:'Cosmetic', code:'100000118', name:'(UC) 하이드레이팅 스킨 세럼 미스트 50ml', currentStock:2431, incoming:0, safetyStock:1352, avgMonthlyOut:1352, moq:5000, leadTime:10, expiryDate:'2027-02-11', remark:'단종' },
+    { category:'Cosmetic', code:'100000119', name:'(UC) 비타 수퍼 브라이트닝 앰플 30g', currentStock:5028, incoming:0, safetyStock:1419, avgMonthlyOut:1419, moq:5000, leadTime:12, expiryDate:'2027-01-23', remark:'단종' },
+    { category:'Cosmetic', code:'100000121', name:'(UC) 하이드레이팅 스킨 크림 30ml', currentStock:2235, incoming:0, safetyStock:1435, avgMonthlyOut:1435, moq:5000, leadTime:12, expiryDate:'2027-04-01', remark:'단종' },
+    { category:'Cosmetic', code:'100000122', name:'(UC) 하이드레이팅 래디언스 선크림 30ml', currentStock:3268, incoming:0, safetyStock:1216, avgMonthlyOut:1216, moq:5000, leadTime:10, expiryDate:'2028-01-15', remark:'단종' },
     { category:'Cosmetic', code:'100000126', name:'(CN)유니은커우 비타 수퍼 브라이트닝 마스크 1매', currentStock:550, incoming:0, safetyStock:0, avgMonthlyOut:0, moq:10000, leadTime:14, expiryDate:'2026-07-16', remark:'단종' },
-    { category:'Cosmetic', code:'100000132', name:'[USA]DEEP HYDRATING SKIN NUTRITION CREAM', currentStock:2998, incoming:2235, safetyStock:709, avgMonthlyOut:709, moq:5000, leadTime:10, expiryDate:'2027-05-12', remark:'' },
-    { category:'Cosmetic', code:'100000133', name:'[USA]VITA C GLUTAGLOW SUPER BRIGHTENING AMPOULE', currentStock:998, incoming:5028, safetyStock:818, avgMonthlyOut:818, moq:5000, leadTime:12, expiryDate:'2027-03-31', remark:'' },
-    { category:'Cosmetic', code:'100000134', name:'[USA]VITA C 13.5 SUPER BRIGHTENING AMPOULE', currentStock:3722, incoming:5000, safetyStock:401, avgMonthlyOut:401, moq:5000, leadTime:12, expiryDate:'2028-02-05', remark:'3월 중순 입고예정' },
+    { category:'Cosmetic', code:'100000132', name:'[USA]DEEP HYDRATING SKIN NUTRITION CREAM', currentStock:2998, incoming:0, safetyStock:709, avgMonthlyOut:709, moq:5000, leadTime:10, expiryDate:'2027-05-12', remark:'' },
+    { category:'Cosmetic', code:'100000133', name:'[USA]VITA C GLUTAGLOW SUPER BRIGHTENING AMPOULE', currentStock:998, incoming:0, safetyStock:818, avgMonthlyOut:818, moq:5000, leadTime:12, expiryDate:'2027-03-31', remark:'' },
+    { category:'Cosmetic', code:'100000134', name:'[USA]VITA C 13.5 SUPER BRIGHTENING AMPOULE', currentStock:3722, incoming:0, safetyStock:401, avgMonthlyOut:401, moq:5000, leadTime:12, expiryDate:'2028-02-05', remark:'3월 중순 입고예정' },
     { category:'Cosmetic', code:'100000136', name:'[USA]VITA C SUPER BRIGHTENING MASK', currentStock:2988, incoming:0, safetyStock:1475, avgMonthlyOut:1475, moq:5000, leadTime:12, expiryDate:'2027-02-19', remark:'' },
-    { category:'Cosmetic', code:'100000137', name:'[USA]VITA C ENZYME POWDER WASH', currentStock:42, incoming:0, safetyStock:467, avgMonthlyOut:467, moq:5000, leadTime:10, expiryDate:'2028-05-06', remark:'국내용 출고' },
-    { category:'Cosmetic', code:'100000138', name:'[USA]HYDRATING SKIN BARRIER SERUM MIST', currentStock:2493, incoming:2431, safetyStock:647, avgMonthlyOut:647, moq:10000, leadTime:14, expiryDate:'2027-03-27', remark:'' },
-    { category:'Cosmetic', code:'100000129', name:'루미너스 레이어 타이트업 쿠션', currentStock:1139, incoming:0, safetyStock:236, avgMonthlyOut:236, moq:10000, leadTime:14, expiryDate:'', remark:'' },
-    { category:'Cosmetic', code:'100000130', name:'루미너스 레이어 타이트업 리필', currentStock:2821, incoming:0, safetyStock:181, avgMonthlyOut:181, moq:10000, leadTime:12, expiryDate:'', remark:'' },
+    { category:'Cosmetic', code:'100000137', name:'[USA]VITA C ENZYME POWDER WASH', currentStock:42, incoming:0, safetyStock:467, avgMonthlyOut:467, moq:5000, leadTime:10, expiryDate:'2027-05-06', remark:'' },
+    { category:'Cosmetic', code:'100000138', name:'[USA]HYDRATING SKIN BARRIER SERUM MIST', currentStock:2493, incoming:0, safetyStock:647, avgMonthlyOut:647, moq:10000, leadTime:14, expiryDate:'2027-03-27', remark:'' },
+    { category:'Cosmetic', code:'100000129', name:'루미너스 레이어 타이트업 쿠션', currentStock:1134, incoming:0, safetyStock:275, avgMonthlyOut:275, moq:10000, leadTime:14, expiryDate:'2028-03-29', remark:'' },
+    { category:'Cosmetic', code:'100000130', name:'루미너스 레이어 타이트업 리필', currentStock:2819, incoming:0, safetyStock:222, avgMonthlyOut:222, moq:10000, leadTime:12, expiryDate:'2028-03-29', remark:'' },
+    { category:'Cosmetic', code:'100000131', name:'시그니처 리바이탈라이징 샴푸', currentStock:686, incoming:0, safetyStock:231, avgMonthlyOut:231, moq:5000, leadTime:8, expiryDate:'2027-12-10', remark:'' },
     // ===== Health Care (16개) =====
-    { category:'Health Care', code:'000000201', name:'데일리 메가 에너자이저 플러스 30포', currentStock:2923, incoming:0, safetyStock:234, avgMonthlyOut:234, moq:5000, leadTime:10, expiryDate:'', remark:'' },
-    { category:'Health Care', code:'000000202', name:'트리플 메가 익스텐션 60캡슐', currentStock:2937, incoming:0, safetyStock:251, avgMonthlyOut:251, moq:5000, leadTime:10, expiryDate:'2027-11-18', remark:'' },
-    { category:'Health Care', code:'000000203', name:'데일리 츄어블 프로폴리스 90캡슐', currentStock:2226, incoming:0, safetyStock:311, avgMonthlyOut:311, moq:5000, leadTime:12, expiryDate:'2028-01-14', remark:'' },
-    { category:'Health Care', code:'200000206', name:'더블 컷 메가 슬림 플러스 (구독사은품)', currentStock:4418, incoming:0, safetyStock:236, avgMonthlyOut:236, moq:5000, leadTime:10, expiryDate:'2026-10-15', remark:'' },
-    { category:'Health Care', code:'200000207', name:'슬리밍 메가 프로바이오틱스', currentStock:1929, incoming:2500, safetyStock:422, avgMonthlyOut:422, moq:5000, leadTime:12, expiryDate:'2026-07-06', remark:'4월 입고 예정' },
-    { category:'Health Care', code:'200000210', name:'본 앤 조인트 액티브 메가 포뮬러 60캡슐', currentStock:5634, incoming:0, safetyStock:128, avgMonthlyOut:128, moq:5000, leadTime:8, expiryDate:'2027-08-21', remark:'' },
-    { category:'Health Care', code:'200000213', name:'이뮨 메가 부스터 AHCC 10병', currentStock:4170, incoming:0, safetyStock:471, avgMonthlyOut:471, moq:10000, leadTime:10, expiryDate:'2026-06-19', remark:'발주요청 완료' },
-    { category:'Health Care', code:'100000135', name:'슬림핏 프로틴 쉐이크 고소한 멀티 그레인 40g X 10', currentStock:4688, incoming:0, safetyStock:245, avgMonthlyOut:245, moq:20000, leadTime:10, expiryDate:'2027-04-30', remark:'' },
-    { category:'Health Care', code:'200000218', name:'글로우 뷰티 콜라겐 젤리 타트체리 맛 20g X 30포', currentStock:1466, incoming:0, safetyStock:154, avgMonthlyOut:154, moq:3000, leadTime:10, expiryDate:'2026-10-23', remark:'' },
-    { category:'Health Care', code:'200000220', name:'브이애플 나이트 액션', currentStock:2391, incoming:0, safetyStock:109, avgMonthlyOut:109, moq:0, leadTime:8, expiryDate:'2027-03-10', remark:'' },
+    { category:'Health Care', code:'000000201', name:'데일리 메가 에너자이저 플러스 30포', currentStock:2908, incoming:0, safetyStock:200, avgMonthlyOut:200, moq:5000, leadTime:10, expiryDate:'2027-11-20', remark:'' },
+    { category:'Health Care', code:'000000202', name:'트리플 메가 익스텐션 60캡슐', currentStock:2927, incoming:0, safetyStock:995, avgMonthlyOut:995, moq:5000, leadTime:10, expiryDate:'2027-11-18', remark:'' },
+    { category:'Health Care', code:'000000203', name:'데일리 츄어블 프로폴리스 90캡슐', currentStock:2201, incoming:0, safetyStock:521, avgMonthlyOut:521, moq:5000, leadTime:10, expiryDate:'2028-01-14', remark:'' },
+    { category:'Health Care', code:'200000206', name:'더블 컷 메가 슬림 플러스 (구독사은품)', currentStock:4385, incoming:0, safetyStock:222, avgMonthlyOut:222, moq:5000, leadTime:10, expiryDate:'2026-10-15', remark:'' },
+    { category:'Health Care', code:'200000207', name:'슬리밍 메가 프로바이오틱스', currentStock:1925, incoming:2500, safetyStock:545, avgMonthlyOut:545, moq:5000, leadTime:12, expiryDate:'2026-07-06', remark:'4월 입고 예정' },
+    { category:'Health Care', code:'200000210', name:'본 앤 조인트 액티브 메가 포뮬러 60캡슐', currentStock:5626, incoming:0, safetyStock:644, avgMonthlyOut:644, moq:5000, leadTime:8, expiryDate:'2027-08-21', remark:'' },
+    { category:'Health Care', code:'200000213', name:'이뮨 메가 부스터 AHCC 10병', currentStock:4109, incoming:0, safetyStock:329, avgMonthlyOut:329, moq:10000, leadTime:10, expiryDate:'2026-06-19', remark:'발주요청 완료' },
+    { category:'Health Care', code:'100000135', name:'슬림핏 프로틴 쉐이크 고소한 멀티 그레인 40g X 10', currentStock:4680, incoming:0, safetyStock:760, avgMonthlyOut:760, moq:20000, leadTime:10, expiryDate:'2027-04-30', remark:'' },
+    { category:'Health Care', code:'200000218', name:'글로우 뷰티 콜라겐 젤리 타트체리 맛 20g X 30포', currentStock:1463, incoming:0, safetyStock:122, avgMonthlyOut:122, moq:3000, leadTime:10, expiryDate:'2026-10-23', remark:'' },
+    { category:'Health Care', code:'200000220', name:'브이애플 나이트 액션', currentStock:2386, incoming:0, safetyStock:130, avgMonthlyOut:130, moq:0, leadTime:8, expiryDate:'2027-03-10', remark:'' },
     { category:'Health Care', code:'100000139', name:'[USA]Daily Chewable Propolis', currentStock:2545, incoming:0, safetyStock:37, avgMonthlyOut:37, moq:0, leadTime:12, expiryDate:'2028-01-14', remark:'' },
     { category:'Health Care', code:'100000140', name:'[USA]Bone & Joint Health Active MEGA FORMULA', currentStock:1000, incoming:0, safetyStock:22, avgMonthlyOut:22, moq:0, leadTime:8, expiryDate:'2027-08-21', remark:'' },
     { category:'Health Care', code:'100000141', name:'[USA]Daily Mega Energizer Plus', currentStock:1000, incoming:0, safetyStock:33, avgMonthlyOut:33, moq:0, leadTime:10, expiryDate:'2027-11-20', remark:'' },
@@ -1470,41 +1626,40 @@ function loadSampleData() {
     { category:'Health Care', code:'100000143', name:'[USA]SLIM FIT Protein Shake Powder', currentStock:1000, incoming:0, safetyStock:86, avgMonthlyOut:86, moq:0, leadTime:10, expiryDate:'2027-04-30', remark:'' },
     { category:'Health Care', code:'100000144', name:'[USA]Triple MEGA Extension', currentStock:1000, incoming:0, safetyStock:22, avgMonthlyOut:22, moq:0, leadTime:10, expiryDate:'2027-11-18', remark:'' },
     // ===== Living (8개) =====
-    { category:'Living', code:'000000020', name:'리얼 그린라이프 프리미엄 페이셜 티슈 5입', currentStock:6321, incoming:0, safetyStock:53, avgMonthlyOut:53, moq:0, leadTime:0, expiryDate:'', remark:'소진시 단종' },
-    { category:'Living', code:'000000037', name:'리얼 그린라이프 프리미엄 페이셜 티슈 케이스', currentStock:3931, incoming:0, safetyStock:6, avgMonthlyOut:6, moq:0, leadTime:0, expiryDate:'', remark:'소진시 단종' },
-    { category:'Living', code:'000000044', name:'리얼 그린라이프 프리미엄 대나무 압축타올 30입', currentStock:9161, incoming:0, safetyStock:43, avgMonthlyOut:43, moq:0, leadTime:0, expiryDate:'', remark:'소진시 단종' },
-    { category:'Living', code:'000000051', name:'리얼 그린라이프 프리미엄 토일렛 화장지 12롤', currentStock:2899, incoming:0, safetyStock:53, avgMonthlyOut:53, moq:0, leadTime:0, expiryDate:'', remark:'소진시 단종' },
-    { category:'Living', code:'000000068', name:'리얼 그린라이프 프리미엄 키친타올 점보롤 4입', currentStock:814, incoming:0, safetyStock:18, avgMonthlyOut:18, moq:0, leadTime:0, expiryDate:'', remark:'소진시 단종' },
-    { category:'Living', code:'00000069', name:'유니앤코어 덴티바이옴 치약', currentStock:3531, incoming:0, safetyStock:0, avgMonthlyOut:0, moq:0, leadTime:0, expiryDate:'2027-09-03', remark:'' },
-    { category:'Living', code:'600000635', name:'덴티바이옴 치약 출시 기념 패키지', currentStock:280, incoming:0, safetyStock:12, avgMonthlyOut:12, moq:0, leadTime:0, expiryDate:'', remark:'' },
+    { category:'Living', code:'000000020', name:'리얼 그린라이프 프리미엄 페이셜 티슈 5입', currentStock:6321, incoming:0, safetyStock:70, avgMonthlyOut:70, moq:0, leadTime:0, expiryDate:'', remark:'소진시 단종' },
+    { category:'Living', code:'000000037', name:'리얼 그린라이프 프리미엄 페이셜 티슈 케이스', currentStock:3931, incoming:0, safetyStock:13, avgMonthlyOut:13, moq:0, leadTime:0, expiryDate:'', remark:'소진시 단종' },
+    { category:'Living', code:'000000044', name:'리얼 그린라이프 프리미엄 대나무 압축타올 30입', currentStock:9158, incoming:0, safetyStock:70, avgMonthlyOut:70, moq:0, leadTime:0, expiryDate:'', remark:'소진시 단종' },
+    { category:'Living', code:'000000051', name:'리얼 그린라이프 프리미엄 토일렛 화장지 12롤', currentStock:2898, incoming:0, safetyStock:59, avgMonthlyOut:59, moq:0, leadTime:0, expiryDate:'', remark:'소진시 단종' },
+    { category:'Living', code:'000000068', name:'리얼 그린라이프 프리미엄 키친타올 점보롤 4입', currentStock:812, incoming:0, safetyStock:13, avgMonthlyOut:13, moq:0, leadTime:0, expiryDate:'', remark:'소진시 단종' },
+    { category:'Living', code:'00000069', name:'유니앤코어 덴티바이옴 치약', currentStock:3531, incoming:0, safetyStock:5, avgMonthlyOut:5, moq:0, leadTime:0, expiryDate:'2027-09-03', remark:'' },
+    { category:'Living', code:'600000635', name:'덴티바이옴 치약 출시 기념 패키지', currentStock:280, incoming:0, safetyStock:9, avgMonthlyOut:9, moq:0, leadTime:0, expiryDate:'', remark:'' },
     { category:'Living', code:'800000829', name:'덴텍트 Dentect 4입', currentStock:2786, incoming:0, safetyStock:0, avgMonthlyOut:0, moq:0, leadTime:0, expiryDate:'', remark:'' },
-    // ===== Lounge Item (4개) =====
-    { category:'Lounge Item', code:'300000315', name:'하이퍼루프 스칼프 세럼 300ml', currentStock:619, incoming:0, safetyStock:26, avgMonthlyOut:26, moq:5000, leadTime:8, expiryDate:'2028-07-09', remark:'' },
-    { category:'Lounge Item', code:'300000316', name:'하이퍼루프 바디 크림 280g', currentStock:8, incoming:0, safetyStock:13, avgMonthlyOut:13, moq:0, leadTime:8, expiryDate:'2027-06-18', remark:'월 입고/4월 쿨젤크림' },
-    { category:'Lounge Item', code:'300000318', name:'수딩 앤 모이스트 케어 부스팅 젤 250ml', currentStock:2190, incoming:0, safetyStock:339, avgMonthlyOut:339, moq:5000, leadTime:8, expiryDate:'2026-12-04', remark:'' },
-    { category:'Lounge Item', code:'100000131', name:'시그니처 리바이탈라이징 샴푸', currentStock:689, incoming:0, safetyStock:190, avgMonthlyOut:190, moq:5000, leadTime:8, expiryDate:'2027-12-10', remark:'' },
-    // ===== Sales Aids (12개) - 2026년 3월 31일 동기화 =====
-    { category:'Sales Aids', code:'000000801', name:'유니앤코어 코튼 파우치', currentStock:10542, incoming:0, safetyStock:1, avgMonthlyOut:4, moq:0, leadTime:0, expiryDate:'', remark:'' },
-    { category:'Sales Aids', code:'800000831', name:'마이크로 버블 클렌징 폼 10ml', currentStock:7468, incoming:0, safetyStock:670, avgMonthlyOut:670, moq:0, leadTime:0, expiryDate:'', remark:'' },
-    { category:'Sales Aids', code:'800000849', name:'유니앤코어 친환경 종이컵 8oz (200개)', currentStock:12, incoming:0, safetyStock:0, avgMonthlyOut:0, moq:0, leadTime:0, expiryDate:'', remark:'' },
-    { category:'Sales Aids', code:'800000852', name:'유니앤코어 친환경 종이컵 8oz (제작용)', currentStock:15000, incoming:0, safetyStock:0, avgMonthlyOut:0, moq:0, leadTime:0, expiryDate:'', remark:'' },
-    { category:'Sales Aids', code:'800000845', name:'유니앤코어 기프트 박스', currentStock:1455, incoming:0, safetyStock:2, avgMonthlyOut:2, moq:0, leadTime:0, expiryDate:'', remark:'' },
-    { category:'Sales Aids', code:'000000803', name:'아이스 워터보틀', currentStock:231, incoming:0, safetyStock:56, avgMonthlyOut:56, moq:0, leadTime:0, expiryDate:'', remark:'' },
-    { category:'Sales Aids', code:'000000817', name:'유니앤코어 미스트 펌프', currentStock:165, incoming:0, safetyStock:30, avgMonthlyOut:30, moq:0, leadTime:0, expiryDate:'', remark:'' },
-    { category:'Sales Aids', code:'800000823', name:'유니앤코어 휴대용 미스트 용기', currentStock:1403, incoming:0, safetyStock:71, avgMonthlyOut:71, moq:0, leadTime:0, expiryDate:'', remark:'' },
-    { category:'Sales Aids', code:'800000824', name:'유니앤코어 쇼핑백', currentStock:529, incoming:0, safetyStock:239, avgMonthlyOut:239, moq:0, leadTime:0, expiryDate:'', remark:'' },
-    { category:'Sales Aids', code:'800000834', name:'유니앤코어 쇼핑백 (소형)', currentStock:3889, incoming:0, safetyStock:123, avgMonthlyOut:123, moq:0, leadTime:0, expiryDate:'', remark:'' },
-    { category:'Sales Aids', code:'800000855', name:'유니앤코어 V:DAY 보틀', currentStock:600, incoming:0, safetyStock:0, avgMonthlyOut:0, moq:0, leadTime:0, expiryDate:'', remark:'' },
+    // ===== Lounge Item (3개) =====
+    { category:'Lounge Item', code:'300000315', name:'하이퍼루프 스칼프 세럼 300ml', currentStock:619, incoming:0, safetyStock:23, avgMonthlyOut:23, moq:5000, leadTime:8, expiryDate:'2028-07-09', remark:'' },
+    { category:'Lounge Item', code:'300000316', name:'하이퍼루프 바디 크림 280g', currentStock:8, incoming:0, safetyStock:22, avgMonthlyOut:22, moq:0, leadTime:8, expiryDate:'2027-06-18', remark:'4월 입고/4월 쿨젤크림' },
+    { category:'Lounge Item', code:'300000318', name:'수딩 앤 모이스트 케어 부스팅 젤 250ml', currentStock:2189, incoming:0, safetyStock:198, avgMonthlyOut:198, moq:5000, leadTime:8, expiryDate:'2026-12-04', remark:'' },
+    // ===== Sales Aids (12개) - 2026년 4월 1일 동기화 =====
+    { category:'Sales Aids', code:'000000801', name:'유니앤코어 코튼 파우치', currentStock:10542, incoming:0, safetyStock:8, avgMonthlyOut:8, moq:0, leadTime:0, expiryDate:'', remark:'' },
+    { category:'Sales Aids', code:'800000831', name:'마이크로 버블 클렌징 폼 10ml', currentStock:7268, incoming:0, safetyStock:70, avgMonthlyOut:70, moq:0, leadTime:0, expiryDate:'', remark:'' },
+    { category:'Sales Aids', code:'800000849', name:'유니앤코어 친환경 종이컵 8oz (200개)', currentStock:12, incoming:0, safetyStock:2, avgMonthlyOut:2, moq:0, leadTime:0, expiryDate:'', remark:'' },
+    { category:'Sales Aids', code:'800000852', name:'유니앤코어 친환경 종이컵 8oz (제작용)', currentStock:15000, incoming:0, safetyStock:4, avgMonthlyOut:4, moq:0, leadTime:0, expiryDate:'', remark:'' },
+    { category:'Sales Aids', code:'800000845', name:'유니앤코어 기프트 박스', currentStock:1455, incoming:0, safetyStock:4, avgMonthlyOut:4, moq:0, leadTime:0, expiryDate:'', remark:'' },
+    { category:'Sales Aids', code:'000000803', name:'아이스 워터보틀', currentStock:230, incoming:0, safetyStock:90, avgMonthlyOut:90, moq:0, leadTime:0, expiryDate:'', remark:'' },
+    { category:'Sales Aids', code:'000000817', name:'유니앤코어 미스트 펌프', currentStock:165, incoming:0, safetyStock:25, avgMonthlyOut:25, moq:6000, leadTime:0, expiryDate:'', remark:'' },
+    { category:'Sales Aids', code:'800000823', name:'유니앤코어 휴대용 미스트 용기', currentStock:1403, incoming:0, safetyStock:114, avgMonthlyOut:114, moq:0, leadTime:0, expiryDate:'', remark:'' },
+    { category:'Sales Aids', code:'800000824', name:'유니앤코어 쇼핑백', currentStock:529, incoming:0, safetyStock:36, avgMonthlyOut:36, moq:1000, leadTime:0, expiryDate:'', remark:'' },
+    { category:'Sales Aids', code:'800000834', name:'유니앤코어 쇼핑백 (소형)', currentStock:3889, incoming:0, safetyStock:55, avgMonthlyOut:55, moq:0, leadTime:2, expiryDate:'', remark:'' },
+    { category:'Sales Aids', code:'800000855', name:'유니앤코어 V:DAY 보틀', currentStock:600, incoming:0, safetyStock:0, avgMonthlyOut:0, moq:1000, leadTime:0, expiryDate:'', remark:'' },
     { category:'Sales Aids', code:'800000860', name:'유니앤코어 탁상거울', currentStock:695, incoming:0, safetyStock:0, avgMonthlyOut:0, moq:0, leadTime:0, expiryDate:'', remark:'' },
     // ===== 트라이얼키트 (3개) =====
     { category:'트라이얼키트', code:'000000805', name:'고급 샤무드 원단 파우치 비매품 (증정용)', currentStock:1808, incoming:0, safetyStock:0, avgMonthlyOut:0, moq:5000, leadTime:0, expiryDate:'', remark:'' },
-    { category:'트라이얼키트', code:'800000827', name:'하이드레이팅 래디언스 선크림 SPF50 PA+++10ml', currentStock:8850, incoming:0, safetyStock:253, avgMonthlyOut:253, moq:5000, leadTime:10, expiryDate:'2027-05-27', remark:'' },
-    { category:'트라이얼키트', code:'800000826', name:'딥 리페어 액티베이팅 뉴트리션 크림 7ml', currentStock:1101, incoming:0, safetyStock:2000, avgMonthlyOut:2000, moq:5000, leadTime:10, expiryDate:'2027-02-20', remark:'opp작업완' },
+    { category:'트라이얼키트', code:'800000827', name:'하이드레이팅 래디언스 선크림 SPF50 PA+++10ml', currentStock:8610, incoming:0, safetyStock:125, avgMonthlyOut:125, moq:5000, leadTime:10, expiryDate:'2027-05-27', remark:'' },
+    { category:'트라이얼키트', code:'800000826', name:'딥 리페어 액티베이팅 뉴트리션 크림 7ml', currentStock:901, incoming:0, safetyStock:2000, avgMonthlyOut:2000, moq:5000, leadTime:10, expiryDate:'2027-02-20', remark:'opp작업완료' },
   ];
 
   saveToStorage();
   refreshAll();
-  showToast('실시간 데이터 ' + products.length + '개 제품이 로드되었습니다. (2026년 3월 31일 동기화)');
+  showToast('실시간 데이터 ' + products.length + '개 제품이 로드되었습니다. (2026년 4월 1일 동기화)');
 }
 
 // ============ MODAL / CRUD ============
@@ -1689,6 +1844,233 @@ function triggerManualSync() {
     btn.style.opacity = '1';
     showToast('SharePoint 파일이 새 탭에서 열렸습니다. 데이터를 확인 후 Excel 파일을 다운로드하여 위 업로드 영역에 업로드해 주세요.');
   }, 2000);
+}
+
+// ============ RISK INVENTORY (위험재고) ============
+function getRiskItems() {
+  const active = getActiveProducts();
+  const now = new Date();
+  const items = [];
+
+  active.forEach(p => {
+    // 소비기한이 없는 제품은 위험재고 대상에서 제외
+    if (!p.expiryDate) return;
+
+    const sellableDateStr = getSellableDate(p.expiryDate);
+    if (!sellableDateStr) return;
+
+    const sellableDate = new Date(sellableDateStr);
+    const stock = p.currentStock || 0;
+    const dailyAvg = (p.avgMonthlyOut || 0) / 30;
+
+    // 판매가능기한까지 남은 일수
+    const remainSellDays = Math.floor((sellableDate - now) / (1000 * 60 * 60 * 24));
+
+    // 예상 소진일수 (현재 출고속도로 현재고 소진하는 데 걸리는 일수)
+    const daysToDeplete = dailyAvg > 0 ? Math.ceil(stock / dailyAvg) : 9999;
+
+    // 예상 잔여수량 (판매가능기한까지 소진 못하는 수량)
+    let surplus = 0;
+    if (remainSellDays <= 0) {
+      // 판매가능기한이 이미 지남 → 전량 위험
+      surplus = stock;
+    } else if (dailyAvg > 0 && daysToDeplete > remainSellDays) {
+      // 소진에 필요한 일수가 남은 판매일수보다 많음
+      surplus = Math.round(stock - (dailyAvg * remainSellDays));
+    } else if (dailyAvg <= 0 && stock > 0) {
+      // 출고가 없는데 재고가 있음 → 전량 위험
+      surplus = stock;
+    }
+
+    // 위험도 판정
+    let riskLevel = 'safe';
+    if (remainSellDays <= 0) {
+      riskLevel = 'expired'; // 기한 만료
+    } else if (surplus > 0) {
+      riskLevel = 'critical'; // 소진 불가
+    } else if (remainSellDays <= 60 && stock > 0) {
+      riskLevel = 'warning'; // 60일 이내 판매가능기한 도래
+    }
+
+    if (riskLevel !== 'safe') {
+      items.push({
+        ...p,
+        stock,
+        dailyAvg: Math.round(dailyAvg * 10) / 10,
+        daysToDeplete,
+        sellableDate: sellableDateStr,
+        remainSellDays,
+        surplus: Math.max(0, surplus),
+        riskLevel
+      });
+    }
+  });
+
+  // 판매가능기한 임박 순 정렬 (남은 판매일수 적은 순, 같으면 잔여수량 많은 순)
+  items.sort((a, b) => {
+    if (a.remainSellDays !== b.remainSellDays) return a.remainSellDays - b.remainSellDays;
+    return b.surplus - a.surplus;
+  });
+
+  return items;
+}
+
+function renderRiskInventory() {
+  const cat = document.getElementById('riskCategory').value;
+  const level = document.getElementById('riskLevel').value;
+  const search = document.getElementById('riskSearch').value.toLowerCase();
+  const active = getActiveProducts();
+
+  let items = getRiskItems();
+
+  // 필터 적용
+  if (cat) items = items.filter(i => i.category === cat);
+  if (level) items = items.filter(i => i.riskLevel === level);
+  if (search) items = items.filter(i => i.name.toLowerCase().includes(search) || i.code.toLowerCase().includes(search));
+
+  // KPI 계산 (필터 전 전체 기준)
+  const allRisk = getRiskItems();
+  const expiredCount = allRisk.filter(i => i.riskLevel === 'expired').length;
+  const criticalCount = allRisk.filter(i => i.riskLevel === 'critical').length;
+  const warningCount = allRisk.filter(i => i.riskLevel === 'warning').length;
+  const totalSurplus = allRisk.reduce((s, i) => s + i.surplus, 0);
+
+  // 소비기한이 있는 활성 제품 중 위험하지 않은 수
+  const productsWithExpiry = active.filter(p => p.expiryDate && getSellableDate(p.expiryDate));
+  const safeCount = productsWithExpiry.length - allRisk.length;
+
+  document.getElementById('kpi-risk-over').textContent = expiredCount + criticalCount;
+  document.getElementById('kpi-risk-near').textContent = warningCount;
+  document.getElementById('kpi-risk-surplus').textContent = totalSurplus.toLocaleString();
+  document.getElementById('kpi-risk-safe').textContent = Math.max(0, safeCount);
+
+  const tbody = document.getElementById('riskTableBody');
+  const empty = document.getElementById('riskEmpty');
+
+  if (items.length === 0) {
+    tbody.innerHTML = '';
+    empty.style.display = 'block';
+    renderRiskCharts([], allRisk);
+    return;
+  }
+  empty.style.display = 'none';
+
+  tbody.innerHTML = items.map(p => {
+    const catBadge = p.category === 'Cosmetic' ? 'info' : p.category === 'Health Care' ? 'success' : p.category === 'Living' ? 'gray' : 'warning';
+
+    let riskBadge, riskText;
+    if (p.riskLevel === 'expired') {
+      riskBadge = 'badge-danger';
+      riskText = '기한만료';
+    } else if (p.riskLevel === 'critical') {
+      riskBadge = 'badge-danger';
+      riskText = '소진불가';
+    } else {
+      riskBadge = 'badge-warning';
+      riskText = '주의';
+    }
+
+    const remainDaysText = p.remainSellDays <= 0
+      ? '<span style="color:#dc2626;font-weight:600;">만료</span>'
+      : `<span style="color:${p.remainSellDays <= 60 ? '#f59e0b' : 'var(--gray-700)'};font-weight:${p.remainSellDays <= 60 ? '600' : '400'};">${p.remainSellDays}일</span>`;
+
+    const rowClass = p.riskLevel === 'expired' || p.riskLevel === 'critical' ? 'order-urgent' : 'order-soon';
+
+    return `<tr class="${rowClass}">
+      <td class="mobile-category" data-label="카테고리"><span class="badge badge-${catBadge}">${p.category}</span></td>
+      <td class="num" data-label="상품코드">${p.code}</td>
+      <td class="product-name" data-label="품명">${p.name}</td>
+      <td class="text-right num" data-label="현재고">${(p.currentStock || 0).toLocaleString()}</td>
+      <td class="text-right num" data-label="2M 평균출고">${(p.avgMonthlyOut || 0).toLocaleString()}</td>
+      <td class="text-right num" data-label="일 평균출고">${p.dailyAvg}</td>
+      <td class="text-right num" data-label="예상 소진일수">${p.daysToDeplete >= 9999 ? '<span style="color:var(--gray-500);">출고없음</span>' : p.daysToDeplete + '일'}</td>
+      <td class="num" data-label="판매가능기한" style="font-size:12px;white-space:nowrap;">${getExpiryBadge(p.sellableDate)}</td>
+      <td class="text-right num" data-label="남은 판매일수">${remainDaysText}</td>
+      <td class="text-right num" data-label="예상 잔여수량"><strong style="color:#dc2626;">${p.surplus.toLocaleString()}</strong></td>
+      <td class="mobile-status" data-label="위험도"><span class="badge ${riskBadge}">${riskText}</span></td>
+      <td class="mobile-remark" data-label="REMARK" style="font-size:12px;color:var(--gray-500);" title="${p.remark||''}">${p.remark||'-'}</td>
+    </tr>`;
+  }).join('');
+
+  renderRiskCharts(items, allRisk);
+}
+
+function renderRiskCharts(filteredItems, allItems) {
+  // 카테고리별 위험재고 분포 차트
+  if (charts.riskCategory) charts.riskCategory.destroy();
+  const catCounts = {};
+  allItems.forEach(p => { catCounts[p.category] = (catCounts[p.category] || 0) + 1; });
+  const catLabels = Object.keys(catCounts);
+  const catData = Object.values(catCounts);
+  const catColors = ['#dc2626','#f59e0b','#2563eb','#8b5cf6','#ec4899','#06b6d4'];
+
+  if (catLabels.length > 0) {
+    const ctx1 = document.getElementById('riskCategoryChart').getContext('2d');
+    charts.riskCategory = new Chart(ctx1, {
+      type: 'doughnut',
+      data: {
+        labels: catLabels,
+        datasets: [{ data: catData, backgroundColor: catColors.slice(0, catLabels.length), borderWidth: 0, borderRadius: 4 }]
+      },
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+    });
+  }
+
+  // 잔여수량 TOP 10 차트
+  if (charts.riskSurplus) charts.riskSurplus.destroy();
+  const top10 = allItems.filter(i => i.surplus > 0).sort((a, b) => b.surplus - a.surplus).slice(0, 10);
+
+  if (top10.length > 0) {
+    const labels = top10.map(p => p.name);
+    const data = top10.map(p => p.surplus);
+    const colors = top10.map(p => p.riskLevel === 'expired' ? '#dc2626' : p.riskLevel === 'critical' ? '#f59e0b' : '#2563eb');
+
+    // 품목 수에 따라 차트 높이 동적 조절
+    const chartHeight = Math.max(300, top10.length * 40 + 60);
+    document.getElementById('riskSurplusChart').parentElement.style.height = chartHeight + 'px';
+
+    const ctx2 = document.getElementById('riskSurplusChart').getContext('2d');
+    charts.riskSurplus = new Chart(ctx2, {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [{ label: '예상 잔여수량', data, backgroundColor: colors, borderRadius: 6, barThickness: 24 }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false, indexAxis: 'y',
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { title: { display: true, text: '예상 잔여수량' }, grid: { color: '#f3f4f6' } },
+          y: { grid: { display: false }, ticks: { autoSkip: false, font: { size: 12 } } }
+        }
+      }
+    });
+  }
+}
+
+function exportRiskInventory() {
+  const items = getRiskItems();
+  if (items.length === 0) { showToast('내보낼 위험재고 데이터가 없습니다.'); return; }
+
+  const riskLevelText = { expired: '기한만료', critical: '소진불가', warning: '주의' };
+  const ws_data = [['카테고리','상품코드','품명','현재고','2M 평균출고','일 평균출고','예상 소진일수','판매가능기한','남은 판매일수','예상 잔여수량','위험도','REMARK']];
+  items.forEach(p => {
+    ws_data.push([
+      p.category, p.code, p.name, p.currentStock || 0, p.avgMonthlyOut || 0, p.dailyAvg,
+      p.daysToDeplete >= 9999 ? '출고없음' : p.daysToDeplete,
+      formatDate(p.sellableDate),
+      p.remainSellDays <= 0 ? '만료' : p.remainSellDays,
+      p.surplus,
+      riskLevelText[p.riskLevel] || '',
+      p.remark || ''
+    ]);
+  });
+
+  const ws = XLSX.utils.aoa_to_sheet(ws_data);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, '위험재고');
+  XLSX.writeFile(wb, 'UNI&CORE_위험재고_' + new Date().toISOString().slice(0, 10) + '.xlsx');
+  showToast('위험재고 Excel 파일이 다운로드되었습니다.');
 }
 
 // ============ TOAST ============
