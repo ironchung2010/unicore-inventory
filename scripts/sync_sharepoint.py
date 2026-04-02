@@ -202,22 +202,23 @@ def clean_code(raw_code):
 
 
 def parse_stock_sheet(file_path, sheet_names):
-    """현재고_wms 또는 현재고_Raw 시트에서 SKU별 재고 수량 추출"""
-    stock_data = {}  # code -> stock quantity
+    """현재고_wms 시트에서 SKU별 재고 수량 추출
+
+    현재고_wms 구조 (행 0이 헤더):
+      순번 | 화주 코드 | 화주명 | 로케이션 코드 | 구역 코드 | 구역명 | 존 코드 | 존 명 |
+      상품 대체 코드 | 재고 유형 | 상품 코드 | 상품명 | 물류 그룹 코드 | ULC 코드 | 재고 속성 코드 | ...
+    """
+    stock_data = {}
     target_sheet = None
     for name in sheet_names:
-        if '현재고_wms' == name:
-            target_sheet = name
-            break
-        if '현재고' in name and 'raw' not in name.lower():
+        if name == '현재고_wms':
             target_sheet = name
             break
     if not target_sheet:
         for name in sheet_names:
-            if '현재고' in name:
+            if '현재고' in name and 'raw' not in name.lower():
                 target_sheet = name
                 break
-
     if not target_sheet:
         print("현재고 시트를 찾지 못했습니다.")
         return stock_data
@@ -227,58 +228,92 @@ def parse_stock_sheet(file_path, sheet_names):
         rows = read_sheet_rows(file_path, target_sheet)
         print(f"  행 수: {len(rows)}")
 
-        # 디버그: 처음 8행
-        for i, row in enumerate(rows[:8]):
-            sample = [f"[{j}]{str(c)[:20]}" if c else f"[{j}]None" for j, c in enumerate(row[:15])]
-            print(f"  행 {i}: {sample}")
-
         def safe_get(row, idx, default=None):
             if idx is None or idx < 0 or idx >= len(row):
                 return default
             return row[idx]
 
-        # 헤더 찾기
+        # 헤더 행에서 전체 컬럼 출력 (최대 30개)
+        if rows:
+            max_cols_sample = min(30, max(len(r) for r in rows[:3]))
+            print(f"  전체 컬럼 수: {max_cols_sample}+")
+            for i, row in enumerate(rows[:2]):
+                sample = [f"[{j}]{str(c)[:20]}" if c else f"[{j}]None" for j, c in enumerate(row[:max_cols_sample])]
+                print(f"  행 {i}: {sample}")
+
+        # 헤더 찾기 (공백 제거 후 매칭)
         header_row = -1
         sku_col = None
         stock_col = None
-        name_col = None
-        for i, row in enumerate(rows[:15]):
-            cells = [str(c).strip().lower() if c else '' for c in row]
-            if any(c == 'sku' or '상품코드' in c or c == '코드' for c in cells):
-                header_row = i
-                for j, cell in enumerate(row):
-                    c = str(cell).strip().lower() if cell else ''
-                    if c == 'sku' or '상품코드' in c or c == '코드': sku_col = j
-                    if '현재고' in c or c == '재고' or c == '총': stock_col = j
-                    if '품명' in c or c == '제품명': name_col = j
-                    if '가용' in c or '판매가능' in c: stock_col = stock_col or j
-                print(f"  현재고 헤더 행 {i}: sku_col={sku_col}, stock_col={stock_col}, name_col={name_col}")
+        qty_col = None
+        for i, row in enumerate(rows[:10]):
+            for j, cell in enumerate(row):
+                c_raw = str(cell).strip() if cell else ''
+                c = c_raw.lower().replace(' ', '')  # 공백 제거
+                if c in ('상품코드', 'sku', '코드') and sku_col is None:
+                    sku_col = j
+                    header_row = i
+                if '재고' in c or '수량' in c or '가용' in c or 'qty' in c or 'stock' in c:
+                    if stock_col is None:
+                        stock_col = j
+                if c == '현수량' or c == '가용수량' or c == '현재고수량' or c == '재고수량':
+                    qty_col = j
+
+            if header_row >= 0:
+                print(f"  헤더 행 {i}: sku={sku_col}, stock={stock_col}, qty={qty_col}")
                 break
 
         if header_row < 0 or sku_col is None:
-            print("  현재고 시트에서 헤더를 찾지 못했습니다.")
+            # 현재고_wms는 행 0이 헤더지만, 검색해서 상품 코드 컬럼 직접 찾기
+            for i, row in enumerate(rows[:5]):
+                for j, cell in enumerate(row):
+                    c = str(cell).strip().replace(' ', '').lower() if cell else ''
+                    if '상품' in c and '코드' in c and '대체' not in c:
+                        sku_col = j
+                        header_row = i
+                        break
+                if sku_col is not None:
+                    break
+
+            if sku_col is not None:
+                # 재고 수량 컬럼 찾기 - 헤더 행의 나머지 컬럼에서
+                row = rows[header_row]
+                for j, cell in enumerate(row):
+                    c = str(cell).strip().replace(' ', '').lower() if cell else ''
+                    if any(kw in c for kw in ('재고', '수량', '현수량', '가용', 'qty', 'stock')):
+                        stock_col = j
+                        print(f"  재고 컬럼 발견: [{j}] = {cell}")
+                print(f"  재매칭 결과: sku={sku_col}, stock={stock_col}")
+
+        if sku_col is None:
+            print("  현재고 시트에서 상품 코드 컬럼을 찾지 못했습니다.")
             return stock_data
+
+        # 재고 컬럼이 없으면 각 행의 개수를 1로 카운트 (로케이션별 행 = 재고 있음)
+        use_count_mode = stock_col is None
+        if use_count_mode:
+            print("  재고 수량 컬럼 없음 → 로케이션 행 카운트 모드")
 
         for i in range(header_row + 1, len(rows)):
             row = rows[i]
-            if not row or len(row) < 3:
+            if not row or len(row) <= sku_col:
                 continue
             code = str(safe_get(row, sku_col, '') or '').strip()
-            if not code or code.lower() in ('none', '', 'sku', '합계', '종합계'):
+            if not code or code.lower() in ('none', '', '합계', '종합계'):
                 continue
             code = clean_code(code)
-            qty = 0
-            if stock_col is not None:
+
+            if use_count_mode:
+                stock_data[code] = stock_data.get(code, 0) + 1
+            else:
                 raw_qty = safe_get(row, stock_col, 0)
+                qty = 0
                 if raw_qty is not None:
                     try:
                         qty = round(float(str(raw_qty).replace(',', '')))
                     except:
                         qty = 0
-            if code in stock_data:
-                stock_data[code] += qty
-            else:
-                stock_data[code] = qty
+                stock_data[code] = stock_data.get(code, 0) + qty
 
         print(f"  현재고 데이터: {len(stock_data)}개 SKU")
         for code, qty in list(stock_data.items())[:5]:
