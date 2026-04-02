@@ -458,6 +458,7 @@
               <th>상품코드</th>
               <th>품명</th>
               <th class="text-right">현재고</th>
+              <th class="text-right">2M 평균출고</th>
               <th class="text-right">일 평균 출고</th>
               <th class="text-right">예상 잔여일</th>
               <th>예상 품절일</th>
@@ -1139,6 +1140,7 @@ function renderForecast() {
       <td class="num" data-label="상품코드">${p.code}</td>
       <td class="product-name" data-label="품명">${p.name}</td>
       <td class="text-right num" data-label="현재고">${((p.currentStock||0)+(p.incoming||0)).toLocaleString()}</td>
+      <td class="text-right num" data-label="2M 평균출고">${(p.avgMonthlyOut||0).toLocaleString()}</td>
       <td class="text-right num" data-label="일 평균 출고">${p.dailyAvg}</td>
       <td class="text-right num" data-label="예상 잔여일"><strong>${p.daysLeft >= 9999 ? '-' : p.daysLeft + '일'}</strong></td>
       <td class="num" data-label="예상 품절일">${dateStr}</td>
