@@ -778,7 +778,7 @@ let products = [
   { category: 'Health  Care', code: '100000135', name: '슬림핏 프로틴 쉐이크 고소한 멀티 그레인 40g X 10', currentStock: 4639, incoming: 0, totalStock: 4639, remark: '', expiryDate: '2027-04-30', safetyStock: 264, avgMonthlyOut: 264, moq: 20000, leadTime: 10 },
   { category: 'Health  Care', code: '200000218', name: '글로우 뷰티 콜라겐 젤리 타트체리 맛 20g X 30포', currentStock: 1449, incoming: 0, totalStock: 1449, remark: '', expiryDate: '2026-10-23', safetyStock: 168, avgMonthlyOut: 168, moq: 3000, leadTime: 10 },
   { category: 'Health  Care', code: '200000220', name: '브이애플 나이트 액션', currentStock: 2361, incoming: 0, totalStock: 2361, remark: '', expiryDate: '2027-03-10', safetyStock: 166, avgMonthlyOut: 166, moq: 5000, leadTime: 8 },
-  { category: 'Health  Care', code: '100000139', name: '[USA]Daily Chewable Propolis', currentStock: 90, incoming: 0, totalStock: 90, remark: '', expiryDate: '2028-01-14', safetyStock: 37, avgMonthlyOut: 37, moq: 5000, leadTime: 12 },
+  { category: 'Health  Care', code: '100000139', name: '[USA]Daily Chewable Propolis', currentStock: 90, incoming: 0, totalStock: 90, remark: '소진후 국내용 대체출고', expiryDate: '2028-01-14', safetyStock: 37, avgMonthlyOut: 37, moq: 5000, leadTime: 12 },
   { category: 'Health  Care', code: '100000140', name: '[USA]Bone & Joint Health Active MEGA FORMULA', currentStock: 1000, incoming: 0, totalStock: 1000, remark: '', expiryDate: '2027-08-21', safetyStock: 22, avgMonthlyOut: 22, moq: 5000, leadTime: 8 },
   { category: 'Health  Care', code: '100000141', name: '[USA]Daily Mega Energizer Plus', currentStock: 1000, incoming: 0, totalStock: 1000, remark: '', expiryDate: '2027-11-20', safetyStock: 33, avgMonthlyOut: 33, moq: 5000, leadTime: 10 },
   { category: 'Health  Care', code: '100000142', name: '[USA]Slimming Mega Probiotics', currentStock: 112, incoming: 2500, totalStock: 2612, remark: '발주완료, 4월 입고 예정', expiryDate: '2026-07-06', safetyStock: 48, avgMonthlyOut: 48, moq: 5000, leadTime: 12 },
@@ -919,7 +919,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function saveToStorage() {
   try {
     localStorage.setItem('unicore_products', JSON.stringify(products));
-    localStorage.setItem('unicore_data_version', 'v-auto-202604021026');
+    localStorage.setItem('unicore_data_version', 'v-auto-202604021031');
   } catch(e) {}
 }
 
