@@ -464,6 +464,7 @@
               <th>소비기한</th>
               <th>판매가능기한</th>
               <th>긴급도</th>
+              <th>Remark</th>
             </tr>
           </thead>
           <tbody id="forecastTableBody"></tbody>
@@ -1144,6 +1145,7 @@ function renderForecast() {
       <td class="num desktop-only" data-label="소비기한" style="font-size:12px;white-space:nowrap;">${getExpiryBadge(p.expiryDate)}</td>
       <td class="num desktop-only" data-label="판매가능기한" style="font-size:12px;white-space:nowrap;">${getExpiryBadge(getSellableDate(p.expiryDate))}</td>
       <td class="mobile-status" data-label="긴급도"><span class="badge ${urgency}">${urgText}</span></td>
+      <td data-label="Remark" style="font-size:12px;">${p.remark || ""}</td>
     </tr>`;
   }).join('');
 
