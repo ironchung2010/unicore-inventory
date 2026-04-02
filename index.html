@@ -504,6 +504,9 @@
               <th>상품코드</th>
               <th>품명</th>
               <th class="text-right">현재고</th>
+              <th class="text-right">2M 평균출고</th>
+              <th class="text-right">예상 잔여일</th>
+              <th>예상 품절일</th>
               <th class="text-right">MOQ</th>
               <th class="text-right">추천 발주량</th>
               <th class="text-right">리드타임(주)</th>
@@ -1236,8 +1239,9 @@ function renderOrders() {
     const recQty = Math.max(moq, Math.ceil((monthlyNeed * 3) / moq) * moq);
     const arrivalDate = new Date();
     arrivalDate.setDate(arrivalDate.getDate() + leadDays);
+    const stockoutDate = new Date(); stockoutDate.setDate(stockoutDate.getDate() + daysLeft);
 
-    return { ...p, dailyAvg, daysLeft, leadDays, needsOrder, recQty, arrivalDate };
+    return { ...p, dailyAvg, daysLeft, leadDays, needsOrder, recQty, arrivalDate, stockoutDate };
   }).filter(p => p.needsOrder || (p.remark && (p.remark.includes('발주') || p.remark.includes('별도조치') || p.remark.includes('단종조치'))));
 
   orderItems.sort((a,b) => a.daysLeft - b.daysLeft);
@@ -1274,6 +1278,9 @@ function renderOrders() {
       <td class="num" data-label="상품코드">${p.code}</td>
       <td class="product-name" data-label="품명">${p.name}</td>
       <td class="text-right num" data-label="현재고">${(p.currentStock||0).toLocaleString()}</td>
+      <td class="text-right num" data-label="2M 평균출고">${(p.avgMonthlyOut||0).toLocaleString()}</td>
+      <td class="text-right num" data-label="예상 잔여일"><strong>${p.daysLeft >= 9999 ? '-' : p.daysLeft + '일'}</strong></td>
+      <td class="num" data-label="예상 품절일">${p.daysLeft >= 9999 ? '-' : p.stockoutDate ? p.stockoutDate.toLocaleDateString('ko-KR') : '-'}</td>
       <td class="text-right num" data-label="MOQ">${(p.moq||5000).toLocaleString()}</td>
       <td class="text-right num" data-label="추천 발주량"><strong>${p.recQty.toLocaleString()}</strong></td>
       <td class="text-right num" data-label="리드타임(주)">${p.leadTime || 10}</td>
