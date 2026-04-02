@@ -878,12 +878,14 @@ let charts = {};
 function isDiscontinued(p) {
   if (!p.remark) return false;
   const r = p.remark.trim();
-  return r === '단종';
+  return r === '단종' || r.includes('단종');
 }
 
 function getActiveProducts() {
   const showDisc = document.getElementById('showDiscontinued') && document.getElementById('showDiscontinued').checked;
-  return showDisc ? products : products.filter(p => !isDiscontinued(p));
+  if (showDisc) return products;
+  // 단종이라도 현재고 > 0이면 기본 표시
+  return products.filter(p => !isDiscontinued(p) || p.currentStock > 0);
 }
 
 function onDiscontinuedToggle() {
