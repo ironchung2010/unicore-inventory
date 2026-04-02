@@ -1266,6 +1266,8 @@ function toggleAllOrders(el) {
 function getOrderAction(p) {
   if (!p.remark) return '';
   if (p.remark.includes('단종조치')) return '단종조치';
+  if (p.remark.includes('발주진행중')) return '발주진행중';
+  if (p.remark.includes('대체출고')) return '대체출고';
   if (p.remark.includes('별도조치')) return '별도조치';
   if (p.remark.includes('발주대기')) return '발주대기';
   if (p.remark.includes('발주완료') || p.remark.includes('발주요청 완료')) return '발주완료';
@@ -1281,7 +1283,7 @@ function handleOrderAction(code, selectEl) {
   const p = products[idx];
 
   // 기존 remark에서 이전 액션 태그 제거
-  let baseRemark = (p.remark || '').replace(/\s*\[(발주완료|발주대기|별도조치|단종조치)\s*[^\]]*\]\s*/g, '').trim();
+  let baseRemark = (p.remark || '').replace(/\s*\[(발주완료|발주진행중|발주대기|대체출고|별도조치|단종조치)\s*[^\]]*\]\s*/g, '').trim();
   // 기존 '발주요청 완료 (...)' 패턴도 제거
   baseRemark = baseRemark.replace(/\s*발주요청 완료\s*\([^)]*\)\s*/g, '').trim();
 
@@ -1294,7 +1296,8 @@ function handleOrderAction(code, selectEl) {
 
     const actionMessages = {
       '발주완료': '발주완료로 저장되었습니다.',
-      '발주대기': '발주대기로 저장되었습니다.',
+      '발주진행중': '발주진행중으로 저장되었습니다.',
+      '대체출고': '대체출고로 저장되었습니다.',
       '별도조치': '별도조치로 저장되었습니다.',
       '단종조치': '단종조치로 저장되었습니다.'
     };
@@ -1962,7 +1965,7 @@ function extractOrderActions() {
   products.forEach(p => {
     const action = getOrderAction(p);
     if (action) {
-      const match = (p.remark || '').match(/\[(발주완료|발주대기|별도조치|단종조치)\s*([^\]]*)\]/);
+      const match = (p.remark || '').match(/\[(발주완료|발주진행중|발주대기|대체출고|별도조치|단종조치)\s*([^\]]*)\]/);
       actions[p.code] = {
         action: action,
         date: match ? match[2].trim() : new Date().toLocaleDateString('ko-KR'),
@@ -1982,7 +1985,7 @@ function applyOrderActions(actions) {
     const info = actions[code];
     const currentAction = getOrderAction(products[idx]);
     if (currentAction === info.action) return;
-    let baseRemark = (products[idx].remark || '').replace(/\s*\[(발주완료|발주대기|별도조치|단종조치)\s*[^\]]*\]\s*/g, '').trim();
+    let baseRemark = (products[idx].remark || '').replace(/\s*\[(발주완료|발주진행중|발주대기|대체출고|별도조치|단종조치)\s*[^\]]*\]\s*/g, '').trim();
     baseRemark = baseRemark.replace(/\s*발주요청 완료\s*\([^)]*\)\s*/g, '').trim();
     const tag = '[' + info.action + ' ' + info.date + ']';
     products[idx].remark = baseRemark ? baseRemark + ' ' + tag : tag;
