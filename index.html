@@ -1874,20 +1874,74 @@ function exportOrders() {
   const checked = document.querySelectorAll('.order-check:checked');
   if (checked.length === 0) { showToast('발주할 제품을 선택하세요.'); return; }
 
-  const ws_data = [['발주일','상품코드','품명','현재고','MOQ','추천발주량','리드타임(주)','예상입고일','REMARK']];
   const today = new Date().toLocaleDateString('ko-KR');
+  const headers = ['상품코드','품명','현재고','2M 평균출고','예상 잔여일','예상 품절일','MOQ','추천 발주량','리드타임(주)','예상 입고일','REMARK'];
 
+  // 체크된 행에서 데이터 수집 (renderOrders의 products 데이터 활용)
+  const rows = [];
   checked.forEach(el => {
     const row = el.closest('tr');
     const cells = row.querySelectorAll('td');
-    ws_data.push([today, cells[2].textContent, cells[3].textContent, cells[4].textContent, cells[5].textContent, cells[6].textContent, cells[7].textContent, cells[8].textContent, cells[9].textContent]);
+    // 컬럼 순서: 0=체크박스, 1=긴급도, 2=상품코드, 3=품명, 4=현재고, 5=2M평균출고, 6=예상잔여일, 7=예상품절일, 8=MOQ, 9=추천발주량, 10=리드타임, 11=예상입고일, 12=REMARK, 13=액션
+    const getText = (i) => (cells[i] ? cells[i].textContent.trim() : '');
+    const getNum = (i) => { const v = getText(i).replace(/[^0-9.-]/g, ''); return v ? Number(v) : 0; };
+    rows.push([
+      getText(2),           // 상품코드
+      getText(3),           // 품명
+      getNum(4),            // 현재고
+      getNum(5),            // 2M 평균출고
+      getText(6),           // 예상 잔여일
+      getText(7),           // 예상 품절일
+      getNum(8),            // MOQ
+      getNum(9),            // 추천 발주량
+      getNum(10),           // 리드타임(주)
+      getText(11),          // 예상 입고일
+      getText(12)           // REMARK
+    ]);
   });
 
+  // 타이틀 행 + 빈 행 + 헤더 + 데이터
+  const title = 'UNI&CORE 발주서 (' + today + ')';
+  const ws_data = [
+    [title],
+    [],
+    headers,
+    ...rows
+  ];
+
   const ws = XLSX.utils.aoa_to_sheet(ws_data);
+
+  // 컬럼 너비 설정
+  ws['!cols'] = [
+    { wch: 14 },  // 상품코드
+    { wch: 45 },  // 품명
+    { wch: 10 },  // 현재고
+    { wch: 12 },  // 2M 평균출고
+    { wch: 12 },  // 예상 잔여일
+    { wch: 14 },  // 예상 품절일
+    { wch: 10 },  // MOQ
+    { wch: 12 },  // 추천 발주량
+    { wch: 12 },  // 리드타임(주)
+    { wch: 14 },  // 예상 입고일
+    { wch: 30 },  // REMARK
+  ];
+
+  // 타이틀 병합 (A1:K1)
+  ws['!merges'] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: 10 } }];
+
+  // 숫자 서식 (현재고, 2M평균출고, MOQ, 추천발주량에 천단위 콤마)
+  const numCols = [2, 3, 6, 7]; // C, D, G, H columns
+  for (let r = 3; r < 3 + rows.length; r++) {
+    numCols.forEach(c => {
+      const addr = XLSX.utils.encode_cell({ r, c });
+      if (ws[addr]) ws[addr].z = '#,##0';
+    });
+  }
+
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, '발주서');
   XLSX.writeFile(wb, 'UNI&CORE_발주서_' + new Date().toISOString().slice(0,10) + '.xlsx');
-  showToast('발주서가 다운로드되었습니다.');
+  showToast(rows.length + '개 제품 발주서가 다운로드되었습니다.');
 }
 
 // ============ SYNC SETTINGS ============
