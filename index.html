@@ -620,24 +620,23 @@
       <span id="syncStatusBadge" style="font-size:12px;padding:4px 10px;border-radius:12px;background:var(--success-bg);color:var(--success);font-weight:600;">활성</span>
     </div>
     <div class="panel-body">
-      <p style="font-size:13px;color:var(--gray-500);margin-bottom:12px;">팀즈 F'cst 공유파일 링크를 등록하면, 매일 오후 11:50 (KST) 에 자동으로 데이터를 동기화합니다. 월별로 파일이 변경되면 아래 링크를 업데이트해 주세요.</p>
-      <div style="display:flex;gap:8px;align-items:flex-end;">
+      <p style="font-size:13px;color:var(--gray-500);margin-bottom:12px;">SharePoint 재고 데이터가 3시간마다 자동 동기화됩니다. 수동 동기화를 실행하려면 아래 버튼을 누르세요.</p>
+      <div style="display:flex;gap:8px;align-items:flex-end;margin-bottom:12px;">
         <div style="flex:1;">
-          <label style="display:block;font-size:13px;font-weight:600;color:var(--gray-700);margin-bottom:4px;">SharePoint 공유파일 URL</label>
-          <input type="text" id="syncUrl" placeholder="https://uniandcore.sharepoint.com/..." style="width:100%;padding:10px 12px;border:1px solid var(--gray-300);border-radius:8px;font-size:13px;transition:border-color 0.2s;" onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='var(--gray-300)'">
+          <label style="display:block;font-size:13px;font-weight:600;color:var(--gray-700);margin-bottom:4px;">GitHub Token (수동 동기화에 필요)</label>
+          <input type="password" id="syncToken" placeholder="ghp_xxxxxxxxxxxx" style="width:100%;padding:10px 12px;border:1px solid var(--gray-300);border-radius:8px;font-size:13px;" onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='var(--gray-300)'">
         </div>
-        <button class="btn btn-primary btn-sm" onclick="saveSyncUrl()" style="white-space:nowrap;height:40px;">링크 저장</button>
+        <button class="btn btn-outline btn-sm" onclick="saveSyncToken()" style="white-space:nowrap;height:40px;">토큰 저장</button>
       </div>
-      <div id="syncUrlStatus" style="margin-top:8px;font-size:12px;color:var(--gray-500);"></div>
-      <div style="margin-top:16px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
-        <button class="btn btn-outline btn-sm" onclick="triggerManualSync()" id="manualSyncBtn">수동 동기화 실행</button>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+        <button class="btn btn-primary btn-sm" onclick="triggerManualSync()" id="manualSyncBtn">수동 동기화 실행</button>
         <span id="lastSyncTime" style="font-size:12px;color:var(--gray-500);"></span>
       </div>
       <div style="margin-top:12px;padding:10px 14px;background:var(--info-bg);border-radius:8px;font-size:12px;color:var(--info);line-height:1.6;">
         <strong>동기화 안내</strong><br>
-        - 자동 동기화: 매일 23:50 KST에 실행됩니다<br>
+        - 자동 동기화: 3시간마다 자동 실행됩니다 (00, 03, 06, 09, 12, 15, 18, 21시 UTC)<br>
         - 수동 동기화: 위 버튼을 누르면 서버에서 즉시 실행됩니다 (1-2분 소요, 완료 시 자동 새로고침)<br>
-        - GitHub 토큰 필요: 아래 '발주 액션 공유 설정'에서 토큰을 먼저 등록해 주세요
+        - 토큰은 이 브라우저에만 저장되며 외부로 전송되지 않습니다
       </div>
     </div>
   </div>
@@ -908,6 +907,7 @@ document.addEventListener('DOMContentLoaded', () => {
   refreshAll();
   loadSyncSettings();
   loadGitHubSettings();
+  loadSyncToken();
   recordDailyShipment();
 
   // GitHub에서 공유 발주 액션 자동 불러오기
@@ -2062,22 +2062,44 @@ function schedulePushToGitHub() {
   ghPushTimer = setTimeout(() => { pushOrderActionsToGitHub(); }, 2000);
 }
 
+function saveSyncToken() {
+  const token = document.getElementById('syncToken').value.trim();
+  if (!token) { showToast('토큰을 입력해 주세요.'); return; }
+  try {
+    localStorage.setItem('unicore_sync_token', token);
+    // Also share with order actions
+    localStorage.setItem('unicore_gh_token', token);
+    localStorage.setItem('unicore_gh_repo', 'ironchung2010/unicore-inventory');
+  } catch(e) {}
+  showToast('토큰이 저장되었습니다.');
+}
+
+function loadSyncToken() {
+  const token = localStorage.getItem('unicore_sync_token') || localStorage.getItem('unicore_gh_token') || '';
+  if (token) {
+    document.getElementById('syncToken').value = token;
+  }
+}
+
 function triggerManualSync() {
   const btn = document.getElementById('manualSyncBtn');
   btn.disabled = true;
   btn.textContent = '동기화 실행 중...';
   btn.style.opacity = '0.6';
 
-  const ghRepo = localStorage.getItem('unicore_gh_repo') || 'ironchung2010/unicore-inventory';
-  const ghToken = localStorage.getItem('unicore_gh_token') || '';
+  const ghRepo = 'ironchung2010/unicore-inventory';
+  const ghToken = document.getElementById('syncToken').value.trim() || localStorage.getItem('unicore_sync_token') || localStorage.getItem('unicore_gh_token') || '';
 
   if (!ghToken) {
-    showToast('데이터 관리 탭에서 GitHub 토큰을 먼저 설정해 주세요.');
+    showToast('위에 GitHub 토큰을 입력하고 저장해 주세요.');
     btn.disabled = false;
     btn.textContent = '수동 동기화 실행';
     btn.style.opacity = '1';
     return;
   }
+
+  // Auto-save token
+  try { localStorage.setItem('unicore_sync_token', ghToken); } catch(e) {}
 
   const now = new Date().toLocaleString('ko-KR', { timeZone:'Asia/Seoul' });
 
