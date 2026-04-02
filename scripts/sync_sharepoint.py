@@ -253,11 +253,14 @@ def parse_stock_sheet(file_path, sheet_names):
                 if c in ('상품코드', 'sku', '코드') and sku_col is None:
                     sku_col = j
                     header_row = i
-                if '재고' in c or '수량' in c or '가용' in c or 'qty' in c or 'stock' in c:
-                    if stock_col is None:
-                        stock_col = j
-                if c == '현수량' or c == '가용수량' or c == '현재고수량' or c == '재고수량':
-                    qty_col = j
+                # 총 수량 우선, 가용 수량 차선 (재고 유형은 제외)
+                if '유형' not in c_raw and '타입' not in c_raw:
+                    if c in ('총수량',) or (c == '총' and j > 10):
+                        stock_col = j  # 최우선: 총 수량
+                    elif c in ('가용수량', '현수량', '현재고수량', '재고수량'):
+                        qty_col = j  # 차선: 가용 수량
+                    elif ('수량' in c or 'qty' in c) and stock_col is None and qty_col is None:
+                        qty_col = j
 
             if header_row >= 0:
                 print(f"  헤더 행 {i}: sku={sku_col}, stock={stock_col}, qty={qty_col}")
@@ -280,16 +283,26 @@ def parse_stock_sheet(file_path, sheet_names):
                 row = rows[header_row]
                 for j, cell in enumerate(row):
                     c = str(cell).strip().replace(' ', '').lower() if cell else ''
-                    if any(kw in c for kw in ('재고', '수량', '현수량', '가용', 'qty', 'stock')):
-                        stock_col = j
-                        print(f"  재고 컬럼 발견: [{j}] = {cell}")
+                    if '유형' not in c and '타입' not in c:
+                        if '총수량' in c or ('총' in c and '수량' in c):
+                            stock_col = j
+                            print(f"  총수량 컬럼 발견: [{j}] = {cell}")
+                        elif ('가용' in c and '수량' in c) or '현수량' in c:
+                            if stock_col is None:
+                                stock_col = j
+                                print(f"  가용수량 컬럼 발견: [{j}] = {cell}")
                 print(f"  재매칭 결과: sku={sku_col}, stock={stock_col}")
 
         if sku_col is None:
             print("  현재고 시트에서 상품 코드 컬럼을 찾지 못했습니다.")
             return stock_data
 
-        # 재고 컬럼이 없으면 각 행의 개수를 1로 카운트 (로케이션별 행 = 재고 있음)
+        # qty_col을 폴백으로 사용
+        if stock_col is None and qty_col is not None:
+            stock_col = qty_col
+            print(f"  가용수량 컬럼({qty_col})을 재고로 사용")
+
+        # 재고 컬럼이 없으면 로케이션 행 카운트 모드
         use_count_mode = stock_col is None
         if use_count_mode:
             print("  재고 수량 컬럼 없음 → 로케이션 행 카운트 모드")
