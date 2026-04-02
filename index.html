@@ -492,7 +492,7 @@
   <div class="panel">
     <div class="panel-header">
       <div class="panel-title">발주 추천 목록</div>
-      <button class="btn btn-primary btn-sm" onclick="exportOrders()">발주서 내보내기</button>
+      <button class="btn btn-primary btn-sm" onclick="exportOrders()">발주 검토서 내보내기</button>
     </div>
     <div class="panel-body">
       <div class="table-wrap" style="max-height:500px;overflow-y:auto;">
@@ -1903,7 +1903,7 @@ function exportOrders() {
   });
 
   // 타이틀 행 + 빈 행 + 헤더 + 데이터
-  const title = 'UNI&CORE 발주서 (' + today + ')';
+  const title = 'UNI&CORE 발주 검토서 (' + today + ')';
   const ws_data = [
     [title],
     [],
@@ -1941,9 +1941,9 @@ function exportOrders() {
   }
 
   const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, '발주서');
-  XLSX.writeFile(wb, 'UNI&CORE_발주서_' + new Date().toISOString().slice(0,10) + '.xlsx');
-  showToast(rows.length + '개 제품 발주서가 다운로드되었습니다.');
+  XLSX.utils.book_append_sheet(wb, ws, '발주검토서');
+  XLSX.writeFile(wb, 'UNI&CORE_발주검토서_' + new Date().toISOString().slice(0,10) + '.xlsx');
+  showToast(rows.length + '개 제품 발주 검토서가 다운로드되었습니다.');
 }
 
 // ============ SYNC SETTINGS ============
