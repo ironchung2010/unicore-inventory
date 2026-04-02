@@ -246,6 +246,13 @@ def parse_excel(file_path):
         except:
             return 0
 
+    # 디버그: 처음 5행 샘플 출력
+    print("=== 처음 5행 샘플 ===")
+    for i, row in enumerate(rows[:5]):
+        sample = [f"[{j}]{str(c)[:25]}" if c else f"[{j}]None" for j, c in enumerate(row[:25])]
+        print(f"  행 {i}: {sample}")
+    print("=== 샘플 끝 ===")
+
     # 헤더 행 찾기 (처음 20행까지 검색)
     header_row = -1
     col_map = {}
@@ -278,7 +285,9 @@ def parse_excel(file_path):
                 if c == 'moq' or '발주단위' in c or '최소발주' in c: col_map['moq'] = j
                 if '리드타임' in c or '리드 타임' in c or 'l/t' in c: col_map['lead_time'] = j
                 if '소비기한' in c or '유통기한' in c: col_map['expiry'] = j
-            print(f"헤더 발견 (행 {i}): {col_map}")
+            full_headers = [f"[{j}]{str(cell)[:30]}" for j, cell in enumerate(row)]
+            print(f"헤더 행 {i} 전체 컬럼: {full_headers}")
+            print(f"매핑 결과: {col_map}")
             break
 
     if header_row < 0:
@@ -287,7 +296,7 @@ def parse_excel(file_path):
             sample = [str(c)[:20] if c else 'None' for c in row[:15]]
             print(f"  행 {i}: {sample}")
 
-        # 기본 매핑 - 행 길이에 맞춰 안전하게 설정
+        # 기본 매쥑 - 행 길이에 맞춰 안전하게 설정
         header_row = 4
         max_cols = max((len(r) for r in rows[:20]), default=10)
         print(f"최대 컬럼 수: {max_cols}")
