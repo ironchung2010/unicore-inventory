@@ -2204,16 +2204,21 @@ async function pullOrderActionsFromGitHub() {
     }
     if (!res.ok) throw new Error('HTTP ' + res.status);
     const data = await res.json();
-    const content = JSON.parse(atob(data.content));
-    const actions = content.actions || {};
-    const changed = applyOrderActions(actions);
-    if (changed) {
-      refreshAll();
-      const activeTab = document.querySelector('.tab-content.active');
-      if (activeTab && activeTab.id === 'tab-orders') renderOrders();
+    const cnt = JSON.parse(atob(data.content));
+    const actions = cnt.actions || {};
+    // 삭제 목록도 동기화
+    if (cnt.dismissed && Array.isArray(cnt.dismissed)) {
+      const merged = [...new Set([...dismissedOrders, ...cnt.dismissed])];
+      dismissedOrders = merged;
+      saveDismissedToLocal();
     }
+    const changed = applyOrderActions(actions);
+    refreshAll();
+    const activeTab = document.querySelector('.tab-content.active');
+    if (activeTab && activeTab.id === 'tab-orders') renderOrders();
     const count = Object.keys(actions).length;
-    const time = content.updatedAt ? new Date(content.updatedAt).toLocaleString('ko-KR') : '-';
+    const dismissed = dismissedOrders.length;
+    const time = cnt.updatedAt ? new Date(content.updatedAt).toLocaleString('ko-KR') : '-';
     statusEl.textContent = count + '개 액션 반영 완료 (마지막 저장: ' + time + ')';
     statusEl.style.color = 'var(--success)';
   } catch(e) {
