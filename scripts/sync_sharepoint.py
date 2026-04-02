@@ -55,7 +55,6 @@ def download_excel():
     token = get_access_token()
     headers = {"Authorization": f"Bearer {token}"}
 
-    # 사이트 ID 조회
     print(f"SharePoint 사이트 조회 중... ({SHAREPOINT_HOST}:/sites/{SITE_NAME})")
     site_url = f"https://graph.microsoft.com/v1.0/sites/{SHAREPOINT_HOST}:/sites/{SITE_NAME}"
     resp = requests.get(site_url, headers=headers)
@@ -67,7 +66,6 @@ def download_excel():
     print(f"사이트 ID: {site_id}")
     print(f"사이트 이름: {site_data.get('displayName', 'N/A')}")
 
-    # 드라이브 (문서 라이브러리) 조회
     drives_url = f"https://graph.microsoft.com/v1.0/sites/{site_id}/drives"
     resp = requests.get(drives_url, headers=headers)
     if resp.status_code != 200:
@@ -93,16 +91,13 @@ def download_excel():
         print("ERROR: 문서 라이브러리를 찾을 수 없습니다.")
         sys.exit(1)
 
-    # 파일 경로 정리
     file_path = FILE_PATH.strip().lstrip("/")
     if not file_path:
         print("ERROR: SHAREPOINT_FILE_PATH가 비어있습니다.")
         sys.exit(1)
 
-    # URL이 설정된 경우 → Graph API 검색으로 파일 찾기
     if file_path.startswith("http"):
         print("SHAREPOINT_FILE_PATH에 URL이 감지됨 → 파일 검색 방식으로 전환")
-        # URL에서 sourcedoc GUID 추출 시도
         guid_match = re.search(r'sourcedoc=%7[Bb]([a-fA-F0-9-]+)%7[Dd]', file_path)
         if not guid_match:
             guid_match = re.search(r'sourcedoc=\{?([a-fA-F0-9-]+)\}?', file_path)
@@ -110,7 +105,6 @@ def download_excel():
         if guid_match:
             guid = guid_match.group(1)
             print(f"sourcedoc GUID: {guid}")
-            # GUID로 SharePoint 검색 (ListItem UniqueId)
             search_url = f"https://graph.microsoft.com/v1.0/drives/{drive_id}/root/search(q='Inventory Report')?$select=name,id,webUrl,file,sharepointIds&$top=20"
             search_resp = requests.get(search_url, headers=headers)
             if search_resp.status_code == 200:
@@ -125,7 +119,6 @@ def download_excel():
                         target_item = item
                         break
                 if not target_item and items:
-                    # GUID 매칭 실패 시 최신 Inventory Report 파일 사용
                     for item in items:
                         if 'Inventory Report' in item.get('name', '') and item.get('name', '').endswith('.xlsb'):
                             target_item = item
@@ -155,7 +148,6 @@ def download_excel():
             print("WARNING: URL에서 sourcedoc GUID를 추출할 수 없습니다. 기본 경로로 시도합니다.")
             file_path = "General/12. SC/F'cst/UNI&CORE Inventory Report_(4월).xlsb"
 
-    # 경로 기반 다운로드
     print(f"파일 경로: {file_path}")
     path_segments = file_path.split("/")
     encoded_segments = [quote(seg, safe='') for seg in path_segments]
@@ -172,11 +164,10 @@ def download_excel():
         root_resp = requests.get(root_url, headers=headers)
         if root_resp.status_code == 200:
             for item in root_resp.json().get("value", []):
-                t = "📁" if "folder" in item else "📄"
+                t = "F" if "folder" in item else "f"
                 print(f"  {t} {item['name']}")
         sys.exit(1)
 
-    # 파일 확장자에 따라 저장
     ext = os.path.splitext(file_path)[1].lower()
     local_path = f"/tmp/inventory_report{ext}"
     with open(local_path, "wb") as f:
@@ -186,54 +177,78 @@ def download_excel():
     return local_path
 
 
-def parse_excel(file_path):
-    """엑셀 파일에서 재고 데이터 추출 (.xlsx 및 .xlsb 지원)"""
+def read_sheet_rows(file_path, sheet_name):
+    """시트 데이터를 읽어서 행 리스트로 반환"""
     ext = os.path.splitext(file_path)[1].lower()
-    print(f"엑셀 파일 파싱 중... (형식: {ext})")
-
     if ext == '.xlsb':
-        # .xlsb (바이너리 형식) - pyxlsb 사용
         from pyxlsb import open_workbook
         wb = open_workbook(file_path)
-        sheet_names = wb.sheets
-
-        sheet_name = None
-        for name in sheet_names:
-            if '소비기한' in name:
-                sheet_name = name
-                break
-        if not sheet_name:
-            sheet_name = sheet_names[0]
-
-        print(f"시트: {sheet_name} (전체: {sheet_names})")
         rows = []
         with wb.get_sheet(sheet_name) as ws:
             for row in ws.rows():
                 rows.append(tuple(c.v for c in row))
         wb.close()
+        return rows
     else:
-        # .xlsx 형식 - openpyxl 사용
         import openpyxl
         wb = openpyxl.load_workbook(file_path, read_only=True, data_only=True)
-
-        sheet_name = None
-        for name in wb.sheetnames:
-            if '소비기한' in name:
-                sheet_name = name
-                break
-        if not sheet_name:
-            sheet_name = wb.sheetnames[0]
-
-        print(f"시트: {sheet_name} (전체: {wb.sheetnames})")
         ws = wb[sheet_name]
         rows = list(ws.iter_rows(values_only=True))
         wb.close()
+        return rows
 
+
+def get_sheet_names(file_path):
+    """시트 이름 목록 반환"""
+    ext = os.path.splitext(file_path)[1].lower()
+    if ext == '.xlsb':
+        from pyxlsb import open_workbook
+        wb = open_workbook(file_path)
+        names = wb.sheets
+        wb.close()
+        return names
+    else:
+        import openpyxl
+        wb = openpyxl.load_workbook(file_path, read_only=True)
+        names = wb.sheetnames
+        wb.close()
+        return names
+
+
+def parse_excel(file_path):
+    """엑셀 파일에서 재고 데이터 추출 (.xlsx 및 .xlsb 지원)
+
+    '소비기한' 시트 구조:
+      행 0: 타이틀
+      행 1: 카테고리 (Cosmetic 등) + 창고명
+      행 2: 컬럼 헤더 (P.O # | SKU | 품명 | 제조일자 | 소비기한 | 로트번호 | 파트너스 | 물류 | 총 | 판매가능 | 잔여개월수 | 유효기한)
+      행 3+: 로트별 데이터 (같은 SKU가 여러 로트로 반복)
+      중간: 새 카테고리 섹션 헤더
+    """
+    ext = os.path.splitext(file_path)[1].lower()
+    print(f"엑셀 파일 파싱 중... (형식: {ext})")
+
+    sheet_names = get_sheet_names(file_path)
+    print(f"전체 시트: {sheet_names}")
+
+    # 소비기한 시트 찾기
+    sheet_name = None
+    for name in sheet_names:
+        if name == '소비기한':
+            sheet_name = name
+            break
+        if '소비기한' in name and '_c' not in name.lower() and '1220' not in name:
+            sheet_name = name
+            break
+    if not sheet_name:
+        sheet_name = sheet_names[0]
+
+    print(f"메인 시트: {sheet_name}")
+    rows = read_sheet_rows(file_path, sheet_name)
     print(f"총 행 수: {len(rows)}")
 
     # 안전한 셀 접근 함수
     def safe_get(row, idx, default=None):
-        """행의 인덱스 범위를 초과하지 않도록 안전하게 셀 값을 가져옴"""
         if idx is None or idx < 0 or idx >= len(row):
             return default
         return row[idx]
@@ -246,118 +261,185 @@ def parse_excel(file_path):
         except:
             return 0
 
-    # 디버그: 처음 5행 샘플 출력
+    def parse_date(raw):
+        """다양한 날짜 형식 처리: YYYYMMDD, YYYYMMDD.0, Excel serial, datetime"""
+        if raw is None:
+            return ''
+        if isinstance(raw, datetime):
+            return raw.strftime('%Y-%m-%d')
+        if isinstance(raw, (int, float)):
+            raw_int = int(raw)
+            raw_str = str(raw_int)
+            if len(raw_str) == 8 and raw_str[:2] in ('19', '20'):
+                return f"{raw_str[:4]}-{raw_str[4:6]}-{raw_str[6:8]}"
+            if 40000 < raw_int < 60000:
+                from datetime import timedelta
+                d = datetime(1899, 12, 30) + timedelta(days=raw_int)
+                return d.strftime('%Y-%m-%d')
+        raw_str = str(raw).strip().replace('.0', '')
+        if len(raw_str) == 8 and raw_str.isdigit() and raw_str[:2] in ('19', '20'):
+            return f"{raw_str[:4]}-{raw_str[4:6]}-{raw_str[6:8]}"
+        return ''
+
+    # 디버그: 처음 5행 샘플
     print("=== 처음 5행 샘플 ===")
     for i, row in enumerate(rows[:5]):
-        sample = [f"[{j}]{str(c)[:25]}" if c else f"[{j}]None" for j, c in enumerate(row[:25])]
+        sample = [f"[{j}]{str(c)[:25]}" if c else f"[{j}]None" for j, c in enumerate(row[:20])]
         print(f"  행 {i}: {sample}")
     print("=== 샘플 끝 ===")
 
-    # 헤더 행 찾기 (처음 20행까지 검색)
+    # 헤더 행 찾기
     header_row = -1
     col_map = {}
     for i, row in enumerate(rows[:20]):
         cells = [str(c).strip().lower() if c else '' for c in row]
-        # 다양한 헤더 패턴 매칭
         has_header = (
             'category' in cells or
             any('상품코드' in c for c in cells) or
             any('품명' in c for c in cells) or
             any('현재고' in c for c in cells) or
+            any(c == 'sku' for c in cells) or
             (any('코드' in c for c in cells) and any('품' in c for c in cells))
         )
         if has_header:
             header_row = i
             for j, cell in enumerate(row):
                 c = str(cell).strip().lower() if cell else ''
-                if c == 'category' or c == '카테고리' or c == '구분': col_map['category'] = j
-                if '상품코드' in c or (c == '코드'): col_map['code'] = j
-                if '품명' in c or ('품' in c and '명' in c) or c == '제품명': col_map['name'] = j
-                if '현재고' in c or c == '재고': col_map['stock'] = j
-                if '입고' in c and ('예정' in c or '수량' in c): col_map['incoming'] = j
-                if '총' in c and '재고' in c: col_map['total'] = j
-                if c == 'remark' or c == '비고': col_map['remark'] = j
-                if '안전재고' in c or ('안전' in c and '재고' in c): col_map['safety'] = j
-                if '1m' in c and '안전' in c: col_map['safety'] = j
-                if '2m' in c and '평균' in c: col_map['avg_out'] = j
-                if '3m' in c and '평균' in c: col_map['avg_out_3m'] = j
-                if '평균' in c and '출고' in c: col_map.setdefault('avg_out', j)
-                if c == 'moq' or '발주단위' in c or '최소발주' in c: col_map['moq'] = j
-                if '리드타임' in c or '리드 타임' in c or 'l/t' in c: col_map['lead_time'] = j
+                if c in ('category', '카테고리', '구분'): col_map['category'] = j
+                if c == 'sku' or '상품코드' in c or c == '코드': col_map['code'] = j
+                if '품명' in c or c == '제품명': col_map['name'] = j
+                if c == '총' or c == '현재고' or c == '재고': col_map['stock'] = j
+                if '파트너스' in c: col_map['partners_stock'] = j
+                if c == '물류': col_map['logistics_stock'] = j
+                if '판매가능' in c: col_map['available'] = j
+                if '입고' in c: col_map.setdefault('incoming', j)
                 if '소비기한' in c or '유통기한' in c: col_map['expiry'] = j
+                if '제조일자' in c: col_map['mfg_date'] = j
+                if '잔여개월수' in c or '잔여' in c: col_map['remaining_months'] = j
+                if '유효기한' in c: col_map['validity_months'] = j
+                if '로트' in c or 'lot' in c: col_map['lot'] = j
+                if 'p.o' in c: col_map['po'] = j
+                if c in ('remark', '비고'): col_map['remark'] = j
+                if '안전재고' in c: col_map['safety'] = j
+                if c == 'moq' or '발주단위' in c or '최소발주' in c: col_map['moq'] = j
+                if '리드타임' in c or 'l/t' in c: col_map['lead_time'] = j
+                if '평균' in c and '출고' in c: col_map.setdefault('avg_out', j)
             full_headers = [f"[{j}]{str(cell)[:30]}" for j, cell in enumerate(row)]
             print(f"헤더 행 {i} 전체 컬럼: {full_headers}")
             print(f"매핑 결과: {col_map}")
             break
 
     if header_row < 0:
-        print("WARNING: 헤더 행을 찾지 못했습니다. 처음 5행 샘플:")
-        for i, row in enumerate(rows[:5]):
-            sample = [str(c)[:20] if c else 'None' for c in row[:15]]
-            print(f"  행 {i}: {sample}")
+        print("WARNING: 헤더 행을 찾지 못했습니다.")
+        header_row = 2
+        col_map = {'code': 2, 'name': 3, 'expiry': 5, 'stock': 9}
 
-        # 기본 매쥑 - 행 길이에 맞춰 안전하게 설정
-        header_row = 4
-        max_cols = max((len(r) for r in rows[:20]), default=10)
-        print(f"최대 컬럼 수: {max_cols}")
-        col_map = {'category': 0, 'code': 1, 'name': 2}
-        if max_cols > 5: col_map['stock'] = 5
-        if max_cols > 6: col_map['incoming'] = 6
-        if max_cols > 8: col_map['total'] = 8
-        if max_cols > 9: col_map['remark'] = 9
-        if max_cols > 15: col_map['safety'] = 15
-        if max_cols > 17: col_map['avg_out'] = 17
-        if max_cols > 18: col_map['moq'] = 18
-        if max_cols > 19: col_map['lead_time'] = 19
+    # 카테고리 추적: 헤더 앞 섹션에서 초기 카테고리 감지
+    current_category = 'General'
+    SKIP_KW = {'소비기간', '재고현황', 'p.o', 'sku', '품명', '제조', '로트', 'none', ''}
+    for i in range(header_row):
+        val = str(safe_get(rows[i], 1, '') or '').strip()
+        if val and val.lower() not in SKIP_KW and not val.startswith('0'):
+            current_category = val
+            print(f"초기 카테고리 (행 {i}): {current_category}")
 
-    products = []
+    # 데이터 행 파싱: SKU별 그룹핑 (로트 통합)
+    products_by_sku = {}
+    code_col = col_map.get('code')
+    name_col = col_map.get('name')
+    skip_names = {'종합계', '합계', 'total', 'Total', '소계'}
+
     for i in range(header_row + 1, len(rows)):
         row = rows[i]
         if not row or len(row) < 3:
             continue
 
-        category = str(safe_get(row, col_map.get('category'), '') or '').strip()
-        code = str(safe_get(row, col_map.get('code'), '') or '').strip()
-        name = str(safe_get(row, col_map.get('name'), '') or '').strip()
+        # 카테고리 섹션 헤더 감지: col 1에 텍스트, SKU는 비어있음
+        col1_val = str(safe_get(row, 1, '') or '').strip()
+        sku_val = str(safe_get(row, code_col, '') or '').strip()
 
-        if not name or not code or name == '종합계' or not category:
+        if col1_val and not sku_val and col1_val.lower() not in SKIP_KW:
+            if not col1_val.replace(' ', '').replace('-', '').isdigit():
+                current_category = col1_val
+                print(f"  카테고리 변경 (행 {i}): {current_category}")
+                continue
+
+        code = sku_val
+        name = str(safe_get(row, name_col, '') or '').strip()
+
+        if not name or not code:
+            continue
+        if name in skip_names:
             continue
 
+        # 재고 데이터
         stock = safe_num(safe_get(row, col_map.get('stock'), 0))
-        incoming = safe_num(safe_get(row, col_map.get('incoming'), 0))
-        avg_out_idx = col_map.get('avg_out') or col_map.get('avg_out_3m')
-        avg_out = safe_num(safe_get(row, avg_out_idx, 0))
-        moq = safe_num(safe_get(row, col_map.get('moq'), 0)) or 5000
-        lead_time = safe_num(safe_get(row, col_map.get('lead_time'), 0)) or 10
-        remark = str(safe_get(row, col_map.get('remark'), '') or '').strip()
+        partners = safe_num(safe_get(row, col_map.get('partners_stock'), 0))
+        logistics = safe_num(safe_get(row, col_map.get('logistics_stock'), 0))
+        if stock == 0 and (partners > 0 or logistics > 0):
+            stock = partners + logistics
 
-        expiry_date = ''
-        expiry_idx = col_map.get('expiry')
-        if expiry_idx is not None:
-            raw = safe_get(row, expiry_idx)
-            if raw is not None:
-                if isinstance(raw, datetime):
-                    expiry_date = raw.strftime('%Y-%m-%d')
-                elif isinstance(raw, (int, float)) and raw > 0:
-                    from datetime import timedelta
-                    d = datetime(1899, 12, 30) + timedelta(days=int(raw))
-                    expiry_date = d.strftime('%Y-%m-%d')
+        # 소비기한 (YYYYMMDD.0 형식)
+        expiry_date = parse_date(safe_get(row, col_map.get('expiry')))
 
-        products.append({
-            'category': category,
-            'code': code,
-            'name': name,
-            'currentStock': stock,
-            'incoming': incoming,
-            'safetyStock': safe_num(safe_get(row, col_map.get('safety'), 0)),
-            'avgMonthlyOut': avg_out,
-            'moq': moq,
-            'leadTime': lead_time,
-            'expiryDate': expiry_date,
-            'remark': remark
-        })
+        # 잔여개월수
+        remaining_months = 0
+        rm_val = safe_get(row, col_map.get('remaining_months'))
+        if rm_val is not None:
+            try:
+                remaining_months = round(float(rm_val), 1)
+            except:
+                pass
 
-    print(f"파싱 완료: {len(products)}개 제품")
+        # SKU별 그룹핑
+        if code not in products_by_sku:
+            products_by_sku[code] = {
+                'category': current_category,
+                'code': code,
+                'name': name,
+                'currentStock': stock,
+                'incoming': safe_num(safe_get(row, col_map.get('incoming'), 0)),
+                'safetyStock': safe_num(safe_get(row, col_map.get('safety'), 0)),
+                'avgMonthlyOut': safe_num(safe_get(row, col_map.get('avg_out'), 0)),
+                'moq': safe_num(safe_get(row, col_map.get('moq'), 0)) or 5000,
+                'leadTime': safe_num(safe_get(row, col_map.get('lead_time'), 0)) or 10,
+                'expiryDate': expiry_date,
+                'remainingMonths': remaining_months,
+                'remark': str(safe_get(row, col_map.get('remark'), '') or '').strip(),
+                'lotCount': 1
+            }
+        else:
+            p = products_by_sku[code]
+            p['currentStock'] += stock
+            p['lotCount'] += 1
+            if expiry_date and (not p['expiryDate'] or expiry_date < p['expiryDate']):
+                p['expiryDate'] = expiry_date
+                p['remainingMonths'] = remaining_months
+
+    # Summary 시트 디버그 (추후 재고 병합용)
+    summary_sheet = None
+    for name in sheet_names:
+        if name.lower() == 'summary':
+            summary_sheet = name
+            break
+    if summary_sheet:
+        try:
+            print(f"\nSummary 시트 읽기 중: {summary_sheet}")
+            sum_rows = read_sheet_rows(file_path, summary_sheet)
+            print(f"Summary 행 수: {len(sum_rows)}")
+            for i, row in enumerate(sum_rows[:8]):
+                sample = [f"[{j}]{str(c)[:25]}" if c else f"[{j}]None" for j, c in enumerate(row[:20])]
+                print(f"  Summary 행 {i}: {sample}")
+        except Exception as e:
+            print(f"Summary 시트 읽기 실패: {e}")
+
+    products = list(products_by_sku.values())
+
+    # 디버그: 상위 5개 제품 정보
+    for p in products[:5]:
+        print(f"  {p['code']} {p['name'][:20]} - 로트:{p['lotCount']}개, 재고:{p['currentStock']}, 소비기한:{p['expiryDate']}")
+
+    print(f"\n파싱 완료: {len(products)}개 제품 ({sum(p['lotCount'] for p in products)}개 로트)")
     return products
 
 
@@ -368,22 +450,24 @@ def update_dashboard(products):
     with open(DASHBOARD_HTML, 'r', encoding='utf-8') as f:
         html = f.read()
 
-    # JavaScript 배열 문자열 생성 (JS 객체 형식)
     today = datetime.now().strftime('%Y년 %m월 %d일')
     js_entries = []
     for p in products:
+        # JS 문자열 내 따옴표 이스케이프
+        esc_name = p['name'].replace("'", "\\'")
+        esc_cat = p['category'].replace("'", "\\'")
+        esc_remark = p.get('remark', '').replace("'", "\\'")
         entry = "  { "
-        entry += f"category: '{p['category']}', code: '{p['code']}', name: '{p['name']}', "
+        entry += f"category: '{esc_cat}', code: '{p['code']}', name: '{esc_name}', "
         entry += f"currentStock: {p['currentStock']}, incoming: {p['incoming']}, "
         entry += f"totalStock: {p['currentStock'] + p['incoming']}, "
-        entry += f"remark: '{p.get('remark', '')}', expiryDate: '{p.get('expiryDate', '')}', "
+        entry += f"remark: '{esc_remark}', expiryDate: '{p.get('expiryDate', '')}', "
         entry += f"safetyStock: {p.get('safetyStock', 0)}, avgMonthlyOut: {p.get('avgMonthlyOut', 0)}, "
         entry += f"moq: {p.get('moq', 5000)}, leadTime: {p.get('leadTime', 10)}"
         entry += " }"
         js_entries.append(entry)
     js_content = ',\n'.join(js_entries)
 
-    # 메인 let products = [...] 배열 교체
     marker = 'let products = ['
     idx = html.find(marker)
     if idx < 0:
@@ -401,14 +485,12 @@ def update_dashboard(products):
 
     new_html = html[:array_start] + '\n' + js_content + '\n' + html[array_end:]
 
-    # 동기화 날짜 업데이트
     new_html = re.sub(
         r"showToast\('.*?동기화.*?'\);",
         f"showToast('실시간 데이터 ' + products.length + '개 제품이 로드되었습니다. ({today} 동기화)');",
         new_html
     )
 
-    # 데이터 버전 업데이트 (캐시 무효화)
     version = f"v-auto-{datetime.now().strftime('%Y%m%d%H%M')}"
     new_html = re.sub(r"'v\d+-[a-z]+'", f"'{version}'", new_html)
 
@@ -452,7 +534,6 @@ def record_shipment(products):
                 'qty': qty
             })
 
-    # 최근 180일만 유지
     cutoff = (datetime.now() - __import__('datetime').timedelta(days=180)).strftime('%Y-%m-%d')
     history = [h for h in history if h['date'] >= cutoff]
 
