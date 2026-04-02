@@ -147,9 +147,10 @@
   .order-action-select { padding: 5px 8px; border: 1px solid var(--gray-300); border-radius: 6px; font-size: 12px; font-weight: 500; outline: none; cursor: pointer; background: white; min-width: 100px; }
   .order-action-select:focus { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(26,86,50,0.1); }
   .order-action-select.action-발주완료 { background: var(--success-bg); color: var(--success); border-color: var(--success); font-weight: 600; }
-  .order-action-select.action-발주대기 { background: var(--warning-bg); color: #b45309; border-color: var(--warning); font-weight: 600; }
+  .order-action-select.action-발주진행중 { background: var(--warning-bg); color: #b45309; border-color: var(--warning); font-weight: 600; }
   .order-action-select.action-별도조치 { background: var(--info-bg); color: var(--info); border-color: var(--info); font-weight: 600; }
   .order-action-select.action-단종조치 { background: var(--gray-100); color: var(--gray-500); border-color: var(--gray-300); font-weight: 600; }
+  .order-action-select.action-대체출고 { background: #fef3c7; color: #92400e; border-color: #f59e0b; font-weight: 600; }
 
   /* Toast */
   .toast { position: fixed; bottom: 24px; right: 24px; background: var(--gray-900); color: white; padding: 12px 20px; border-radius: 10px; font-size: 14px; z-index: 2000; opacity: 0; transform: translateY(10px); transition: all 0.3s; }
@@ -1248,9 +1249,10 @@ function renderOrders() {
         <select class="order-action-select ${actionClass}" onchange="handleOrderAction('${safeCode}', this)">
           <option value="">-- 선택 --</option>
           <option value="발주완료"${currentAction === '발주완료' ? ' selected' : ''}>발주완료</option>
-          <option value="발주대기"${currentAction === '발주대기' ? ' selected' : ''}>발주대기</option>
-          <option value="별도조치"${currentAction === '별도조치' ? ' selected' : ''}>별도조치</option>
+          <option value="발주진행중"${currentAction === '발주진행중' ? ' selected' : ''}>발주진행중</option>
+          <option value="대체출고"${currentAction === '대체출고' ? ' selected' : ''}>대체출고</option>
           <option value="단종조치"${currentAction === '단종조치' ? ' selected' : ''}>단종조치</option>
+          <option value="별도조치"${currentAction === '별도조치' ? ' selected' : ''}>별도조치</option>
         </select>
       </td>
     </tr>`;
