@@ -950,13 +950,9 @@ function loadOrderActionsFromLocal() {
     const actions = JSON.parse(saved);
     Object.keys(actions).forEach(code => {
       const idx = products.findIndex(p => p.code === code);
-      if (idx >= 0) {
-        const info = actions[code];
-        // 임베딩 remark에 이미 액션 태그가 있으면 스킵
-        const existing = getOrderAction(products[idx]);
-        if (!existing && info.remark) {
-          products[idx].remark = info.remark;
-        }
+      if (idx >= 0 && actions[code].remark) {
+        // 사용자가 명시적으로 저장한 액션은 항상 우선 적용
+        products[idx].remark = actions[code].remark;
       }
     });
   } catch(e) {}
@@ -1311,12 +1307,18 @@ function cleanRemark(r) {
 
 function getOrderAction(p) {
   if (!p.remark) return '';
-  if (p.remark.includes('단종조치')) return '단종조치';
-  if (p.remark.includes('발주진행중')) return '발주진행중';
-  if (p.remark.includes('대체출고')) return '대체출고';
-  if (p.remark.includes('별도조치')) return '별도조치';
-  if (p.remark.includes('발주대기')) return '발주대기';
+  // 정확한 액션 태그 먼저 체크 (사용자가 직접 선택한 것)
+  if (p.remark.includes('[발주완료'))   return '발주완료';
+  if (p.remark.includes('[발주진행중')) return '발주진행중';
+  if (p.remark.includes('[대체출고'))   return '대체출고';
+  if (p.remark.includes('[단종조치'))   return '단종조치';
+  if (p.remark.includes('[별도조치'))   return '별도조치';
+  // 원본 remark 키워드 기반 매칭 (sync 데이터의 자연어)
   if (p.remark.includes('발주완료') || p.remark.includes('발주요청 완료')) return '발주완료';
+  if (p.remark.includes('발주진행중') || p.remark.includes('발주 진행')) return '발주진행중';
+  if (p.remark.includes('대체출고') || p.remark.includes('대체 출고')) return '대체출고';
+  if (p.remark.includes('단종')) return '단종조치';
+  if (p.remark.includes('별도조치') || p.remark.includes('별도 조치')) return '별도조치';
   return '';
 }
 
