@@ -165,15 +165,10 @@ def parse_excel(file_path):
     target_header = -1
     target_col_map = {}
 
-    # 우선순위: Process > 소비기한_c > CL > 나머지 (소비기한, 현재고_wms 제외)
-    priority = ['Process', '소비기한_c', 'CL', '2026']
-    candidates = []
-    for name in priority:
-        if name in sheets:
-            candidates.append(name)
-    for name in sheets:
-        if name not in candidates and name not in ('소비기한', '현재고_wms', '현재고_Raw', '입고_Raw', '출고_Raw', 'Summary', 'Sheet3'):
-            candidates.append(name)
+    # 모든 시트 검색 (로트/원시 데이터 시트는 후순위)
+    low_priority = {'소비기한', '소비기한_c', '소비기한1220', '현재고_wms', '현재고_Raw', '입고_Raw', '출고_Raw', 'Sheet3'}
+    candidates = [s for s in sheets if s not in low_priority]
+    candidates += [s for s in sheets if s in low_priority]
 
     def safe_get(row, idx, default=None):
         if idx is None or idx < 0 or idx >= len(row):
@@ -189,18 +184,19 @@ def parse_excel(file_path):
             # 헤더 행 찾기: Category + 상품코드 조합
             for i, row in enumerate(rows[:15]):
                 cells = [str(c).strip().lower() if c else '' for c in row]
+                cells_nospace = [x.replace(' ', '') for x in cells]
                 has_category = any(c == 'category' or c == '카테고리' for c in cells)
-                has_code = any('상품코드' in c or c == 'sku' for c in cells)
-                has_name = any('품명' in c or '품 명' in c for c in cells)
+                has_code = any('상품코드' in c for c in cells_nospace) or any(c == 'sku' for c in cells)
+                has_name = any('품명' in c for c in cells_nospace)
 
-                if has_category and has_code and has_name:
+                if has_code and has_name:  # Category가 없어도 code+name이면 OK
                     col_map = {}
                     for j, cell in enumerate(row):
                         c = str(cell).strip().lower() if cell else ''
                         cn = c.replace(' ', '')  # 공백 제거 버전
                         if c == 'category' or c == '카테고리': col_map['category'] = j
-                        if '상품코드' in cn or c == 'sku': col_map['code'] = j
-                        if '품명' in cn or '품 명' in c: col_map['name'] = j
+                        if '상품코드' in cn or c == 'sku' or c == '코드': col_map['code'] = j
+                        if '품명' in cn: col_map['name'] = j
                         if '현재고' in cn and '안전' not in c: col_map['stock'] = j
                         if '입고' in cn and '예정' in cn: col_map['incoming'] = j
                         if '총' in cn and '재고' in cn: col_map['total'] = j
@@ -231,7 +227,7 @@ def parse_excel(file_path):
     if not target_sheet:
         print("ERROR: Category+상품코드+품명 헤더가 있는 시트를 찾지 못했습니다.")
         # 디버그: 각 시트 첫 행 출력
-        for name in sheets[:5]:
+        for name in sheets[:10]:
             try:
                 rows = read_sheet(file_path, name)
                 for i, row in enumerate(rows[:8]):
