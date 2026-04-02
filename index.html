@@ -636,8 +636,8 @@
       <div style="margin-top:12px;padding:10px 14px;background:var(--info-bg);border-radius:8px;font-size:12px;color:var(--info);line-height:1.6;">
         <strong>동기화 안내</strong><br>
         - 자동 동기화: 매일 23:50 KST에 실행됩니다<br>
-        - 수동 동기화: 위 버튼으로 즉시 실행할 수 있습니다<br>
-        - 파일 변경 시: 새 월의 파일 URL을 위에 붙여넣고 "링크 저장"을 누르세요
+        - 수동 동기화: 위 버튼을 누르면 서버에서 즉시 실행됩니다 (1-2분 소요, 완료 시 자동 새로고침)<br>
+        - GitHub 토큰 필요: 아래 '발주 액션 공유 설정'에서 토큰을 먼저 등록해 주세요
       </div>
     </div>
   </div>
@@ -2063,32 +2063,90 @@ function schedulePushToGitHub() {
 }
 
 function triggerManualSync() {
-  const url = document.getElementById('syncUrl').value.trim();
-  if (!url) {
-    showToast('먼저 SharePoint URL을 등록해 주세요.');
-    return;
-  }
   const btn = document.getElementById('manualSyncBtn');
   btn.disabled = true;
-  btn.textContent = '동기화 중...';
+  btn.textContent = '동기화 실행 중...';
   btn.style.opacity = '0.6';
 
-  // Record sync attempt
-  const now = new Date().toLocaleString('ko-KR', { timeZone:'Asia/Seoul' });
-  try {
-    localStorage.setItem('unicore_last_sync', now);
-  } catch(e) {}
-  document.getElementById('lastSyncTime').textContent = '마지막 동기화 시도: ' + now;
+  const ghRepo = localStorage.getItem('unicore_gh_repo') || 'ironchung2010/unicore-inventory';
+  const ghToken = localStorage.getItem('unicore_gh_token') || '';
 
-  // Open the SharePoint file in a new tab for manual review
-  window.open(url, '_blank');
-
-  setTimeout(() => {
+  if (!ghToken) {
+    showToast('데이터 관리 탭에서 GitHub 토큰을 먼저 설정해 주세요.');
     btn.disabled = false;
     btn.textContent = '수동 동기화 실행';
     btn.style.opacity = '1';
-    showToast('SharePoint 파일이 새 탭에서 열렸습니다. 데이터를 확인 후 Excel 파일을 다운로드하여 위 업로드 영역에 업로드해 주세요.');
-  }, 2000);
+    return;
+  }
+
+  const now = new Date().toLocaleString('ko-KR', { timeZone:'Asia/Seoul' });
+
+  // Trigger GitHub Actions workflow_dispatch
+  fetch(`https://api.github.com/repos/${ghRepo}/actions/workflows/sync.yml/dispatches`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `token ${ghToken}`,
+      'Accept': 'application/vnd.github+json'
+    },
+    body: JSON.stringify({ ref: 'main' })
+  })
+  .then(resp => {
+    if (resp.status === 204) {
+      document.getElementById('lastSyncTime').textContent = '동기화 트리거: ' + now + ' (약 1-2분 후 반영)';
+      try { localStorage.setItem('unicore_last_sync', now); } catch(e) {}
+      showToast('동기화가 시작되었습니다! 약 1-2분 후 페이지를 새로고침하면 최신 데이터가 반영됩니다.');
+      // Poll for completion
+      setTimeout(() => pollSyncStatus(ghRepo, ghToken, btn), 15000);
+    } else {
+      resp.text().then(t => {
+        console.error('Sync trigger failed:', t);
+        showToast('동기화 트리거 실패. GitHub 토큰 권한을 확인해 주세요.');
+        btn.disabled = false;
+        btn.textContent = '수동 동기화 실행';
+        btn.style.opacity = '1';
+      });
+    }
+  })
+  .catch(err => {
+    console.error('Sync error:', err);
+    showToast('동기화 실행 중 오류가 발생했습니다.');
+    btn.disabled = false;
+    btn.textContent = '수동 동기화 실행';
+    btn.style.opacity = '1';
+  });
+}
+
+function pollSyncStatus(ghRepo, ghToken, btn) {
+  fetch(`https://api.github.com/repos/${ghRepo}/actions/runs?per_page=1&event=workflow_dispatch`, {
+    headers: {
+      'Authorization': `token ${ghToken}`,
+      'Accept': 'application/vnd.github+json'
+    }
+  })
+  .then(r => r.json())
+  .then(data => {
+    const run = data.workflow_runs && data.workflow_runs[0];
+    if (run && run.status === 'completed') {
+      if (run.conclusion === 'success') {
+        showToast('동기화 완료! 페이지를 새로고침합니다...');
+        setTimeout(() => location.reload(), 2000);
+      } else {
+        showToast('동기화 실패: ' + (run.conclusion || 'unknown'));
+        btn.disabled = false;
+        btn.textContent = '수동 동기화 실행';
+        btn.style.opacity = '1';
+      }
+    } else {
+      // Still running, poll again
+      document.getElementById('lastSyncTime').textContent = '동기화 진행 중...';
+      setTimeout(() => pollSyncStatus(ghRepo, ghToken, btn), 10000);
+    }
+  })
+  .catch(() => {
+    btn.disabled = false;
+    btn.textContent = '수동 동기화 실행';
+    btn.style.opacity = '1';
+  });
 }
 
 // ============ RISK INVENTORY (위험재고) ============
