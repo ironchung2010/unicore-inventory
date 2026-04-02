@@ -893,6 +893,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Always use embedded sync data (products array from sync script)
   // localStorage is only used for user-specific data (order actions, settings)
+  loadOrderActionsFromLocal();
   saveToStorage();
 
   // Drag & drop
@@ -925,6 +926,39 @@ function saveToStorage() {
     localStorage.setItem('unicore_data_version', 'v-auto-202604021031');
   } catch(e) {}
 }
+
+function saveOrderActionsToLocal() {
+  try {
+    const actions = {};
+    products.forEach(p => {
+      const action = getOrderAction(p);
+      if (action) {
+        actions[p.code] = { action: action, remark: p.remark };
+      }
+    });
+    localStorage.setItem('unicore_order_actions_local', JSON.stringify(actions));
+  } catch(e) {}
+}
+
+function loadOrderActionsFromLocal() {
+  try {
+    const saved = localStorage.getItem('unicore_order_actions_local');
+    if (!saved) return;
+    const actions = JSON.parse(saved);
+    Object.keys(actions).forEach(code => {
+      const idx = products.findIndex(p => p.code === code);
+      if (idx >= 0) {
+        const info = actions[code];
+        // 임베딩 remark에 이미 액션 태그가 있으면 스킵
+        const existing = getOrderAction(products[idx]);
+        if (!existing && info.remark) {
+          products[idx].remark = info.remark;
+        }
+      }
+    });
+  } catch(e) {}
+}
+
 
 // ============ TAB SWITCHING ============
 function switchTab(tab) {
@@ -1309,6 +1343,8 @@ function handleOrderAction(code, selectEl) {
 
   refreshAll();
   renderOrders();
+  saveOrderActionsToLocal();
+  schedulePushToGitHub();
 }
 
 // ============ SHIPMENT (출고현황) ============
