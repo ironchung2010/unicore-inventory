@@ -380,7 +380,7 @@ def update_dashboard(products):
         new_html
     )
     version = f"v-auto-{datetime.now().strftime('%Y%m%d%H%M')}"
-    new_html = re.sub(r"'v\d+-[a-z]+'", f"'{version}'", new_html)
+    new_html = re.sub(r"'v-auto-\d+'", f"'{version}'", new_html)
 
     with open(DASHBOARD_HTML, 'w', encoding='utf-8') as f:
         f.write(new_html)
