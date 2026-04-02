@@ -873,6 +873,7 @@ let products = [
 ];
 let editIndex = -1;
 let charts = {};
+let dismissedOrders = []; // 조치완료 후 삭제된 상품코드 목록
 
 // ============ DISCONTINUED FILTER ============
 function isDiscontinued(p) {
@@ -1242,6 +1243,9 @@ function renderOrders() {
     return { ...p, dailyAvg, daysLeft, leadDays, needsOrder, recQty, arrivalDate, stockoutDate };
   }).filter(p => p.needsOrder || (p.remark && (p.remark.includes('발주') || p.remark.includes('별도조치') || p.remark.includes('단종조치'))));
 
+  // 조치완료 후 삭제된 항목 필터링
+  orderItems = orderItems.filter(p => !dismissedOrders.includes(p.code));
+
   orderItems.sort((a,b) => a.daysLeft - b.daysLeft);
 
   let urgent = 0, review = 0, inProgress = 0, arriving = 0;
@@ -1361,6 +1365,72 @@ function handleOrderAction(code, selectEl) {
   renderOrders();
   saveOrderActionsToLocal();
   schedulePushToGitHub();
+}
+
+// ============ DISMISSED ORDERS (조치완료 삭제) ============
+function dismissCheckedOrders() {
+  const checks = document.querySelectorAll('.order-check:checked');
+  if (checks.length === 0) {
+    showToast('삭제할 항목을 선택해 주세요.');
+    return;
+  }
+
+  if (!confirm('선택한 ' + checks.length + '개 항목을 발주추천목록에서 삭제하시겠습니까?\n(삭제 이력에서 복원 가능)')) return;
+
+  const rows = [];
+  checks.forEach(chk => {
+    const tr = chk.closest('tr');
+    if (!tr) return;
+    const codeTd = tr.querySelector('td:nth-child(3)');
+    if (codeTd) {
+      const code = codeTd.textContent.trim();
+      if (code && !dismissedOrders.includes(code)) {
+        dismissedOrders.push(code);
+        rows.push(code);
+      }
+    }
+  });
+
+  if (rows.length > 0) {
+    saveDismissedToLocal();
+    showToast(rows.length + '개 항목이 삭제되었습니다.');
+    renderOrders();
+    schedulePushToGitHub();
+  }
+}
+
+function saveDismissedToLocal() {
+  try {
+    localStorage.setItem('unicore_dismissed_orders', JSON.stringify(dismissedOrders));
+  } catch(e) {}
+}
+
+function loadDismissedFromLocal() {
+  try {
+    const saved = localStorage.getItem('unicore_dismissed_orders');
+    if (saved) dismissedOrders = JSON.parse(saved);
+  } catch(e) {}
+}
+
+function showDismissedOrders() {
+  if (dismissedOrders.length === 0) {
+    showToast('삭제된 항목이 없습니다.');
+    return;
+  }
+
+  const items = dismissedOrders.map(code => {
+    const p = products.find(pp => pp.code === code);
+    return p ? code + ' - ' + p.name : code;
+  });
+
+  const msg = '삭제된 항목 (' + dismissedOrders.length + '개):\n\n' + items.join('\n') + '\n\n복원하시겠습니까?';
+  if (confirm(msg)) {
+    dismissedOrders = [];
+    saveDismissedToLocal();
+    showToast('모든 삭제 항목이 복원되었습니다.');
+    renderOrders();
+    schedulePushToGitHub();
+  }
 }
 
 // ============ SHIPMENT (출고현황) ============
