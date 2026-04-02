@@ -231,35 +231,75 @@ def parse_excel(file_path):
 
     print(f"총 행 수: {len(rows)}")
 
-    # 헤더 행 찾기
+    # 안전한 셀 접근 함수
+    def safe_get(row, idx, default=None):
+        """행의 인덱스 범위를 초과하지 않도록 안전하게 셀 값을 가져옴"""
+        if idx is None or idx < 0 or idx >= len(row):
+            return default
+        return row[idx]
+
+    def safe_num(val):
+        if val is None or val == '' or val == '-':
+            return 0
+        try:
+            return round(float(str(val).replace(',', '')))
+        except:
+            return 0
+
+    # 헤더 행 찾기 (처음 20행까지 검색)
     header_row = -1
     col_map = {}
-    for i, row in enumerate(rows[:10]):
+    for i, row in enumerate(rows[:20]):
         cells = [str(c).strip().lower() if c else '' for c in row]
-        if 'category' in cells or any('상품코드' in c for c in cells):
+        # 다양한 헤더 패턴 매칭
+        has_header = (
+            'category' in cells or
+            any('상품코드' in c for c in cells) or
+            any('품명' in c for c in cells) or
+            any('현재고' in c for c in cells) or
+            (any('코드' in c for c in cells) and any('품' in c for c in cells))
+        )
+        if has_header:
             header_row = i
             for j, cell in enumerate(row):
                 c = str(cell).strip().lower() if cell else ''
-                if c == 'category': col_map['category'] = j
-                if '상품코드' in c: col_map['code'] = j
-                if '품' in c and '명' in c: col_map['name'] = j
-                if '현재고' in c: col_map['stock'] = j
-                if '입고' in c and '예정' in c: col_map['incoming'] = j
+                if c == 'category' or c == '카테고리' or c == '구분': col_map['category'] = j
+                if '상품코드' in c or (c == '코드'): col_map['code'] = j
+                if '품명' in c or ('품' in c and '명' in c) or c == '제품명': col_map['name'] = j
+                if '현재고' in c or c == '재고': col_map['stock'] = j
+                if '입고' in c and ('예정' in c or '수량' in c): col_map['incoming'] = j
                 if '총' in c and '재고' in c: col_map['total'] = j
-                if c == 'remark': col_map['remark'] = j
-                if '안전재고' in c and '1m' in c: col_map['safety'] = j
+                if c == 'remark' or c == '비고': col_map['remark'] = j
+                if '안전재고' in c or ('안전' in c and '재고' in c): col_map['safety'] = j
+                if '1m' in c and '안전' in c: col_map['safety'] = j
                 if '2m' in c and '평균' in c: col_map['avg_out'] = j
                 if '3m' in c and '평균' in c: col_map['avg_out_3m'] = j
-                if c == 'moq': col_map['moq'] = j
-                if '리드타임' in c or '리드 타임' in c: col_map['lead_time'] = j
+                if '평균' in c and '출고' in c: col_map.setdefault('avg_out', j)
+                if c == 'moq' or '발주단위' in c or '최소발주' in c: col_map['moq'] = j
+                if '리드타임' in c or '리드 타임' in c or 'l/t' in c: col_map['lead_time'] = j
                 if '소비기한' in c or '유통기한' in c: col_map['expiry'] = j
+            print(f"헤더 발견 (행 {i}): {col_map}")
             break
 
     if header_row < 0:
-        print("WARNING: 헤더 행을 찾지 못했습니다. 기본 구조로 파싱합니다.")
+        print("WARNING: 헤더 행을 찾지 못했습니다. 처음 5행 샘플:")
+        for i, row in enumerate(rows[:5]):
+            sample = [str(c)[:20] if c else 'None' for c in row[:15]]
+            print(f"  행 {i}: {sample}")
+
+        # 기본 매핑 - 행 길이에 맞춰 안전하게 설정
         header_row = 4
-        col_map = {'category': 0, 'code': 1, 'name': 2, 'stock': 5, 'incoming': 6,
-                    'total': 8, 'remark': 9, 'safety': 15, 'avg_out': 17, 'moq': 18, 'lead_time': 19}
+        max_cols = max((len(r) for r in rows[:20]), default=10)
+        print(f"최대 컬럼 수: {max_cols}")
+        col_map = {'category': 0, 'code': 1, 'name': 2}
+        if max_cols > 5: col_map['stock'] = 5
+        if max_cols > 6: col_map['incoming'] = 6
+        if max_cols > 8: col_map['total'] = 8
+        if max_cols > 9: col_map['remark'] = 9
+        if max_cols > 15: col_map['safety'] = 15
+        if max_cols > 17: col_map['avg_out'] = 17
+        if max_cols > 18: col_map['moq'] = 18
+        if max_cols > 19: col_map['lead_time'] = 19
 
     products = []
     for i in range(header_row + 1, len(rows)):
@@ -267,37 +307,32 @@ def parse_excel(file_path):
         if not row or len(row) < 3:
             continue
 
-        category = str(row[col_map.get('category', 0)] or '').strip()
-        code = str(row[col_map.get('code', 1)] or '').strip()
-        name = str(row[col_map.get('name', 2)] or '').strip()
+        category = str(safe_get(row, col_map.get('category'), '') or '').strip()
+        code = str(safe_get(row, col_map.get('code'), '') or '').strip()
+        name = str(safe_get(row, col_map.get('name'), '') or '').strip()
 
         if not name or not code or name == '종합계' or not category:
             continue
 
-        def safe_num(val):
-            if val is None or val == '' or val == '-':
-                return 0
-            try:
-                return round(float(str(val).replace(',', '')))
-            except:
-                return 0
-
-        stock = safe_num(row[col_map.get('stock', 5)] if col_map.get('stock') is not None else 0)
-        incoming = safe_num(row[col_map.get('incoming', 6)] if col_map.get('incoming') is not None else 0)
-        avg_out = safe_num(row[col_map.get('avg_out') or col_map.get('avg_out_3m', 17)] if (col_map.get('avg_out') or col_map.get('avg_out_3m')) is not None else 0)
-        moq = safe_num(row[col_map.get('moq', 18)] if col_map.get('moq') is not None else 0) or 5000
-        lead_time = safe_num(row[col_map.get('lead_time', 19)] if col_map.get('lead_time') is not None else 0) or 10
-        remark = str(row[col_map.get('remark', 9)] or '').strip() if col_map.get('remark') is not None else ''
+        stock = safe_num(safe_get(row, col_map.get('stock'), 0))
+        incoming = safe_num(safe_get(row, col_map.get('incoming'), 0))
+        avg_out_idx = col_map.get('avg_out') or col_map.get('avg_out_3m')
+        avg_out = safe_num(safe_get(row, avg_out_idx, 0))
+        moq = safe_num(safe_get(row, col_map.get('moq'), 0)) or 5000
+        lead_time = safe_num(safe_get(row, col_map.get('lead_time'), 0)) or 10
+        remark = str(safe_get(row, col_map.get('remark'), '') or '').strip()
 
         expiry_date = ''
-        if col_map.get('expiry') is not None and row[col_map['expiry']]:
-            raw = row[col_map['expiry']]
-            if isinstance(raw, datetime):
-                expiry_date = raw.strftime('%Y-%m-%d')
-            elif isinstance(raw, (int, float)):
-                from datetime import timedelta
-                d = datetime(1899, 12, 30) + timedelta(days=int(raw))
-                expiry_date = d.strftime('%Y-%m-%d')
+        expiry_idx = col_map.get('expiry')
+        if expiry_idx is not None:
+            raw = safe_get(row, expiry_idx)
+            if raw is not None:
+                if isinstance(raw, datetime):
+                    expiry_date = raw.strftime('%Y-%m-%d')
+                elif isinstance(raw, (int, float)) and raw > 0:
+                    from datetime import timedelta
+                    d = datetime(1899, 12, 30) + timedelta(days=int(raw))
+                    expiry_date = d.strftime('%Y-%m-%d')
 
         products.append({
             'category': category,
@@ -305,7 +340,7 @@ def parse_excel(file_path):
             'name': name,
             'currentStock': stock,
             'incoming': incoming,
-            'safetyStock': safe_num(row[col_map.get('safety', 15)] if col_map.get('safety') is not None else 0),
+            'safetyStock': safe_num(safe_get(row, col_map.get('safety'), 0)),
             'avgMonthlyOut': avg_out,
             'moq': moq,
             'leadTime': lead_time,
