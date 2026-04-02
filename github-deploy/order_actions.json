@@ -1,0 +1,66 @@
+{
+  "actions": {
+    "100000108": {
+      "action": "발주완료",
+      "date": "2026. 4. 2.",
+      "name": "비타씨 수퍼 브라이트닝 마스크 5매"
+    },
+    "100000117": {
+      "action": "발주완료",
+      "date": "2026. 4. 2.",
+      "name": "NEW 비타 씨 13.5 수퍼 화이트닝 앰플 30g"
+    },
+    "100000131": {
+      "action": "발주진행중",
+      "date": "2026. 4. 2.",
+      "name": "시그니처 리바이탈라이징 샴푸"
+    },
+    "100000133": {
+      "action": "단종조치",
+      "date": "2026. 4. 2.",
+      "name": "[USA]VITA C GLUTAGLOW SUPER BRIGHTENING AMPOULE"
+    },
+    "100000134": {
+      "action": "발주완료",
+      "date": "2026. 4. 2.",
+      "name": "[USA]VITA C 13.5 SUPER BRIGHTENING AMPOULE"
+    },
+    "100000136": {
+      "action": "대체출고",
+      "date": "2026. 4. 2.",
+      "name": "[USA]VITA C SUPER BRIGHTENING MASK"
+    },
+    "100000137": {
+      "action": "대체출고",
+      "date": "2026. 4. 2.",
+      "name": "[USA]VITA C ENZYME POWDER WASH"
+    },
+    "100000139": {
+      "action": "대체출고",
+      "date": "2026. 4. 2.",
+      "name": "[USA]Daily Chewable Propolis"
+    },
+    "100000142": {
+      "action": "발주완료",
+      "date": "2026. 4. 2.",
+      "name": "[USA]Slimming Mega Probiotics"
+    },
+    "200000207": {
+      "action": "발주완료",
+      "date": "2026. 4. 2.",
+      "name": "슬리밍 메가 프로바이오틱스"
+    },
+    "300000316": {
+      "action": "발주완료",
+      "date": "2026. 4. 2.",
+      "name": "하이퍼루프 바디 크림 280g"
+    },
+    "800000824": {
+      "action": "발주진행중",
+      "date": "2026. 4. 2.",
+      "name": "유니앤코어 쇼핑백"
+    }
+  },
+  "updatedAt": "2026-04-02T10:59:33.732Z",
+  "updatedBy": "dashboard"
+}
