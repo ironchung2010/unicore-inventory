@@ -1,8 +1,8 @@
 name: SharePoint 데이터 동기화
 
-on:
+on:h
   schedule:
-    - cron: '50 14 * * *'
+        - cron: '0 */3 * * *'
   workflow_dispatch:
 
 permissions:
