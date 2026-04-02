@@ -1105,7 +1105,7 @@ function renderInventoryTable() {
       <td class="num desktop-only" data-label="소비기한" style="font-size:12px;white-space:nowrap;">${getExpiryBadge(p.expiryDate)}</td>
       <td class="num desktop-only" data-label="판매가능기한" style="font-size:12px;white-space:nowrap;">${getExpiryBadge(getSellableDate(p.expiryDate))}</td>
       <td class="mobile-status" data-label="상태"><span class="badge ${badgeClass}">${badgeText}</span></td>
-      <td class="mobile-remark" data-label="REMARK" style="font-size:12px;color:var(--gray-500);" title="${p.remark||''}">${p.remark||'-'}</td>
+      <td class="mobile-remark" data-label="REMARK" style="font-size:12px;color:var(--gray-500);" title="${p.remark||''}">${cleanRemark(p.remark)}</td>
     </tr>`;
   }).join('');
 }
@@ -1185,7 +1185,7 @@ function renderForecast() {
       <td class="num desktop-only" data-label="소비기한" style="font-size:12px;white-space:nowrap;">${getExpiryBadge(p.expiryDate)}</td>
       <td class="num desktop-only" data-label="판매가능기한" style="font-size:12px;white-space:nowrap;">${getExpiryBadge(getSellableDate(p.expiryDate))}</td>
       <td class="mobile-status" data-label="긴급도"><span class="badge ${urgency}">${urgText}</span></td>
-      <td data-label="Remark" style="font-size:12px;">${p.remark || ""}</td>
+      <td data-label="Remark" style="font-size:12px;">${cleanRemark(p.remark)}</td>
     </tr>`;
   }).join('');
 
@@ -1285,7 +1285,7 @@ function renderOrders() {
       <td class="text-right num" data-label="추천 발주량"><strong>${p.recQty.toLocaleString()}</strong></td>
       <td class="text-right num" data-label="리드타임(주)">${p.leadTime || 10}</td>
       <td class="num" data-label="예상 입고일">${p.arrivalDate.toLocaleDateString('ko-KR')}</td>
-      <td class="mobile-remark" data-label="REMARK" style="font-size:12px;">${p.remark||'-'}</td>
+      <td class="mobile-remark" data-label="REMARK" style="font-size:12px;">${cleanRemark(p.remark)}</td>
       <td data-label="액션">
         <select class="order-action-select ${actionClass}" onchange="handleOrderAction('${safeCode}', this)">
           <option value="">-- 선택 --</option>
@@ -1302,6 +1302,11 @@ function renderOrders() {
 
 function toggleAllOrders(el) {
   document.querySelectorAll('.order-check').forEach(c => c.checked = el.checked);
+}
+
+function cleanRemark(r) {
+  if (!r) return '-';
+  return r.replace(/\s*\[[^\]]*\]\s*/g, '').trim() || '-';
 }
 
 function getOrderAction(p) {
@@ -2365,7 +2370,7 @@ function renderRiskInventory() {
       <td class="text-right num" data-label="남은 판매일수">${remainDaysText}</td>
       <td class="text-right num" data-label="예상 잔여수량"><strong style="color:#dc2626;">${p.surplus.toLocaleString()}</strong></td>
       <td class="mobile-status" data-label="위험도"><span class="badge ${riskBadge}">${riskText}</span></td>
-      <td class="mobile-remark" data-label="REMARK" style="font-size:12px;color:var(--gray-500);" title="${p.remark||''}">${p.remark||'-'}</td>
+      <td class="mobile-remark" data-label="REMARK" style="font-size:12px;color:var(--gray-500);" title="${p.remark||''}">${cleanRemark(p.remark)}</td>
     </tr>`;
   }).join('');
 
