@@ -15,11 +15,11 @@
       "pw": "MTIzNDU2",
       "name": "정철",
       "dept": "경영지원본부",
-      "role": "user",
+      "role": "manager",
       "status": "active",
       "createdAt": "2026-04-03",
       "lastLogin": "2026-04-03T09:50:02.577Z"
     }
   ],
-  "updatedAt": "2026-04-03T09:50:02.701Z"
+  "updatedAt": "2026-04-03T09:50:22.973Z"
 }
