@@ -2350,7 +2350,7 @@ async function pullOrderActionsFromGitHub() {
     }
     if (!res.ok) throw new Error('HTTP ' + res.status);
     const data = await res.json();
-    const cnt = JSON.parse(atob(data.content));
+    const cnt = JSON.parse(decodeURIComponent(escape(atob(data.content))));
     const actions = cnt.actions || {};
     // 삭제 목록도 동기화
     if (cnt.dismissed && Array.isArray(cnt.dismissed)) {
@@ -2767,7 +2767,7 @@ async function loadUsersFromGitHub() {
     if (res.status === 404) return [DEFAULT_ADMIN];
     if (!res.ok) return [DEFAULT_ADMIN];
     const data = await res.json();
-    const parsed = JSON.parse(atob(data.content));
+    const parsed = JSON.parse(decodeURIComponent(escape(atob(data.content))));
     allUsers = parsed.users || [DEFAULT_ADMIN];
     // 기본 admin이 없으면 추가
     if (!allUsers.find(u => u.id === 'admin')) allUsers.unshift(DEFAULT_ADMIN);
