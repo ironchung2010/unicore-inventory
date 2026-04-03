@@ -2350,7 +2350,7 @@ async function pullOrderActionsFromGitHub() {
     }
     if (!res.ok) throw new Error('HTTP ' + res.status);
     const data = await res.json();
-    const cnt = JSON.parse(decodeURIComponent(escape(atob(data.content))));
+    const cnt = JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(data.content), c => c.charCodeAt(0))));
     const actions = cnt.actions || {};
     // 삭제 목록도 동기화
     if (cnt.dismissed && Array.isArray(cnt.dismissed)) {
@@ -2382,7 +2382,7 @@ async function pushOrderActionsToGitHub() {
   try {
     const actions = extractOrderActions();
     const payload = { actions: actions, updatedAt: new Date().toISOString(), updatedBy: 'dashboard' };
-    const contentBase64 = btoa(unescape(encodeURIComponent(JSON.stringify(payload, null, 2))));
+    const contentBase64 = btoa(String.fromCharCode(...new TextEncoder().encode(JSON.stringify(payload, null, 2))));
     let sha = '';
     try {
       const getRes = await fetch('https://api.github.com/repos/' + cfg.repo + '/contents/' + cfg.filePath, {
@@ -2767,7 +2767,7 @@ async function loadUsersFromGitHub() {
     if (res.status === 404) return [DEFAULT_ADMIN];
     if (!res.ok) return [DEFAULT_ADMIN];
     const data = await res.json();
-    const parsed = JSON.parse(decodeURIComponent(escape(atob(data.content))));
+    const parsed = JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(data.content), c => c.charCodeAt(0))));
     allUsers = parsed.users || [DEFAULT_ADMIN];
     // 기본 admin이 없으면 추가
     if (!allUsers.find(u => u.id === 'admin')) allUsers.unshift(DEFAULT_ADMIN);
@@ -2790,7 +2790,7 @@ async function saveUsersToGitHub(users) {
       if (getRes.ok) { sha = (await getRes.json()).sha; }
     } catch(e) {}
     const payload = { users: users, updatedAt: new Date().toISOString() };
-    const body = { message: '회원 정보 업데이트 (' + new Date().toLocaleString('ko-KR') + ')', content: btoa(unescape(encodeURIComponent(JSON.stringify(payload, null, 2)))) };
+    const body = { message: '회원 정보 업데이트 (' + new Date().toLocaleString('ko-KR') + ')', content: btoa(String.fromCharCode(...new TextEncoder().encode(JSON.stringify(payload, null, 2)))) };
     if (sha) body.sha = sha;
     await fetch('https://api.github.com/repos/' + cfg.repo + '/contents/' + USERS_FILE, {
       method: 'PUT',
