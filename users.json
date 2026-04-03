@@ -9,7 +9,17 @@
       "status": "active",
       "createdAt": "2026-01-01",
       "lastLogin": "2026-04-03T09:47:06.812Z"
+    },
+    {
+      "id": "cjung",
+      "pw": "MTIzNDU2",
+      "name": "정철",
+      "dept": "경영지원본부",
+      "role": "user",
+      "status": "pending",
+      "createdAt": "2026-04-03",
+      "lastLogin": ""
     }
   ],
-  "updatedAt": "2026-04-03T09:47:06.992Z"
+  "updatedAt": "2026-04-03T09:47:52.427Z"
 }
