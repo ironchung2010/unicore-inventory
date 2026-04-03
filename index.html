@@ -29,6 +29,49 @@
     --shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
     --shadow-md: 0 4px 6px rgba(0,0,0,0.07), 0 2px 4px rgba(0,0,0,0.06);
   }
+
+  /* Login Screen */
+  .login-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:linear-gradient(135deg, #1a5632 0%, #2d8a4e 50%, #1a5632 100%); z-index:9999; display:flex; align-items:center; justify-content:center; }
+  .login-overlay.hidden { display:none; }
+  .login-box { background:white; border-radius:16px; padding:40px; width:400px; max-width:90vw; box-shadow:0 20px 60px rgba(0,0,0,0.3); }
+  .login-box h2 { text-align:center; color:var(--primary); font-size:24px; margin-bottom:6px; }
+  .login-box .login-subtitle { text-align:center; color:var(--gray-500); font-size:13px; margin-bottom:28px; }
+  .login-box .logo-area { text-align:center; margin-bottom:20px; font-size:36px; }
+  .login-field { margin-bottom:16px; }
+  .login-field label { display:block; font-size:13px; font-weight:600; color:var(--gray-700); margin-bottom:6px; }
+  .login-field input { width:100%; padding:10px 14px; border:1px solid var(--gray-300); border-radius:8px; font-size:14px; outline:none; transition:border 0.2s; }
+  .login-field input:focus { border-color:var(--primary); box-shadow:0 0 0 3px rgba(26,86,50,0.1); }
+  .login-btn { width:100%; padding:12px; background:var(--primary); color:white; border:none; border-radius:8px; font-size:15px; font-weight:600; cursor:pointer; transition:background 0.2s; }
+  .login-btn:hover { background:var(--primary-light); }
+  .login-btn.secondary { background:white; color:var(--primary); border:1px solid var(--primary); margin-top:10px; }
+  .login-btn.secondary:hover { background:var(--primary-bg); }
+  .login-error { color:var(--danger); font-size:12px; margin-top:8px; display:none; text-align:center; }
+  .login-links { display:flex; justify-content:space-between; margin-top:16px; font-size:12px; }
+  .login-links a { color:var(--primary); cursor:pointer; text-decoration:none; }
+  .login-links a:hover { text-decoration:underline; }
+
+  /* Register Modal */
+  .register-modal-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:10000; display:flex; align-items:center; justify-content:center; }
+  .register-modal-overlay.hidden { display:none; }
+  .register-modal { background:white; border-radius:16px; padding:36px; width:440px; max-width:90vw; box-shadow:0 20px 60px rgba(0,0,0,0.3); }
+  .register-modal h3 { text-align:center; color:var(--primary); margin-bottom:20px; font-size:20px; }
+
+  /* User info in header */
+  .user-info { display:flex; align-items:center; gap:8px; }
+  .user-badge { background:rgba(255,255,255,0.2); padding:4px 12px; border-radius:20px; font-size:12px; display:flex; align-items:center; gap:6px; }
+  .user-badge .role-tag { background:rgba(255,255,255,0.3); padding:1px 6px; border-radius:4px; font-size:10px; }
+  .logout-btn { background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.3); color:white; padding:4px 10px; border-radius:6px; font-size:11px; cursor:pointer; }
+  .logout-btn:hover { background:rgba(255,255,255,0.25); }
+
+  /* Member Management */
+  .member-table { width:100%; }
+  .member-table th { background:var(--gray-50); font-weight:600; }
+  .member-table td, .member-table th { padding:10px 14px; border-bottom:1px solid var(--gray-200); font-size:13px; }
+  .role-select { padding:4px 8px; border:1px solid var(--gray-300); border-radius:6px; font-size:12px; }
+  .status-active { color:var(--success); font-weight:600; }
+  .status-pending { color:var(--warning); font-weight:600; }
+  .status-blocked { color:var(--danger); font-weight:600; }
+
   * { margin:0; padding:0; box-sizing:border-box; }
   body { font-family: 'Segoe UI', -apple-system, sans-serif; background: var(--gray-100); color: var(--gray-900); }
 
@@ -268,12 +311,67 @@
 </head>
 <body>
 
-<div class="header">
+<!-- 로그인 화면 -->
+<div class="login-overlay" id="loginOverlay">
+  <div class="login-box">
+    <div class="logo-area">🏢</div>
+    <h2>UNI&CORE</h2>
+    <div class="login-subtitle">재고 및 발주 관리 시스템</div>
+    <div class="login-field">
+      <label>아이디</label>
+      <input type="text" id="loginId" placeholder="아이디를 입력하세요" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <div class="login-field">
+      <label>비밀번호</label>
+      <input type="password" id="loginPw" placeholder="비밀번호를 입력하세요" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <div class="login-error" id="loginError"></div>
+    <button class="login-btn" onclick="doLogin()">로그인</button>
+    <button class="login-btn secondary" onclick="showRegister()">회원가입</button>
+  </div>
+</div>
+
+<!-- 회원가입 모달 -->
+<div class="register-modal-overlay hidden" id="registerOverlay">
+  <div class="register-modal">
+    <h3>회원가입</h3>
+    <div class="login-field">
+      <label>아이디 (영문/숫자, 4~20자)</label>
+      <input type="text" id="regId" placeholder="아이디">
+    </div>
+    <div class="login-field">
+      <label>비밀번호 (6자 이상)</label>
+      <input type="password" id="regPw" placeholder="비밀번호">
+    </div>
+    <div class="login-field">
+      <label>비밀번호 확인</label>
+      <input type="password" id="regPwConfirm" placeholder="비밀번호 확인">
+    </div>
+    <div class="login-field">
+      <label>이름</label>
+      <input type="text" id="regName" placeholder="이름">
+    </div>
+    <div class="login-field">
+      <label>부서</label>
+      <input type="text" id="regDept" placeholder="부서명">
+    </div>
+    <div class="login-error" id="regError"></div>
+    <button class="login-btn" onclick="doRegister()">가입 신청</button>
+    <button class="login-btn secondary" onclick="hideRegister()">취소</button>
+  </div>
+</div>
+
+
+<div class="header" id="mainHeader">
   <div>
     <h1>UNI&CORE 재고 및 발주 관리 시스템</h1>
     <div class="subtitle">Inventory & Order Management System</div>
   </div>
   <div class="header-right">
+    <div class="user-info" id="userInfoArea">
+      <span class="user-badge" id="userBadge"></span>
+      <button class="logout-btn" onclick="doLogout()">로그아웃</button>
+    </div>
     <div class="header-date" id="currentDate"></div>
   </div>
 </div>
@@ -285,6 +383,7 @@
   <div class="tab" onclick="switchTab('orders')">발주관리</div>
   <div class="tab" onclick="switchTab('risk')">위험재고</div>
   <div class="tab" onclick="switchTab('data')">데이터 관리</div>
+  <div class="tab" onclick="switchTab('members')" id="tabMembers" style="display:none;">회원관리</div>
 </div>
 
 <!-- ===== 재고현황 탭 ===== -->
@@ -748,6 +847,41 @@
   </div>
 </div>
 
+
+<!-- ===== 회원관리 탭 ===== -->
+<div id="tab-members" class="tab-content">
+  <div class="kpi-grid">
+    <div class="kpi-card info"><div class="kpi-label">전체 회원</div><div class="kpi-value" id="kpi-total-members">0</div></div>
+    <div class="kpi-card success"><div class="kpi-label">활성 회원</div><div class="kpi-value" id="kpi-active-members">0</div></div>
+    <div class="kpi-card warning"><div class="kpi-label">승인 대기</div><div class="kpi-value" id="kpi-pending-members">0</div></div>
+    <div class="kpi-card danger"><div class="kpi-label">차단 회원</div><div class="kpi-value" id="kpi-blocked-members">0</div></div>
+  </div>
+  <div class="panel">
+    <div class="panel-header">
+      <div class="panel-title">회원 목록</div>
+      <button class="btn btn-primary btn-sm" onclick="saveMembersToGitHub()">회원정보 저장</button>
+    </div>
+    <div class="panel-body no-pad">
+      <table class="data-table member-table">
+        <thead>
+          <tr>
+            <th>아이디</th>
+            <th>이름</th>
+            <th>부서</th>
+            <th>권한</th>
+            <th>상태</th>
+            <th>가입일</th>
+            <th>최근 로그인</th>
+            <th>관리</th>
+          </tr>
+        </thead>
+        <tbody id="memberTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+</div>
 <div class="toast" id="toast"></div>
 
 <script>
@@ -896,7 +1030,16 @@ function onDiscontinuedToggle() {
 }
 
 // ============ INIT ============
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+  // 로그인 상태 확인
+  const savedUser = sessionStorage.getItem('unicore_current_user');
+  if (savedUser) {
+    try {
+      currentUser = JSON.parse(savedUser);
+      onLoginSuccess();
+    } catch(e) {}
+  }
+
   document.getElementById('currentDate').textContent = new Date().toLocaleDateString('ko-KR', { year:'numeric', month:'long', day:'numeric', weekday:'long' });
 
   // Always use embedded sync data (products array from sync script)
@@ -969,12 +1112,13 @@ function switchTab(tab) {
   document.querySelectorAll('.tab').forEach((t,i) => t.classList.remove('active'));
   document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
   document.getElementById('tab-' + tab).classList.add('active');
-  const tabs = ['inventory','shipment','forecast','orders','risk','data'];
+  const tabs = ['inventory','shipment','forecast','orders','risk','data','members'];
   document.querySelectorAll('.tab')[tabs.indexOf(tab)].classList.add('active');
   if (tab === 'shipment') renderShipment();
   if (tab === 'forecast') renderForecast();
   if (tab === 'orders') renderOrders();
   if (tab === 'risk') renderRiskInventory();
+  if (tab === 'members') renderMembers();
 }
 
 // ============ REFRESH ALL ============
@@ -2605,6 +2749,234 @@ function exportRiskInventory() {
   XLSX.writeFile(wb, 'UNI&CORE_위험재고_' + new Date().toISOString().slice(0, 10) + '.xlsx');
   showToast('위험재고 Excel 파일이 다운로드되었습니다.');
 }
+
+
+// ============ AUTH SYSTEM ============
+let currentUser = null;
+let allUsers = [];
+const USERS_FILE = 'users.json';
+const DEFAULT_ADMIN = { id: 'admin', pw: btoa('admin1234'), name: '관리자', dept: '경영지원', role: 'admin', status: 'active', createdAt: '2026-01-01', lastLogin: '' };
+
+async function loadUsersFromGitHub() {
+  const cfg = getGitHubConfig();
+  if (!cfg.repo || !cfg.token) return [DEFAULT_ADMIN];
+  try {
+    const res = await fetch('https://api.github.com/repos/' + cfg.repo + '/contents/' + USERS_FILE, {
+      headers: { 'Authorization': 'Bearer ' + cfg.token, 'Accept': 'application/vnd.github.v3+json' }
+    });
+    if (res.status === 404) return [DEFAULT_ADMIN];
+    if (!res.ok) return [DEFAULT_ADMIN];
+    const data = await res.json();
+    const parsed = JSON.parse(atob(data.content));
+    allUsers = parsed.users || [DEFAULT_ADMIN];
+    // 기본 admin이 없으면 추가
+    if (!allUsers.find(u => u.id === 'admin')) allUsers.unshift(DEFAULT_ADMIN);
+    return allUsers;
+  } catch(e) { return [DEFAULT_ADMIN]; }
+}
+
+async function saveUsersToGitHub(users) {
+  const cfg = getGitHubConfig();
+  if (!cfg.repo || !cfg.token) { 
+    localStorage.setItem('unicore_users', JSON.stringify(users));
+    return; 
+  }
+  try {
+    let sha = '';
+    try {
+      const getRes = await fetch('https://api.github.com/repos/' + cfg.repo + '/contents/' + USERS_FILE, {
+        headers: { 'Authorization': 'Bearer ' + cfg.token, 'Accept': 'application/vnd.github.v3+json' }
+      });
+      if (getRes.ok) { sha = (await getRes.json()).sha; }
+    } catch(e) {}
+    const payload = { users: users, updatedAt: new Date().toISOString() };
+    const body = { message: '회원 정보 업데이트 (' + new Date().toLocaleString('ko-KR') + ')', content: btoa(unescape(encodeURIComponent(JSON.stringify(payload, null, 2)))) };
+    if (sha) body.sha = sha;
+    await fetch('https://api.github.com/repos/' + cfg.repo + '/contents/' + USERS_FILE, {
+      method: 'PUT',
+      headers: { 'Authorization': 'Bearer ' + cfg.token, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+  } catch(e) { localStorage.setItem('unicore_users', JSON.stringify(users)); }
+}
+
+function hashPw(pw) { return btoa(pw); }
+
+async function doLogin() {
+  const id = document.getElementById('loginId').value.trim();
+  const pw = document.getElementById('loginPw').value;
+  const errEl = document.getElementById('loginError');
+  errEl.style.display = 'none';
+  if (!id || !pw) { errEl.textContent = '아이디와 비밀번호를 입력하세요.'; errEl.style.display = 'block'; return; }
+
+  // GitHub에서 최신 사용자 목록 로드
+  allUsers = await loadUsersFromGitHub();
+  // localStorage fallback
+  if (allUsers.length <= 1) {
+    try {
+      const local = JSON.parse(localStorage.getItem('unicore_users') || '[]');
+      if (local.length > 0) allUsers = local;
+      if (!allUsers.find(u => u.id === 'admin')) allUsers.unshift(DEFAULT_ADMIN);
+    } catch(e) {}
+  }
+
+  const user = allUsers.find(u => u.id === id);
+  if (!user) { errEl.textContent = '존재하지 않는 아이디입니다.'; errEl.style.display = 'block'; return; }
+  if (user.status === 'pending') { errEl.textContent = '가입 승인 대기 중입니다. 관리자에게 문의하세요.'; errEl.style.display = 'block'; return; }
+  if (user.status === 'blocked') { errEl.textContent = '차단된 계정입니다. 관리자에게 문의하세요.'; errEl.style.display = 'block'; return; }
+  if (user.pw !== hashPw(pw)) { errEl.textContent = '비밀번호가 일치하지 않습니다.'; errEl.style.display = 'block'; return; }
+
+  // 로그인 성공
+  user.lastLogin = new Date().toISOString();
+  currentUser = user;
+  sessionStorage.setItem('unicore_current_user', JSON.stringify(user));
+  saveUsersToGitHub(allUsers);
+  onLoginSuccess();
+}
+
+function onLoginSuccess() {
+  document.getElementById('loginOverlay').classList.add('hidden');
+  document.getElementById('mainHeader').style.display = '';
+  document.querySelector('.tab-bar').style.display = '';
+  document.querySelector('.content').style.display = '';
+
+  // 사용자 정보 표시
+  const roleNames = { admin: '관리자', manager: '매니저', user: '일반' };
+  document.getElementById('userBadge').innerHTML = currentUser.name + ' <span class="role-tag">' + (roleNames[currentUser.role] || '일반') + '</span>';
+
+  // 관리자만 회원관리 탭 표시
+  if (currentUser.role === 'admin') {
+    document.getElementById('tabMembers').style.display = '';
+  }
+  showToast(currentUser.name + '님, 환영합니다!');
+}
+
+function doLogout() {
+  currentUser = null;
+  sessionStorage.removeItem('unicore_current_user');
+  document.getElementById('loginOverlay').classList.remove('hidden');
+  document.getElementById('loginId').value = '';
+  document.getElementById('loginPw').value = '';
+  document.getElementById('loginError').style.display = 'none';
+  showToast('로그아웃되었습니다.');
+}
+
+function showRegister() {
+  document.getElementById('registerOverlay').classList.remove('hidden');
+  document.getElementById('regId').value = '';
+  document.getElementById('regPw').value = '';
+  document.getElementById('regPwConfirm').value = '';
+  document.getElementById('regName').value = '';
+  document.getElementById('regDept').value = '';
+  document.getElementById('regError').style.display = 'none';
+}
+
+function hideRegister() {
+  document.getElementById('registerOverlay').classList.add('hidden');
+}
+
+async function doRegister() {
+  const id = document.getElementById('regId').value.trim();
+  const pw = document.getElementById('regPw').value;
+  const pwConfirm = document.getElementById('regPwConfirm').value;
+  const name = document.getElementById('regName').value.trim();
+  const dept = document.getElementById('regDept').value.trim();
+  const errEl = document.getElementById('regError');
+  errEl.style.display = 'none';
+
+  if (!id || !pw || !name) { errEl.textContent = '필수 항목을 모두 입력하세요.'; errEl.style.display = 'block'; return; }
+  if (!/^[a-zA-Z0-9]{4,20}$/.test(id)) { errEl.textContent = '아이디는 영문/숫자 4~20자여야 합니다.'; errEl.style.display = 'block'; return; }
+  if (pw.length < 6) { errEl.textContent = '비밀번호는 6자 이상이어야 합니다.'; errEl.style.display = 'block'; return; }
+  if (pw !== pwConfirm) { errEl.textContent = '비밀번호가 일치하지 않습니다.'; errEl.style.display = 'block'; return; }
+
+  allUsers = await loadUsersFromGitHub();
+  if (allUsers.find(u => u.id === id)) { errEl.textContent = '이미 사용 중인 아이디입니다.'; errEl.style.display = 'block'; return; }
+
+  allUsers.push({
+    id: id, pw: hashPw(pw), name: name, dept: dept,
+    role: 'user', status: 'pending',
+    createdAt: new Date().toISOString().slice(0, 10), lastLogin: ''
+  });
+
+  await saveUsersToGitHub(allUsers);
+  hideRegister();
+  showToast('가입 신청이 완료되었습니다. 관리자 승인 후 로그인 가능합니다.');
+}
+
+// ============ MEMBER MANAGEMENT ============
+function renderMembers() {
+  if (!currentUser || currentUser.role !== 'admin') return;
+  const tbody = document.getElementById('memberTableBody');
+  if (!tbody) return;
+
+  let active = 0, pending = 0, blocked = 0;
+  allUsers.forEach(u => {
+    if (u.status === 'active') active++;
+    else if (u.status === 'pending') pending++;
+    else if (u.status === 'blocked') blocked++;
+  });
+
+  document.getElementById('kpi-total-members').textContent = allUsers.length;
+  document.getElementById('kpi-active-members').textContent = active;
+  document.getElementById('kpi-pending-members').textContent = pending;
+  document.getElementById('kpi-blocked-members').textContent = blocked;
+
+  tbody.innerHTML = allUsers.map((u, i) => {
+    const statusClass = u.status === 'active' ? 'status-active' : u.status === 'pending' ? 'status-pending' : 'status-blocked';
+    const statusText = u.status === 'active' ? '활성' : u.status === 'pending' ? '대기' : '차단';
+    const lastLogin = u.lastLogin ? new Date(u.lastLogin).toLocaleString('ko-KR') : '-';
+    const isAdmin = u.id === 'admin';
+
+    return '<tr>' +
+      '<td>' + u.id + '</td>' +
+      '<td>' + u.name + '</td>' +
+      '<td>' + (u.dept || '-') + '</td>' +
+      '<td><select class="role-select" onchange="changeMemberRole(' + i + ',this.value)"' + (isAdmin ? ' disabled' : '') + '>' +
+        '<option value="admin"' + (u.role === 'admin' ? ' selected' : '') + '>관리자</option>' +
+        '<option value="manager"' + (u.role === 'manager' ? ' selected' : '') + '>매니저</option>' +
+        '<option value="user"' + (u.role === 'user' ? ' selected' : '') + '>일반</option>' +
+      '</select></td>' +
+      '<td><span class="' + statusClass + '">' + statusText + '</span></td>' +
+      '<td>' + (u.createdAt || '-') + '</td>' +
+      '<td style="font-size:11px;">' + lastLogin + '</td>' +
+      '<td>' + (isAdmin ? '-' : 
+        (u.status === 'pending' ? '<button class="btn btn-sm" style="background:var(--success);color:white;font-size:11px;padding:3px 8px;border:none;border-radius:4px;cursor:pointer;margin-right:4px;" onclick="approveMember(' + i + ')">승인</button>' : '') +
+        (u.status !== 'blocked' ? '<button class="btn btn-sm" style="background:var(--danger);color:white;font-size:11px;padding:3px 8px;border:none;border-radius:4px;cursor:pointer;" onclick="blockMember(' + i + ')">차단</button>' : '<button class="btn btn-sm" style="background:var(--success);color:white;font-size:11px;padding:3px 8px;border:none;border-radius:4px;cursor:pointer;" onclick="unblockMember(' + i + ')">해제</button>')
+      ) + '</td>' +
+    '</tr>';
+  }).join('');
+}
+
+function changeMemberRole(idx, role) {
+  if (allUsers[idx].id === 'admin') return;
+  allUsers[idx].role = role;
+  showToast(allUsers[idx].name + '님의 권한이 변경되었습니다.');
+}
+
+function approveMember(idx) {
+  allUsers[idx].status = 'active';
+  renderMembers();
+  showToast(allUsers[idx].name + '님의 가입이 승인되었습니다.');
+}
+
+function blockMember(idx) {
+  if (allUsers[idx].id === 'admin') return;
+  allUsers[idx].status = 'blocked';
+  renderMembers();
+  showToast(allUsers[idx].name + '님이 차단되었습니다.');
+}
+
+function unblockMember(idx) {
+  allUsers[idx].status = 'active';
+  renderMembers();
+  showToast(allUsers[idx].name + '님의 차단이 해제되었습니다.');
+}
+
+async function saveMembersToGitHub() {
+  await saveUsersToGitHub(allUsers);
+  showToast('회원 정보가 저장되었습니다.');
+}
+
 
 // ============ TOAST ============
 function showToast(msg) {
