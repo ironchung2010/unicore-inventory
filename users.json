@@ -3,13 +3,13 @@
     {
       "id": "admin",
       "pw": "YWRtaW4xMjM0",
-      "name": "관리자",
-      "dept": "경영지원",
+      "name": "ê´ë¦¬ì",
+      "dept": "ê²½ìì§ì",
       "role": "admin",
       "status": "active",
       "createdAt": "2026-01-01",
-      "lastLogin": "2026-04-03T09:40:03.794Z"
+      "lastLogin": "2026-04-03T09:40:44.635Z"
     }
   ],
-  "updatedAt": "2026-04-03T09:40:04.024Z"
+  "updatedAt": "2026-04-03T09:40:44.636Z"
 }
