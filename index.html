@@ -536,6 +536,7 @@
     </div>
     <div class="panel-body">
       <div class="toolbar">
+        <input type="text" class="search-box" id="forecastSearch" placeholder="제품명 또는 상품코드 검색..." oninput="renderForecast()" style="width:240px;">
         <select class="filter" id="forecastRange" onchange="renderForecast()">
           <option value="30">30일 이내</option>
           <option value="60">60일 이내</option>
@@ -1308,6 +1309,8 @@ function renderForecast() {
     return { ...p, dailyAvg: Math.round(dailyAvg * 10) / 10, daysLeft, stockoutDate };
   });
 
+  const searchTerm = (document.getElementById('forecastSearch').value || '').trim().toLowerCase();
+  if (searchTerm) items = items.filter(i => i.name.toLowerCase().includes(searchTerm) || i.code.includes(searchTerm));
   if (cat) items = items.filter(i => i.category === cat);
   if (range !== 'all') items = items.filter(i => i.daysLeft <= parseInt(range));
   items.sort((a,b) => a.daysLeft - b.daysLeft);
