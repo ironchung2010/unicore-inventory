@@ -382,7 +382,7 @@
   <div class="tab" onclick="switchTab('forecast')">재고예측</div>
   <div class="tab" onclick="switchTab('orders')">발주관리</div>
   <div class="tab" onclick="switchTab('risk')">위험재고</div>
-  <div class="tab" onclick="switchTab('data')">데이터 관리</div>
+  <div class="tab" onclick="switchTab('data')" id="tabData" style="display:none;">데이터 관리</div>
   <div class="tab" onclick="switchTab('members')" id="tabMembers" style="display:none;">회원관리</div>
 </div>
 
@@ -2847,6 +2847,7 @@ function onLoginSuccess() {
   // 관리자만 회원관리 탭 표시
   if (currentUser.role === 'admin') {
     document.getElementById('tabMembers').style.display = '';
+    document.getElementById('tabData').style.display = '';
   }
   showToast(currentUser.name + '님, 환영합니다!');
 }
