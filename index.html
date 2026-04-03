@@ -591,9 +591,9 @@
   <div class="panel">
     <div class="panel-header">
       <div class="panel-title">발주 추천 목록</div>
-      <button class="btn btn-primary btn-sm" onclick="exportOrders()">발주 검토서 내보내기</button>
-      <button class="btn btn-sm" style="background:#fee2e2;color:#dc2626;border:1px solid #fca5a5;" onclick="dismissCheckedOrders()">조치완료 후 삭제</button>
-      <button class="btn btn-sm" style="background:var(--gray-100);color:var(--gray-500);border:1px solid var(--gray-300);font-size:11px;" onclick="showDismissedOrders()">삭제 이력</button>
+      <button class="btn btn-primary btn-sm" onclick="exportOrders()" id="btnExportOrders">발주 검토서 내보내기</button>
+      <button class="btn btn-sm" style="background:#fee2e2;color:#dc2626;border:1px solid #fca5a5;" onclick="dismissCheckedOrders()" id="btnDismissOrders">조치완료 후 삭제</button>
+      <button class="btn btn-sm" style="background:var(--gray-100);color:var(--gray-500);border:1px solid var(--gray-300);font-size:11px;" onclick="showDismissedOrders()" id="btnDismissHistory">삭제 이력</button>
     </div>
     <div class="panel-body">
       <div class="table-wrap" style="max-height:500px;overflow-y:auto;">
@@ -1435,7 +1435,7 @@ function renderOrders() {
       <td class="num" data-label="예상 입고일">${p.arrivalDate.toLocaleDateString('ko-KR')}</td>
       <td class="mobile-remark" data-label="REMARK" style="font-size:12px;">${cleanRemark(p.remark)}</td>
       <td data-label="액션">
-        <select class="order-action-select ${actionClass}" onchange="handleOrderAction('${safeCode}', this)">
+        <select class="order-action-select ${actionClass}" onchange="handleOrderAction('${safeCode}', this)" ${canEditOrders() ? '' : 'disabled style="opacity:0.5;cursor:not-allowed;"'}>
           <option value="">-- 선택 --</option>
           <option value="발주완료"${currentAction === '발주완료' ? ' selected' : ''}>발주완료</option>
           <option value="발주진행중"${currentAction === '발주진행중' ? ' selected' : ''}>발주진행중</option>
@@ -1475,6 +1475,7 @@ function getOrderAction(p) {
 }
 
 function handleOrderAction(code, selectEl) {
+  if (!canEditOrders()) { showToast('권한이 없습니다. 매니저 이상만 변경 가능합니다.'); selectEl.selectedIndex = 0; return; }
   const idx = products.findIndex(p => p.code === code);
   if (idx < 0) return;
 
@@ -1515,6 +1516,7 @@ function handleOrderAction(code, selectEl) {
 
 // ============ DISMISSED ORDERS (조치완료 삭제) ============
 function dismissCheckedOrders() {
+  if (!canEditOrders()) { showToast('권한이 없습니다. 매니저 이상만 삭제 가능합니다.'); return; }
   const checks = document.querySelectorAll('.order-check:checked');
   if (checks.length === 0) {
     showToast('삭제할 항목을 선택해 주세요.');
@@ -2091,6 +2093,7 @@ function exportTable() {
 }
 
 function exportOrders() {
+  if (!canEditOrders()) { showToast('권한이 없습니다. 매니저 이상만 내보내기 가능합니다.'); return; }
   const checked = document.querySelectorAll('.order-check:checked');
   if (checked.length === 0) { showToast('발주할 제품을 선택하세요.'); return; }
 
@@ -2849,6 +2852,13 @@ function onLoginSuccess() {
     document.getElementById('tabMembers').style.display = '';
     document.getElementById('tabData').style.display = '';
   }
+  // 매니저 이상만 발주 액션 버튼 표시
+  const orderBtns = ['btnExportOrders', 'btnDismissOrders', 'btnDismissHistory'];
+  orderBtns.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = canEditOrders() ? '' : 'none';
+  });
+
   showToast(currentUser.name + '님, 환영합니다!');
 }
 
@@ -2902,6 +2912,13 @@ async function doRegister() {
   await saveUsersToGitHub(allUsers);
   hideRegister();
   showToast('가입 신청이 완료되었습니다. 관리자 승인 후 로그인 가능합니다.');
+}
+
+
+// ============ PERMISSION HELPERS ============
+function canEditOrders() {
+  // admin, manager만 발주 액션 변경/삭제 가능
+  return currentUser && (currentUser.role === 'admin' || currentUser.role === 'manager');
 }
 
 // ============ MEMBER MANAGEMENT ============
