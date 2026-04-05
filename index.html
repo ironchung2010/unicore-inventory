@@ -1075,7 +1075,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 function saveToStorage() {
   try {
     localStorage.setItem('unicore_products', JSON.stringify(products));
-    localStorage.setItem('unicore_data_version', 'v-auto-202604042158');
+    localStorage.setItem('unicore_data_version', 'v-auto-202604050557');
   } catch(e) {}
 }
 
@@ -2022,7 +2022,7 @@ function loadSampleData() {
 
   saveToStorage();
   refreshAll();
-  showToast('실시간 데이터 ' + products.length + '개 제품이 로드되었습니다. (2026년 04월 04일 동기화)');
+  showToast('실시간 데이터 ' + products.length + '개 제품이 로드되었습니다. (2026년 04월 05일 동기화)');
 }
 
 // ============ MODAL / CRUD ============
@@ -2232,7 +2232,7 @@ function saveSyncUrl() {
   document.getElementById('syncStatusBadge').textContent = '활성';
   document.getElementById('syncStatusBadge').style.background = 'var(--success-bg)';
   document.getElementById('syncStatusBadge').style.color = 'var(--success)';
-  showToast('실시간 데이터 ' + products.length + '개 제품이 로드되었습니다. (2026년 04월 04일 동기화)');
+  showToast('실시간 데이터 ' + products.length + '개 제품이 로드되었습니다. (2026년 04월 05일 동기화)');
 }
 
 function saveSyncConfig(url) {
@@ -2474,13 +2474,13 @@ function triggerManualSync() {
     if (resp.status === 204) {
       document.getElementById('lastSyncTime').textContent = '동기화 트리거: ' + now + ' (약 1-2분 후 반영)';
       try { localStorage.setItem('unicore_last_sync', now); } catch(e) {}
-      showToast('실시간 데이터 ' + products.length + '개 제품이 로드되었습니다. (2026년 04월 04일 동기화)');
+      showToast('실시간 데이터 ' + products.length + '개 제품이 로드되었습니다. (2026년 04월 05일 동기화)');
       // Poll for completion
       setTimeout(() => pollSyncStatus(ghRepo, ghToken, btn), 15000);
     } else {
       resp.text().then(t => {
         console.error('Sync trigger failed:', t);
-        showToast('실시간 데이터 ' + products.length + '개 제품이 로드되었습니다. (2026년 04월 04일 동기화)');
+        showToast('실시간 데이터 ' + products.length + '개 제품이 로드되었습니다. (2026년 04월 05일 동기화)');
         btn.disabled = false;
         btn.textContent = '수동 동기화 실행';
         btn.style.opacity = '1';
@@ -2489,7 +2489,7 @@ function triggerManualSync() {
   })
   .catch(err => {
     console.error('Sync error:', err);
-    showToast('실시간 데이터 ' + products.length + '개 제품이 로드되었습니다. (2026년 04월 04일 동기화)');
+    showToast('실시간 데이터 ' + products.length + '개 제품이 로드되었습니다. (2026년 04월 05일 동기화)');
     btn.disabled = false;
     btn.textContent = '수동 동기화 실행';
     btn.style.opacity = '1';
@@ -2508,7 +2508,7 @@ function pollSyncStatus(ghRepo, ghToken, btn) {
     const run = data.workflow_runs && data.workflow_runs[0];
     if (run && run.status === 'completed') {
       if (run.conclusion === 'success') {
-        showToast('실시간 데이터 ' + products.length + '개 제품이 로드되었습니다. (2026년 04월 04일 동기화)');
+        showToast('실시간 데이터 ' + products.length + '개 제품이 로드되었습니다. (2026년 04월 05일 동기화)');
         setTimeout(() => location.reload(), 2000);
       } else {
         showToast('동기화 실패: ' + (run.conclusion || 'unknown'));
