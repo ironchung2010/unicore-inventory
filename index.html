@@ -676,6 +676,7 @@
               <th class="text-right">일 평균출고</th>
               <th class="text-right">예상 소진일수</th>
               <th>판매가능기한</th>
+              <th>소비기한</th>
               <th class="text-right">남은 판매일수</th>
               <th class="text-right">예상 잔여수량</th>
               <th>위험도</th>
@@ -2668,6 +2669,7 @@ function renderRiskInventory() {
       <td class="text-right num" data-label="일 평균출고">${p.dailyAvg}</td>
       <td class="text-right num" data-label="예상 소진일수">${p.daysToDeplete >= 9999 ? '<span style="color:var(--gray-500);">출고없음</span>' : p.daysToDeplete + '일'}</td>
       <td class="num" data-label="판매가능기한" style="font-size:12px;white-space:nowrap;">${getExpiryBadge(p.sellableDate)}</td>
+      <td class="num" data-label="소비기한" style="font-size:12px;white-space:nowrap;">${getExpiryBadge(p.expiryDate)}</td>
       <td class="text-right num" data-label="남은 판매일수">${remainDaysText}</td>
       <td class="text-right num" data-label="예상 잔여수량"><strong style="color:#dc2626;">${p.surplus.toLocaleString()}</strong></td>
       <td class="mobile-status" data-label="위험도"><span class="badge ${riskBadge}">${riskText}</span></td>
@@ -2736,12 +2738,13 @@ function exportRiskInventory() {
   if (items.length === 0) { showToast('내보낼 위험재고 데이터가 없습니다.'); return; }
 
   const riskLevelText = { expired: '기한만료', critical: '소진불가', warning: '주의' };
-  const ws_data = [['카테고리','상품코드','품명','현재고','2M 평균출고','일 평균출고','예상 소진일수','판매가능기한','남은 판매일수','예상 잔여수량','위험도','REMARK']];
+  const ws_data = [['카테고리','상품코드','품명','현재고','2M 평균출고','일 평균출고','예상 소진일수','판매가능기한','소비기한','남은 판매일수','예상 잔여수량','위험도','REMARK']];
   items.forEach(p => {
     ws_data.push([
       p.category, p.code, p.name, p.currentStock || 0, p.avgMonthlyOut || 0, p.dailyAvg,
       p.daysToDeplete >= 9999 ? '출고없음' : p.daysToDeplete,
       formatDate(p.sellableDate),
+      p.expiryDate ? formatDate(p.expiryDate) : '',
       p.remainSellDays <= 0 ? '만료' : p.remainSellDays,
       p.surplus,
       riskLevelText[p.riskLevel] || '',
