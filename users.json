@@ -29,7 +29,17 @@
       "status": "pending",
       "createdAt": "2026-04-06",
       "lastLogin": ""
+    },
+    {
+      "id": "mlkim",
+      "pw": "MTIzNDU2",
+      "name": "김미란",
+      "dept": "마케팅본부",
+      "role": "user",
+      "status": "pending",
+      "createdAt": "2026-04-06",
+      "lastLogin": ""
     }
   ],
-  "updatedAt": "2026-04-06T05:25:51.275Z"
+  "updatedAt": "2026-04-06T05:26:56.070Z"
 }
