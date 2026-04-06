@@ -1,4 +1,25 @@
 {
-  "users": [],
-  "updatedAt": "2026-04-06T05:22:56.097Z"
+  "users": [
+    {
+      "id": "admin",
+      "pw": "YWRtaW4xMjM0",
+      "name": "관리자",
+      "dept": "경영지원",
+      "role": "admin",
+      "status": "active",
+      "createdAt": "2026-01-01",
+      "lastLogin": ""
+    },
+    {
+      "id": "shkim",
+      "pw": "MTIzNDU2",
+      "name": "김성현",
+      "dept": "대표이사",
+      "role": "user",
+      "status": "pending",
+      "createdAt": "2026-04-06",
+      "lastLogin": ""
+    }
+  ],
+  "updatedAt": "2026-04-06T05:24:14.796Z"
 }
