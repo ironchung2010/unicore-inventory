@@ -1,25 +1,4 @@
 {
-  "users": [
-    {
-      "id": "admin",
-      "pw": "YWRtaW4xMjM0",
-      "name": "관리자",
-      "dept": "경영지원",
-      "role": "admin",
-      "status": "active",
-      "createdAt": "2026-01-01",
-      "lastLogin": "2026-04-06T01:08:25.858Z"
-    },
-    {
-      "id": "cjung",
-      "pw": "MTIzNDU2",
-      "name": "정철",
-      "dept": "경영지원본부",
-      "role": "manager",
-      "status": "active",
-      "createdAt": "2026-04-03",
-      "lastLogin": "2026-04-03T09:50:02.577Z"
-    }
-  ],
-  "updatedAt": "2026-04-06T01:08:25.861Z"
+  "users": [],
+  "updatedAt": "2026-04-06T05:22:56.097Z"
 }
