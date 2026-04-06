@@ -46,10 +46,10 @@
       "name": "테스트",
       "dept": "테스트",
       "role": "user",
-      "status": "pending",
+      "status": "active",
       "createdAt": "2026-04-06",
       "lastLogin": ""
     }
   ],
-  "updatedAt": "2026-04-06T10:40:57.804Z"
+  "updatedAt": "2026-04-06T10:41:04.140Z"
 }
