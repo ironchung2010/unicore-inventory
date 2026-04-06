@@ -16,7 +16,7 @@
       "name": "김성현",
       "dept": "대표이사",
       "role": "user",
-      "status": "pending",
+      "status": "active",
       "createdAt": "2026-04-06",
       "lastLogin": ""
     },
@@ -26,7 +26,7 @@
       "name": "최동하",
       "dept": "영업본부",
       "role": "user",
-      "status": "pending",
+      "status": "active",
       "createdAt": "2026-04-06",
       "lastLogin": ""
     },
@@ -36,10 +36,10 @@
       "name": "김미란",
       "dept": "마케팅본부",
       "role": "user",
-      "status": "pending",
+      "status": "active",
       "createdAt": "2026-04-06",
       "lastLogin": ""
     }
   ],
-  "updatedAt": "2026-04-06T10:37:28.860Z"
+  "updatedAt": "2026-04-06T10:37:41.448Z"
 }
