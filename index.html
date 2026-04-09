@@ -949,7 +949,7 @@ let products = [
   { category: 'Sales Aids', code: '000000803', name: '아이스 워터보틀', currentStock: 218, incoming: 0, totalStock: 218, remark: '', expiryDate: '', safetyStock: 8, avgMonthlyOut: 8, moq: 5000, leadTime: 10 },
   { category: 'Sales Aids', code: '000000817', name: '유니앤코어 미스트 펌프', currentStock: 159, incoming: 0, totalStock: 159, remark: '', expiryDate: '', safetyStock: 36, avgMonthlyOut: 36, moq: 6000, leadTime: 10 },
   { category: 'Sales Aids', code: '800000823', name: '유니앤코어 휴대용 미스트 용기', currentStock: 1386, incoming: 0, totalStock: 1386, remark: '', expiryDate: '', safetyStock: 18, avgMonthlyOut: 18, moq: 5000, leadTime: 10 },
-  { category: 'Sales Aids', code: '800000824', name: '유니앤코어 쇼핑백', currentStock: 524, incoming: 0, totalStock: 524, remark: '발주진행중', expiryDate: '', safetyStock: 206, avgMonthlyOut: 206, moq: 1000, leadTime: 10 },
+  { category: 'Sales Aids', code: '800000824', name: '유니앤코어 쇼핑백', currentStock: 524, incoming: 0, totalStock: 524, remark: '2000개 발주완료', expiryDate: '', safetyStock: 206, avgMonthlyOut: 206, moq: 1000, leadTime: 10 },
   { category: 'Sales Aids', code: '800000834', name: '유니앤코어 쇼핑백 (소형)', currentStock: 3889, incoming: 0, totalStock: 3889, remark: '', expiryDate: '', safetyStock: 150, avgMonthlyOut: 150, moq: 5000, leadTime: 2 },
   { category: 'Sales Aids', code: '800000855', name: '유니앤코어 V:DAY 보틀', currentStock: 600, incoming: 0, totalStock: 600, remark: '', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 1000, leadTime: 10 },
   { category: 'Sales Aids', code: '800000860', name: '유니앤코어 탁상거울', currentStock: 695, incoming: 0, totalStock: 695, remark: '', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 10 },
@@ -1076,7 +1076,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 function saveToStorage() {
   try {
     localStorage.setItem('unicore_products', JSON.stringify(products));
-    localStorage.setItem('unicore_data_version', 'v-auto-202604082310');
+    localStorage.setItem('unicore_data_version', 'v-auto-202604090607');
   } catch(e) {}
 }
 
@@ -2023,7 +2023,7 @@ function loadSampleData() {
 
   saveToStorage();
   refreshAll();
-  showToast('실시간 데이터 ' + products.length + '개 제품이 로드되었습니다. (2026년 04월 08일 동기화)');
+  showToast('실시간 데이터 ' + products.length + '개 제품이 로드되었습니다. (2026년 04월 09일 동기화)');
 }
 
 // ============ MODAL / CRUD ============
@@ -2233,7 +2233,7 @@ function saveSyncUrl() {
   document.getElementById('syncStatusBadge').textContent = '활성';
   document.getElementById('syncStatusBadge').style.background = 'var(--success-bg)';
   document.getElementById('syncStatusBadge').style.color = 'var(--success)';
-  showToast('실시간 데이터 ' + products.length + '개 제품이 로드되었습니다. (2026년 04월 08일 동기화)');
+  showToast('실시간 데이터 ' + products.length + '개 제품이 로드되었습니다. (2026년 04월 09일 동기화)');
 }
 
 function saveSyncConfig(url) {
@@ -2475,13 +2475,13 @@ function triggerManualSync() {
     if (resp.status === 204) {
       document.getElementById('lastSyncTime').textContent = '동기화 트리거: ' + now + ' (약 1-2분 후 반영)';
       try { localStorage.setItem('unicore_last_sync', now); } catch(e) {}
-      showToast('실시간 데이터 ' + products.length + '개 제품이 로드되었습니다. (2026년 04월 08일 동기화)');
+      showToast('실시간 데이터 ' + products.length + '개 제품이 로드되었습니다. (2026년 04월 09일 동기화)');
       // Poll for completion
       setTimeout(() => pollSyncStatus(ghRepo, ghToken, btn), 15000);
     } else {
       resp.text().then(t => {
         console.error('Sync trigger failed:', t);
-        showToast('실시간 데이터 ' + products.length + '개 제품이 로드되었습니다. (2026년 04월 08일 동기화)');
+        showToast('실시간 데이터 ' + products.length + '개 제품이 로드되었습니다. (2026년 04월 09일 동기화)');
         btn.disabled = false;
         btn.textContent = '수동 동기화 실행';
         btn.style.opacity = '1';
@@ -2490,7 +2490,7 @@ function triggerManualSync() {
   })
   .catch(err => {
     console.error('Sync error:', err);
-    showToast('실시간 데이터 ' + products.length + '개 제품이 로드되었습니다. (2026년 04월 08일 동기화)');
+    showToast('실시간 데이터 ' + products.length + '개 제품이 로드되었습니다. (2026년 04월 09일 동기화)');
     btn.disabled = false;
     btn.textContent = '수동 동기화 실행';
     btn.style.opacity = '1';
@@ -2509,7 +2509,7 @@ function pollSyncStatus(ghRepo, ghToken, btn) {
     const run = data.workflow_runs && data.workflow_runs[0];
     if (run && run.status === 'completed') {
       if (run.conclusion === 'success') {
-        showToast('실시간 데이터 ' + products.length + '개 제품이 로드되었습니다. (2026년 04월 08일 동기화)');
+        showToast('실시간 데이터 ' + products.length + '개 제품이 로드되었습니다. (2026년 04월 09일 동기화)');
         setTimeout(() => location.reload(), 2000);
       } else {
         showToast('동기화 실패: ' + (run.conclusion || 'unknown'));
