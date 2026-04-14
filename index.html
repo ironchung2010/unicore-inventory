@@ -2181,7 +2181,7 @@ async function pullOrderActionsFromGitHub() {
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
     const data = await res.json();
-    const content = JSON.parse(atob(data.content));
+    const content = JSON.parse(decodeURIComponent(escape(atob(data.content))));
     const actions = content.actions || {};
 
     // 삭제 목록도 동기화
