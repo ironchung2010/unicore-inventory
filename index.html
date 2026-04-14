@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>UNI&CORE 재고 및 발주 관리 시스템</title>
-<script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
   :root {
@@ -29,49 +29,6 @@
     --shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
     --shadow-md: 0 4px 6px rgba(0,0,0,0.07), 0 2px 4px rgba(0,0,0,0.06);
   }
-
-  /* Login Screen */
-  .login-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:linear-gradient(135deg, #1a5632 0%, #2d8a4e 50%, #1a5632 100%); z-index:9999; display:flex; align-items:center; justify-content:center; }
-  .login-overlay.hidden { display:none; }
-  .login-box { background:white; border-radius:16px; padding:40px; width:400px; max-width:90vw; box-shadow:0 20px 60px rgba(0,0,0,0.3); }
-  .login-box h2 { text-align:center; color:var(--primary); font-size:24px; margin-bottom:6px; }
-  .login-box .login-subtitle { text-align:center; color:var(--gray-500); font-size:13px; margin-bottom:28px; }
-  .login-box .logo-area { text-align:center; margin-bottom:20px; font-size:36px; }
-  .login-field { margin-bottom:16px; }
-  .login-field label { display:block; font-size:13px; font-weight:600; color:var(--gray-700); margin-bottom:6px; }
-  .login-field input { width:100%; padding:10px 14px; border:1px solid var(--gray-300); border-radius:8px; font-size:14px; outline:none; transition:border 0.2s; }
-  .login-field input:focus { border-color:var(--primary); box-shadow:0 0 0 3px rgba(26,86,50,0.1); }
-  .login-btn { width:100%; padding:12px; background:var(--primary); color:white; border:none; border-radius:8px; font-size:15px; font-weight:600; cursor:pointer; transition:background 0.2s; }
-  .login-btn:hover { background:var(--primary-light); }
-  .login-btn.secondary { background:white; color:var(--primary); border:1px solid var(--primary); margin-top:10px; }
-  .login-btn.secondary:hover { background:var(--primary-bg); }
-  .login-error { color:var(--danger); font-size:12px; margin-top:8px; display:none; text-align:center; }
-  .login-links { display:flex; justify-content:space-between; margin-top:16px; font-size:12px; }
-  .login-links a { color:var(--primary); cursor:pointer; text-decoration:none; }
-  .login-links a:hover { text-decoration:underline; }
-
-  /* Register Modal */
-  .register-modal-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:10000; display:flex; align-items:center; justify-content:center; }
-  .register-modal-overlay.hidden { display:none; }
-  .register-modal { background:white; border-radius:16px; padding:36px; width:440px; max-width:90vw; box-shadow:0 20px 60px rgba(0,0,0,0.3); }
-  .register-modal h3 { text-align:center; color:var(--primary); margin-bottom:20px; font-size:20px; }
-
-  /* User info in header */
-  .user-info { display:flex; align-items:center; gap:8px; }
-  .user-badge { background:rgba(255,255,255,0.2); padding:4px 12px; border-radius:20px; font-size:12px; display:flex; align-items:center; gap:6px; }
-  .user-badge .role-tag { background:rgba(255,255,255,0.3); padding:1px 6px; border-radius:4px; font-size:10px; }
-  .logout-btn { background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.3); color:white; padding:4px 10px; border-radius:6px; font-size:11px; cursor:pointer; }
-  .logout-btn:hover { background:rgba(255,255,255,0.25); }
-
-  /* Member Management */
-  .member-table { width:100%; }
-  .member-table th { background:var(--gray-50); font-weight:600; }
-  .member-table td, .member-table th { padding:10px 14px; border-bottom:1px solid var(--gray-200); font-size:13px; }
-  .role-select { padding:4px 8px; border:1px solid var(--gray-300); border-radius:6px; font-size:12px; }
-  .status-active { color:var(--success); font-weight:600; }
-  .status-pending { color:var(--warning); font-weight:600; }
-  .status-blocked { color:var(--danger); font-weight:600; }
-
   * { margin:0; padding:0; box-sizing:border-box; }
   body { font-family: 'Segoe UI', -apple-system, sans-serif; background: var(--gray-100); color: var(--gray-900); }
 
@@ -190,10 +147,9 @@
   .order-action-select { padding: 5px 8px; border: 1px solid var(--gray-300); border-radius: 6px; font-size: 12px; font-weight: 500; outline: none; cursor: pointer; background: white; min-width: 100px; }
   .order-action-select:focus { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(26,86,50,0.1); }
   .order-action-select.action-발주완료 { background: var(--success-bg); color: var(--success); border-color: var(--success); font-weight: 600; }
-  .order-action-select.action-발주진행중 { background: var(--warning-bg); color: #b45309; border-color: var(--warning); font-weight: 600; }
+  .order-action-select.action-발주대기 { background: var(--warning-bg); color: #b45309; border-color: var(--warning); font-weight: 600; }
   .order-action-select.action-별도조치 { background: var(--info-bg); color: var(--info); border-color: var(--info); font-weight: 600; }
   .order-action-select.action-단종조치 { background: var(--gray-100); color: var(--gray-500); border-color: var(--gray-300); font-weight: 600; }
-  .order-action-select.action-대체출고 { background: #fef3c7; color: #92400e; border-color: #f59e0b; font-weight: 600; }
 
   /* Toast */
   .toast { position: fixed; bottom: 24px; right: 24px; background: var(--gray-900); color: white; padding: 12px 20px; border-radius: 10px; font-size: 14px; z-index: 2000; opacity: 0; transform: translateY(10px); transition: all 0.3s; }
@@ -311,67 +267,12 @@
 </head>
 <body>
 
-<!-- 로그인 화면 -->
-<div class="login-overlay" id="loginOverlay">
-  <div class="login-box">
-    <div class="logo-area">🏢</div>
-    <h2>UNI&CORE</h2>
-    <div class="login-subtitle">재고 및 발주 관리 시스템</div>
-    <div class="login-field">
-      <label>아이디</label>
-      <input type="text" id="loginId" placeholder="아이디를 입력하세요" onkeydown="if(event.key==='Enter')doLogin()">
-    </div>
-    <div class="login-field">
-      <label>비밀번호</label>
-      <input type="password" id="loginPw" placeholder="비밀번호를 입력하세요" onkeydown="if(event.key==='Enter')doLogin()">
-    </div>
-    <div class="login-error" id="loginError"></div>
-    <button class="login-btn" onclick="doLogin()">로그인</button>
-    <button class="login-btn secondary" onclick="showRegister()">회원가입</button>
-  </div>
-</div>
-
-<!-- 회원가입 모달 -->
-<div class="register-modal-overlay hidden" id="registerOverlay">
-  <div class="register-modal">
-    <h3>회원가입</h3>
-    <div class="login-field">
-      <label>아이디 (영문/숫자, 4~20자)</label>
-      <input type="text" id="regId" placeholder="아이디">
-    </div>
-    <div class="login-field">
-      <label>비밀번호 (6자 이상)</label>
-      <input type="password" id="regPw" placeholder="비밀번호">
-    </div>
-    <div class="login-field">
-      <label>비밀번호 확인</label>
-      <input type="password" id="regPwConfirm" placeholder="비밀번호 확인">
-    </div>
-    <div class="login-field">
-      <label>이름</label>
-      <input type="text" id="regName" placeholder="이름">
-    </div>
-    <div class="login-field">
-      <label>부서</label>
-      <input type="text" id="regDept" placeholder="부서명">
-    </div>
-    <div class="login-error" id="regError"></div>
-    <button class="login-btn" onclick="doRegister()">가입 신청</button>
-    <button class="login-btn secondary" onclick="hideRegister()">취소</button>
-  </div>
-</div>
-
-
-<div class="header" id="mainHeader">
+<div class="header">
   <div>
     <h1>UNI&CORE 재고 및 발주 관리 시스템</h1>
     <div class="subtitle">Inventory & Order Management System</div>
   </div>
   <div class="header-right">
-    <div class="user-info" id="userInfoArea">
-      <span class="user-badge" id="userBadge"></span>
-      <button class="logout-btn" onclick="doLogout()">로그아웃</button>
-    </div>
     <div class="header-date" id="currentDate"></div>
   </div>
 </div>
@@ -382,8 +283,7 @@
   <div class="tab" onclick="switchTab('forecast')">재고예측</div>
   <div class="tab" onclick="switchTab('orders')">발주관리</div>
   <div class="tab" onclick="switchTab('risk')">위험재고</div>
-  <div class="tab" onclick="switchTab('data')" id="tabData" style="display:none;">데이터 관리</div>
-  <div class="tab" onclick="switchTab('members')" id="tabMembers" style="display:none;">회원관리</div>
+  <div class="tab" onclick="switchTab('data')">데이터 관리</div>
 </div>
 
 <!-- ===== 재고현황 탭 ===== -->
@@ -448,7 +348,7 @@
         </table>
       </div>
       <div id="inventoryEmpty" class="empty-state" style="display:none;">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
         <h3>데이터가 없습니다</h3>
         <p>'데이터 관리' 탭에서 Excel 파일을 업로드하거나 제품을 직접 등록하세요.</p>
       </div>
@@ -508,7 +408,7 @@
         </table>
       </div>
       <div id="shipEmpty" class="empty-state" style="display:none;">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 17H5a2 2 0 00-2 2v0a2 2 0 002 2h14a2 2 0 002-2v0a2 2 0 00-2-2h-4M9 17v-4m0 4h6m-6-4V7a2 2 0 012-2h2a2 2 0 012 2v6m-6 0h6"></path></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 17H5a2 2 0 00-2 2v0a2 2 0 002 2h14a2 2 0 002-2v0a2 2 0 00-2-2h-4M9 17v-4m0 4h6m-6-4V7a2 2 0 012-2h2a2 2 0 012 2v6m-6 0h6"/></svg>
         <h3>출고 데이터가 없습니다</h3>
         <p>일별 데이터 업데이트가 진행되면 출고 이력이 표시됩니다.</p>
       </div>
@@ -536,7 +436,6 @@
     </div>
     <div class="panel-body">
       <div class="toolbar">
-        <input type="text" class="search-box" id="forecastSearch" placeholder="제품명 또는 상품코드 검색..." oninput="renderForecast()" style="width:240px;">
         <select class="filter" id="forecastRange" onchange="renderForecast()">
           <option value="30">30일 이내</option>
           <option value="60">60일 이내</option>
@@ -559,14 +458,12 @@
               <th>상품코드</th>
               <th>품명</th>
               <th class="text-right">현재고</th>
-              <th class="text-right">2M 평균출고</th>
               <th class="text-right">일 평균 출고</th>
               <th class="text-right">예상 잔여일</th>
               <th>예상 품절일</th>
               <th>소비기한</th>
               <th>판매가능기한</th>
               <th>긴급도</th>
-              <th>Remark</th>
             </tr>
           </thead>
           <tbody id="forecastTableBody"></tbody>
@@ -592,9 +489,9 @@
   <div class="panel">
     <div class="panel-header">
       <div class="panel-title">발주 추천 목록</div>
-      <button class="btn btn-primary btn-sm" onclick="exportOrders()" id="btnExportOrders">발주 검토서 내보내기</button>
-      <button class="btn btn-sm" style="background:#fee2e2;color:#dc2626;border:1px solid #fca5a5;" onclick="dismissCheckedOrders()" id="btnDismissOrders">조치완료 후 삭제</button>
-      <button class="btn btn-sm" style="background:var(--gray-100);color:var(--gray-500);border:1px solid var(--gray-300);font-size:11px;" onclick="showDismissedOrders()" id="btnDismissHistory">삭제 이력</button>
+      <button class="btn btn-primary btn-sm" onclick="exportOrders()">발주서 내보내기</button>
+      <button class="btn btn-sm" style="background:#fee2e2;color:#dc2626;border:1px solid #fca5a5;" onclick="dismissCheckedOrders()">조치완료 후 삭제</button>
+      <button class="btn btn-sm" style="background:var(--gray-100);color:var(--gray-500);border:1px solid var(--gray-300);font-size:11px;" onclick="showDismissedOrders()">삭제 이력</button>
     </div>
     <div class="panel-body">
       <div class="table-wrap" style="max-height:500px;overflow-y:auto;">
@@ -606,9 +503,6 @@
               <th>상품코드</th>
               <th>품명</th>
               <th class="text-right">현재고</th>
-              <th class="text-right">2M 평균출고</th>
-              <th class="text-right">예상 잔여일</th>
-              <th>예상 품절일</th>
               <th class="text-right">MOQ</th>
               <th class="text-right">추천 발주량</th>
               <th class="text-right">리드타임(주)</th>
@@ -687,7 +581,7 @@
         </table>
       </div>
       <div id="riskEmpty" class="empty-state" style="display:none;">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
         <h3>위험재고가 없습니다</h3>
         <p>모든 제품이 판매가능기한 내에 소진 가능합니다.</p>
       </div>
@@ -714,7 +608,7 @@
     </div>
     <div class="panel-body">
       <div class="upload-area" id="uploadArea" onclick="document.getElementById('fileInput').click()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6h.1a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6h.1a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
         <p><strong>클릭하여 파일 선택</strong> 또는 드래그 앤 드롭</p>
         <p style="font-size:12px;margin-top:4px;">.xlsx, .xlsb, .xls 파일 지원</p>
         <input type="file" id="fileInput" accept=".xlsx,.xlsb,.xls,.csv" style="display:none" onchange="handleFileUpload(event)">
@@ -729,27 +623,27 @@
       <span id="syncStatusBadge" style="font-size:12px;padding:4px 10px;border-radius:12px;background:var(--success-bg);color:var(--success);font-weight:600;">활성</span>
     </div>
     <div class="panel-body">
-      <p style="font-size:13px;color:var(--gray-500);margin-bottom:12px;">SharePoint 재고 데이터가 3시간마다 자동 동기화됩니다. 수동 동기화를 실행하려면 아래 버튼을 누르세요.</p>
-      <div style="display:flex;gap:8px;align-items:flex-end;margin-bottom:12px;">
+      <p style="font-size:13px;color:var(--gray-500);margin-bottom:12px;">팀즈 F'cst 공유파일 링크를 등록하면, 매일 오후 11:50 (KST) 에 자동으로 데이터를 동기화합니다. 월별로 파일이 변경되면 아래 링크를 업데이트해 주세요.</p>
+      <div style="display:flex;gap:8px;align-items:flex-end;">
         <div style="flex:1;">
-          <label style="display:block;font-size:13px;font-weight:600;color:var(--gray-700);margin-bottom:4px;">GitHub Token (수동 동기화에 필요)</label>
-          <input type="password" id="syncToken" placeholder="ghp_xxxxxxxxxxxx" style="width:100%;padding:10px 12px;border:1px solid var(--gray-300);border-radius:8px;font-size:13px;" onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='var(--gray-300)'">
+          <label style="display:block;font-size:13px;font-weight:600;color:var(--gray-700);margin-bottom:4px;">SharePoint 공유파일 URL</label>
+          <input type="text" id="syncUrl" placeholder="https://uniandcore.sharepoint.com/..." style="width:100%;padding:10px 12px;border:1px solid var(--gray-300);border-radius:8px;font-size:13px;transition:border-color 0.2s;" onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='var(--gray-300)'">
         </div>
-        <button class="btn btn-outline btn-sm" onclick="saveSyncToken()" style="white-space:nowrap;height:40px;">토큰 저장</button>
+        <button class="btn btn-primary btn-sm" onclick="saveSyncUrl()" style="white-space:nowrap;height:40px;">링크 저장</button>
       </div>
-      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
-        <button class="btn btn-primary btn-sm" onclick="triggerManualSync()" id="manualSyncBtn">수동 동기화 실행</button>
+      <div id="syncUrlStatus" style="margin-top:8px;font-size:12px;color:var(--gray-500);"></div>
+      <div style="margin-top:16px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+        <button class="btn btn-outline btn-sm" onclick="triggerManualSync()" id="manualSyncBtn">수동 동기화 실행</button>
         <span id="lastSyncTime" style="font-size:12px;color:var(--gray-500);"></span>
       </div>
       <div style="margin-top:12px;padding:10px 14px;background:var(--info-bg);border-radius:8px;font-size:12px;color:var(--info);line-height:1.6;">
         <strong>동기화 안내</strong><br>
-        - 자동 동기화: 3시간마다 자동 실행됩니다 (00, 03, 06, 09, 12, 15, 18, 21시 UTC)<br>
-        - 수동 동기화: 위 버튼을 누르면 서버에서 즉시 실행됩니다 (1-2분 소요, 완료 시 자동 새로고침)<br>
-        - 토큰은 이 브라우저에만 저장되며 외부로 전송되지 않습니다
+        - 자동 동기화: 매일 23:50 KST에 실행됩니다<br>
+        - 수동 동기화: 위 버튼으로 즉시 실행할 수 있습니다<br>
+        - 파일 변경 시: 새 월의 파일 URL을 위에 붙여넣고 "링크 저장"을 누르세요
       </div>
     </div>
   </div>
-
 
   <div class="panel" style="border-left:4px solid var(--info);">
     <div class="panel-header">
@@ -780,8 +674,8 @@
       </div>
       <div style="margin-top:12px;padding:10px 14px;background:var(--info-bg);border-radius:8px;font-size:12px;color:var(--info);line-height:1.6;">
         <strong>공유 저장 안내</strong><br>
-        - GitHub Personal Access Token은 Settings > Developer settings > Fine-grained tokens에서 생성합니다<br>
-        - 토큰 권한: Repository > Contents (Read and Write)<br>
+        - GitHub Personal Access Token은 Settings → Developer settings → Fine-grained tokens에서 생성합니다<br>
+        - 토큰 권한: Repository → Contents (Read and Write)<br>
         - 발주 액션 변경 시 자동으로 GitHub에 저장되며, 다른 사용자가 페이지를 열면 최신 데이터가 반영됩니다<br>
         - 토큰은 이 브라우저에만 저장되며 외부로 전송되지 않습니다
       </div>
@@ -849,47 +743,130 @@
   </div>
 </div>
 
-
-<!-- ===== 회원관리 탭 ===== -->
-<div id="tab-members" class="tab-content">
-  <div class="kpi-grid">
-    <div class="kpi-card info"><div class="kpi-label">전체 회원</div><div class="kpi-value" id="kpi-total-members">0</div></div>
-    <div class="kpi-card success"><div class="kpi-label">활성 회원</div><div class="kpi-value" id="kpi-active-members">0</div></div>
-    <div class="kpi-card warning"><div class="kpi-label">승인 대기</div><div class="kpi-value" id="kpi-pending-members">0</div></div>
-    <div class="kpi-card danger"><div class="kpi-label">차단 회원</div><div class="kpi-value" id="kpi-blocked-members">0</div></div>
-  </div>
-  <div class="panel">
-    <div class="panel-header">
-      <div class="panel-title">회원 목록</div>
-      <button class="btn btn-primary btn-sm" onclick="saveMembersToGitHub()">회원정보 저장</button>
-    </div>
-    <div class="panel-body no-pad">
-      <table class="data-table member-table">
-        <thead>
-          <tr>
-            <th>아이디</th>
-            <th>이름</th>
-            <th>부서</th>
-            <th>권한</th>
-            <th>상태</th>
-            <th>가입일</th>
-            <th>최근 로그인</th>
-            <th>관리</th>
-          </tr>
-        </thead>
-        <tbody id="memberTableBody"></tbody>
-      </table>
-    </div>
-  </div>
-</div>
-
-</div>
 <div class="toast" id="toast"></div>
 
 <script>
 // ============ DATA STORE ============
 let products = [
-
+    { category: 'Cosmetic', code: '000000101', name: '딥 리페어 액티베이팅 뉴트리션 크림 30ml', currentStock: 4243, incoming: 0, totalStock: 4243, remark: '', expiryDate: '2027-05-12', safetyStock: 976, avgMonthlyOut: 976, moq: 5000, leadTime: 10 },
+    { category: 'Cosmetic', code: '100000117', name: 'NEW 비타 씨 13.5 수퍼 화이트닝 앰플 30g', currentStock: 1177, incoming: 5000, totalStock: 6177, remark: '발주완료, 4월중 입고예정', expiryDate: '2028-02-05', safetyStock: 641, avgMonthlyOut: 641, moq: 5000, leadTime: 10 },
+    { category: 'Cosmetic', code: '100000114', name: '비타 씨 글루타글로우 수퍼 브라이트닝 앰플 30g', currentStock: 2424, incoming: 0, totalStock: 2424, remark: '소진 후 단종', expiryDate: '2027-03-31', safetyStock: 94, avgMonthlyOut: 94, moq: 5000, leadTime: 10 },
+    { category: 'Cosmetic', code: '000000104', name: '하이드레이팅 래디언스 선크림 SPF50 PA+++30ml', currentStock: 1904, incoming: 0, totalStock: 1904, remark: '10ml 대체출고 방안 검토중', expiryDate: '2028-01-15', safetyStock: 743, avgMonthlyOut: 743, moq: 10000, leadTime: 14 },
+    { category: 'Cosmetic', code: '000000106', name: '하이드레이팅 스킨 베리어 세럼 미스트 리필 120ml ', currentStock: 44, incoming: 0, totalStock: 44, remark: '소진 후 단종', expiryDate: '2027-03-27', safetyStock: 360, avgMonthlyOut: 360, moq: 5000, leadTime: 10 },
+    { category: 'Cosmetic', code: '100000107', name: '하이드레이팅 스킨 베리어 세럼 미스트 50ml ', currentStock: 6164, incoming: 0, totalStock: 6164, remark: '', expiryDate: '2027-03-27', safetyStock: 2822, avgMonthlyOut: 822, moq: 5000, leadTime: 10 },
+    { category: 'Cosmetic', code: '100000108', name: '비타씨 수퍼 브라이트닝 마스크 5매', currentStock: 17008, incoming: 0, totalStock: 17008, remark: '', expiryDate: '2028-09-30', safetyStock: 3628, avgMonthlyOut: 3628, moq: 5000, leadTime: 10 },
+    { category: 'Cosmetic', code: '100000146', name: '퓨어 비타 라이스 클렌징 오일 150ml', currentStock: 4276, incoming: 0, totalStock: 4276, remark: '', expiryDate: '2029-02-25', safetyStock: 91, avgMonthlyOut: 91, moq: 5000, leadTime: 10 },
+    { category: 'Cosmetic', code: '100000127', name: '비타씨 엔자임 파우더 워시', currentStock: 5613, incoming: 0, totalStock: 5613, remark: '', expiryDate: '2029-02-01', safetyStock: 472, avgMonthlyOut: 472, moq: 5000, leadTime: 10 },
+    { category: 'Cosmetic', code: '100000112', name: '데일리 카밍 토너 패드 180ml (70매) (구독사은품)', currentStock: 3366, incoming: 0, totalStock: 3366, remark: '', expiryDate: '2029-01-20', safetyStock: 493, avgMonthlyOut: 493, moq: 5000, leadTime: 10 },
+    { category: 'Cosmetic', code: '100000118', name: '(UC) 하이드레이팅 스킨 세럼 미스트 50ml', currentStock: 2391, incoming: 0, totalStock: 2391, remark: '소진 후 단종', expiryDate: '2027-02-11', safetyStock: 268, avgMonthlyOut: 268, moq: 5000, leadTime: 10 },
+    { category: 'Cosmetic', code: '100000119', name: '(UC) 비타 수퍼 브라이트닝 앰플 30g', currentStock: 4845, incoming: 0, totalStock: 4845, remark: '소진 후 단종', expiryDate: '2027-01-23', safetyStock: 852, avgMonthlyOut: 852, moq: 5000, leadTime: 12 },
+    { category: 'Cosmetic', code: '100000121', name: '(UC) 하이드레이팅 스킨 크림 30ml', currentStock: 1899, incoming: 0, totalStock: 1899, remark: '소진 후 단종', expiryDate: '2027-04-01', safetyStock: 471, avgMonthlyOut: 471, moq: 5000, leadTime: 12 },
+    { category: 'Cosmetic', code: '100000122', name: '(UC) 하이드레이팅 래디언스 선크림 30ml', currentStock: 2046, incoming: 0, totalStock: 2046, remark: '소진 후 단종', expiryDate: '2028-01-15', safetyStock: 263, avgMonthlyOut: 263, moq: 5000, leadTime: 10 },
+    { category: 'Cosmetic', code: '100000132', name: '[USA]DEEP HYDRATING SKIN NUTRITION CREAM', currentStock: 2908, incoming: 0, totalStock: 2908, remark: '', expiryDate: '2027-05-12', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 10 },
+    { category: 'Cosmetic', code: '100000133', name: '[USA]VITA C GLUTAGLOW SUPER BRIGHTENING AMPOULE', currentStock: 998, incoming: 0, totalStock: 998, remark: '소진 후 단종', expiryDate: '2027-03-31', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 12 },
+    { category: 'Cosmetic', code: '100000134', name: '[USA]VITA C 13.5 SUPER BRIGHTENING AMPOULE', currentStock: 3418, incoming: 0, totalStock: 3418, remark: '발주완료, 4월중 입고예정', expiryDate: '2028-02-05', safetyStock: 269, avgMonthlyOut: 269, moq: 5000, leadTime: 12 },
+    { category: 'Cosmetic', code: '100000136', name: '[USA]VITA C SUPER BRIGHTENING MASK', currentStock: 2686, incoming: 0, totalStock: 2686, remark: '소진후 국내용 대체출고', expiryDate: '2027-02-19', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 12 },
+    { category: 'Cosmetic', code: '100000138', name: '[USA]HYDRATING SKIN BARRIER SERUM MIST', currentStock: 2493, incoming: 0, totalStock: 2493, remark: '', expiryDate: '2027-03-27', safetyStock: 0, avgMonthlyOut: 0, moq: 10000, leadTime: 14 },
+    { category: 'Cosmetic', code: '100000129', name: '루미너스 레이어 타이트업 쿠션', currentStock: 865, incoming: 0, totalStock: 865, remark: '', expiryDate: '2028-03-29', safetyStock: 282, avgMonthlyOut: 282, moq: 5000, leadTime: 12 },
+    { category: 'Cosmetic', code: '100000130', name: '루미너스 레이어 타이트업 리필', currentStock: 2556, incoming: 0, totalStock: 2556, remark: '', expiryDate: '2028-03-29', safetyStock: 220, avgMonthlyOut: 220, moq: 5000, leadTime: 12 },
+    { category: 'Cosmetic', code: '100000131', name: '시그니처 리바이탈라이징 샴푸 ', currentStock: 396, incoming: -90, totalStock: 306, remark: '발주진행중', expiryDate: '2027-12-10', safetyStock: 254, avgMonthlyOut: 254, moq: 5000, leadTime: 8 },
+    { category: 'Health Care', code: '000000201', name: '데일리 메가 에너자이저 플러스 30포', currentStock: 2757, incoming: 0, totalStock: 2757, remark: '', expiryDate: '2027-11-20', safetyStock: 404, avgMonthlyOut: 404, moq: 5000, leadTime: 10 },
+    { category: 'Health Care', code: '000000202', name: '트리플 메가 익스텐션 60캡슐', currentStock: 2807, incoming: 0, totalStock: 2807, remark: '', expiryDate: '2027-11-18', safetyStock: 202, avgMonthlyOut: 202, moq: 5000, leadTime: 10 },
+    { category: 'Health Care', code: '000000203', name: '데일리 츄어블 프로폴리스 90캡슐', currentStock: 2006, incoming: 0, totalStock: 2006, remark: '', expiryDate: '2028-01-14', safetyStock: 347, avgMonthlyOut: 347, moq: 5000, leadTime: 12 },
+    { category: 'Health Care', code: '200000206', name: '더블 컷 메가 슬림 플러스 (구독사은품)', currentStock: 4014, incoming: 0, totalStock: 4014, remark: '', expiryDate: '2026-10-15', safetyStock: 575, avgMonthlyOut: 575, moq: 5000, leadTime: 10 },
+    { category: 'Health Care', code: '200000207', name: '슬리밍 메가 프로바이오틱스', currentStock: 1581, incoming: 2500, totalStock: 4081, remark: '발주완료, 4월 입고 예정', expiryDate: '2026-07-06', safetyStock: 691, avgMonthlyOut: 691, moq: 5000, leadTime: 12 },
+    { category: 'Health Care', code: '200000210', name: '본 앤 조인트 액티브 메가 포뮬러 60캡슐', currentStock: 5493, incoming: 0, totalStock: 5493, remark: '', expiryDate: '2027-08-21', safetyStock: 173, avgMonthlyOut: 173, moq: 5000, leadTime: 8 },
+    { category: 'Health Care', code: '200000213', name: '이뮨 메가 부스터 AHCC_10병', currentStock: 3214, incoming: 0, totalStock: 3214, remark: '제품변경', expiryDate: '2026-06-19', safetyStock: 1075, avgMonthlyOut: 1075, moq: 10000, leadTime: 10 },
+    { category: 'Health Care', code: '100000135', name: '슬림핏 프로틴 쉐이크 고소한 멀티 그레인 40g X 10', currentStock: 4510, incoming: 0, totalStock: 4510, remark: '', expiryDate: '2027-04-30', safetyStock: 273, avgMonthlyOut: 273, moq: 20000, leadTime: 10 },
+    { category: 'Health Care', code: '200000218', name: '글로우 뷰티 콜라겐 젤리 타트체리 맛 20g X 30포', currentStock: 1358, incoming: 0, totalStock: 1358, remark: '', expiryDate: '2026-10-23', safetyStock: 177, avgMonthlyOut: 177, moq: 3000, leadTime: 10 },
+    { category: 'Health Care', code: '200000220', name: '브이애플 나이트 액션', currentStock: 2265, incoming: 0, totalStock: 2265, remark: '', expiryDate: '2027-03-10', safetyStock: 172, avgMonthlyOut: 172, moq: 0, leadTime: 8 },
+    { category: 'Health Care', code: '100000139', name: '[USA]Daily Chewable Propolis', currentStock: 2414, incoming: 0, totalStock: 2414, remark: '소진후 국내용 대체출고', expiryDate: '2028-01-14', safetyStock: 0, avgMonthlyOut: 0, moq: 0, leadTime: 12 },
+    { category: 'Health Care', code: '100000140', name: ' [USA]Bone & Joint Health Active MEGA FORMULA', currentStock: 1000, incoming: 0, totalStock: 1000, remark: '', expiryDate: '2027-08-21', safetyStock: 0, avgMonthlyOut: 0, moq: 0, leadTime: 8 },
+    { category: 'Health Care', code: '100000141', name: '[USA]Daily Mega Energizer Plus', currentStock: 1000, incoming: 0, totalStock: 1000, remark: '', expiryDate: '2027-11-20', safetyStock: 0, avgMonthlyOut: 0, moq: 0, leadTime: 10 },
+    { category: 'Health Care', code: '100000142', name: '[USA]Slimming Mega Probiotics', currentStock: 112, incoming: 2500, totalStock: 2612, remark: '발주완료, 4월 입고 예정 물류에 확인 필요', expiryDate: '2026-07-06', safetyStock: 0, avgMonthlyOut: 0, moq: 0, leadTime: 12 },
+    { category: 'Health Care', code: '100000143', name: '[USA]SLIM FIT Protein Shake Powder', currentStock: 1000, incoming: 0, totalStock: 1000, remark: '', expiryDate: '2027-04-30', safetyStock: 0, avgMonthlyOut: 0, moq: 0, leadTime: 10 },
+    { category: 'Health Care', code: '100000144', name: '[USA]Triple MEGA Extension', currentStock: 1000, incoming: 0, totalStock: 1000, remark: '', expiryDate: '2027-11-18', safetyStock: 0, avgMonthlyOut: 0, moq: 0, leadTime: 10 },
+    { category: 'Living', code: '000000020', name: '리얼 그린라이프 프리미엄 페이셜 티슈 5입', currentStock: 6315, incoming: 0, totalStock: 6315, remark: '소진시 단종', expiryDate: '', safetyStock: 61, avgMonthlyOut: 61, moq: 0, leadTime: 0 },
+    { category: 'Living', code: '000000037', name: '리얼 그린라이프 프리미엄 페이셜 티슈 케이스', currentStock: 3929, incoming: 0, totalStock: 3929, remark: '소진시 단종', expiryDate: '', safetyStock: 1, avgMonthlyOut: 1, moq: 0, leadTime: 0 },
+    { category: 'Living', code: '000000044', name: '리얼 그린라이프 프리미엄 대나무 압축타올 30입', currentStock: 9126, incoming: 0, totalStock: 9126, remark: '소진시 단종', expiryDate: '', safetyStock: 65, avgMonthlyOut: 65, moq: 0, leadTime: 0 },
+    { category: 'Living', code: '000000051', name: '리얼 그린라이프 프리미엄 토일렛 화장지 12롤', currentStock: 2892, incoming: 0, totalStock: 2892, remark: '소진시 단종', expiryDate: '', safetyStock: 60, avgMonthlyOut: 60, moq: 0, leadTime: 0 },
+    { category: 'Living', code: '000000068', name: '리얼 그린라이프 프리미엄 키친타올 점보롤 4입', currentStock: 796, incoming: 0, totalStock: 796, remark: '소진시 단종', expiryDate: '', safetyStock: 34, avgMonthlyOut: 34, moq: 0, leadTime: 0 },
+    { category: 'Living', code: '000000069', name: '유니앤코어 덴티바이옴 치약', currentStock: 3531, incoming: 0, totalStock: 3531, remark: '', expiryDate: '2027-09-03', safetyStock: 0, avgMonthlyOut: 0, moq: 0, leadTime: 0 },
+    { category: 'Living', code: '600000635', name: '덴티바이옴 치약 출시 기념 패키지', currentStock: 276, incoming: 0, totalStock: 276, remark: '', expiryDate: '', safetyStock: 13, avgMonthlyOut: 13, moq: 0, leadTime: 0 },
+    { category: 'Living', code: '800000829', name: '덴텍트 Dentect 4입', currentStock: 2724, incoming: 0, totalStock: 2724, remark: '', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 0, leadTime: 0 },
+    { category: 'Lounge Item', code: '300000315', name: '하이퍼루프 스칼프 세럼 300ml', currentStock: 605, incoming: 0, totalStock: 605, remark: '', expiryDate: '2028-07-09', safetyStock: 36, avgMonthlyOut: 36, moq: 5000, leadTime: 8 },
+    { category: 'Lounge Item', code: '300000316', name: '하이퍼루프 바디 크림 280g', currentStock: 7, incoming: 0, totalStock: 7, remark: '발주완료, 4월 입고/4월 쿨젤크림', expiryDate: '2027-06-18', safetyStock: 3, avgMonthlyOut: 3, moq: 0, leadTime: 8 },
+    { category: 'Lounge Item', code: '300000318', name: '수딩 앤 모이스트 케어 부스팅 젤 250ml ', currentStock: 2158, incoming: 0, totalStock: 2158, remark: '', expiryDate: '2026-12-04', safetyStock: 184, avgMonthlyOut: 184, moq: 5000, leadTime: 8 },
+    { category: 'Sales Aids', code: '000000801', name: '유니앤코어 코튼 파우치', currentStock: 10542, incoming: 0, totalStock: 10542, remark: '단종', expiryDate: '', safetyStock: 5, avgMonthlyOut: 5, moq: 0, leadTime: 213 },
+    { category: '트라이얼키트', code: '000000805', name: '고급 샤무드 원단 파우치 비매품 (증정용)', currentStock: 1808, incoming: 0, totalStock: 1808, remark: '', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 0 },
+    { category: '트라이얼키트', code: '800000827', name: '하이드레이팅 래디언스 선크림 SPF50 PA+++10ml', currentStock: 8440, incoming: 0, totalStock: 8440, remark: '', expiryDate: '2027-05-27', safetyStock: 518, avgMonthlyOut: 518, moq: 5000, leadTime: 10 },
+    { category: '트라이얼키트', code: '800000826', name: '딥 리페어 액티베이팅 뉴트리션 크림 7ml', currentStock: 901, incoming: 0, totalStock: 901, remark: '단종, opp작업완료', expiryDate: '', safetyStock: 2100, avgMonthlyOut: 100, moq: 5000, leadTime: 10 },
+    { category: 'Sales Aids', code: '800000831', name: '마이크로 버블 클렌징 폼 10ml', currentStock: 7268, incoming: 0, totalStock: 7268, remark: '단종', expiryDate: '2026-05-26', safetyStock: 955, avgMonthlyOut: 955, moq: 0, leadTime: 10 },
+    { category: 'Sales Aids', code: '800000849', name: '유니앤코어 친환경 종이컵 8oz (200개)', currentStock: 11, incoming: 0, totalStock: 11, remark: '', expiryDate: '', safetyStock: 1, avgMonthlyOut: 1, moq: 0, leadTime: 2 },
+    { category: 'Sales Aids', code: '800000852', name: '유니앤코어 친환경 종이컵 8oz (제작용)', currentStock: 15000, incoming: 0, totalStock: 15000, remark: '', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 0, leadTime: 2 },
+    { category: 'Sales Aids', code: '800000845', name: '유니앤코어 기프트 박스', currentStock: 1455, incoming: 0, totalStock: 1455, remark: '', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 0, leadTime: 0 },
+    { category: 'Sales Aids', code: '000000803', name: '아이스 워터보틀', currentStock: 217, incoming: 0, totalStock: 217, remark: '', expiryDate: '', safetyStock: 9, avgMonthlyOut: 9, moq: 0, leadTime: 0 },
+    { category: 'Sales Aids', code: '000000817', name: '유니앤코어 미스트 펌프', currentStock: 158, incoming: 0, totalStock: 158, remark: '', expiryDate: '', safetyStock: 36, avgMonthlyOut: 36, moq: 6000, leadTime: 0 },
+    { category: 'Sales Aids', code: '800000823', name: '유니앤코어 휴대용 미스트 용기', currentStock: 1386, incoming: 0, totalStock: 1386, remark: '', expiryDate: '', safetyStock: 19, avgMonthlyOut: 19, moq: 0, leadTime: 0 },
+    { category: 'Sales Aids', code: '800000824', name: '유니앤코어 쇼핑백', currentStock: 524, incoming: 0, totalStock: 524, remark: '2000개 발주완료', expiryDate: '', safetyStock: 207, avgMonthlyOut: 207, moq: 1000, leadTime: 0 },
+    { category: 'Sales Aids', code: '800000834', name: '유니앤코어 쇼핑백 (소형)', currentStock: 3884, incoming: 0, totalStock: 3884, remark: '', expiryDate: '', safetyStock: 150, avgMonthlyOut: 150, moq: 0, leadTime: 2 },
+    { category: 'Sales Aids', code: '800000855', name: '유니앤코어 V:DAY 보틀', currentStock: 600, incoming: 0, totalStock: 600, remark: '', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 1000, leadTime: 0 },
+    { category: 'Sales Aids', code: '800000860', name: '유니앤코어 탁상거울', currentStock: 695, incoming: 0, totalStock: 695, remark: '', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 0, leadTime: 0 },
+    { category: 'Sales Aids', code: '800000850', name: '유니앤코어 전제품 브로슈어', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 10 },
+    { category: 'Living', code: '800000848', name: '덴텍트 Dentect 1입', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 0, leadTime: 0 },
+    { category: 'Cosmetic', code: '100000113', name: '비타씨 13.5 수퍼 화이트닝 앰플 15g', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 10 },
+    { category: 'Cosmetic', code: '100000126', name: '(CN)유니은커우 비타 수퍼 브라이트닝 마스크 1매', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '2026-07-16', safetyStock: 325, avgMonthlyOut: 325, moq: 10000, leadTime: 14 },
+    { category: 'Sales Aids', code: '000000822', name: '유니앤코어 코튼 파우치 (5매입)', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 0, leadTime: 0 },
+    { category: 'Sales Aids', code: '000000812', name: '유니앤코어 휴대용 파우치', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 0, leadTime: 0 },
+    { category: '챌린지사은품', code: '600000683', name: '챌린지사은품(프로폴리스 30캡슐 15ea)', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 0, leadTime: 10 },
+    { category: 'Cosmetic', code: '100000111', name: '엔자임 스킨 톤 파우더 워시 1g * 30EA-단종', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '2028-01-01', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 10 },
+    { category: 'Cosmetic', code: '000000105', name: '하이드레이팅 스킨 베리어 세럼 미스트 30ml', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 10 },
+    { category: 'Cosmetic', code: '100000128', name: '비타씨 엔자임 파우더 워시(벌크) _new', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 10 },
+    { category: 'Cosmetic', code: '100000110', name: '라이트웨이트 딥 클렌징 오일 200ml', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '2026-02-22', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 10 },
+    { category: 'Cosmetic', code: '000000103', name: '비타씨 수퍼 브라이트닝 마스크 1매 -단종', currentStock: 840, incoming: 0, totalStock: 840, remark: '단종', expiryDate: '2026-05-14', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 10 },
+    { category: 'Health Care', code: '200000204', name: '클렌즈 톡스 샷 1병', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 0, leadTime: 0 },
+    { category: 'Health Care', code: '200000205', name: '클렌즈 톡스 샷 6병', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 10000, leadTime: 10 },
+    { category: 'Health Care', code: '200000208', name: '데일리 츄어블 프로폴리스 30캡슐', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 12 },
+    { category: 'Cosmetic', code: '100000109', name: '마이크로 버블 클렌징 폼 120m', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 10000, leadTime: 14 },
+    { category: 'Sales Aids', code: '000000815', name: '화장품 리플렛', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 10 },
+    { category: 'Health Care', code: '200000216', name: '슬림핏 프로틴 쉐이크 고소한 멀티 그레인 40g X 1', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 10 },
+    { category: 'Cosmetic', code: '800000836', name: '유니앤코어 7DAYS 브라이트닝 트라이얼 키트 ', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 0, leadTime: 0 },
+    { category: 'Cosmetic', code: '000000102', name: '비타씨 13.5 수퍼 화이트닝 앰플 30g', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 0, leadTime: 0 },
+    { category: 'Cosmetic', code: '000000107', name: '비타씨 수퍼 브라이트닝 마스크 4매', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 1000, leadTime: 0 },
+    { category: 'Living', code: '000000052', name: '리얼 그린라이프 프리미엄 토일렛 화장지 1롤', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 0 },
+    { category: 'Sales Aids', code: '800000844', name: '유니앤코어 비즈니스 세미나 입장권', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 0, leadTime: 0 },
+    { category: 'Sales Aids', code: '800000851', name: '본사방문_신규회원 사은품', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 0, leadTime: 0 },
+    { category: 'Sales Aids', code: '000000806', name: '딥 리페어 액티베이팅 뉴트리션 크림 10g 비매품 (증정용)', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 0 },
+    { category: 'Sales Aids', code: '000000807', name: '비타씨 13.5 수퍼 화이트닝 앰플 10g 비매품 (증정용)', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 0, leadTime: 0 },
+    { category: 'Sales Aids', code: '000000808', name: '데일리 메가 에너자이저 플러스 2포 비매품 (증정용)', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 0, leadTime: 0 },
+    { category: 'Sales Aids', code: '000000809', name: '리얼 그린라이프 프리미엄 대나무 압축타올 1개 비매품 (증정용)', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 0, leadTime: 0 },
+    { category: 'Sales Aids', code: '000000810', name: 'M팩 구매용 사은품_트라이얼 키트', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 0, leadTime: 0 },
+    { category: 'Health Care', code: '200000216', name: '슬림핏 프로틴 쉐이크 고소한 멀티 그레인 40g -1포', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 0, leadTime: 0 },
+    { category: 'Sales Aids', code: '000000811', name: '샘플링용_트라이얼 키트', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 0, leadTime: 0 },
+    { category: 'Sales Aids', code: '000000813', name: '비타씨 수퍼 브라이트닝 마스크 1매 비매품 (증정용)', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 0, leadTime: 0 },
+    { category: 'Sales Aids', code: '000000814', name: '화장품 구독 패키지 사은품 (정품용량)', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 0, leadTime: 0 },
+    { category: 'Sales Aids', code: '000000816', name: '건강기능식품 리플렛', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 0, leadTime: 0 },
+    { category: '3300사은품', code: '600000665', name: 'USA Travel kit', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 0, leadTime: 10 },
+    { category: '3300사은품', code: '600000682', name: 'USA Travel kit(single)', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 673, avgMonthlyOut: 673, moq: 0, leadTime: 10 },
+    { category: 'Sales Aids', code: '000000818', name: '유니앤코어 10일분 고급 트라이얼 키트 (4세트입)', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 0, leadTime: 0 },
+    { category: 'Sales Aids', code: '000000819', name: '유니앤코어 리플렛 세트', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 0, leadTime: 0 },
+    { category: 'Sales Aids', code: '000000820', name: '유니앤코어 샤무드 파우치 (5매입)', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 0, leadTime: 0 },
+    { category: 'Sales Aids', code: '000000821', name: '유니앤코어 휴대용 파우치 (5매입)', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 0, leadTime: 0 },
+    { category: 'Sales Aids', code: '000000823', name: '유니앤코어 10일분 고급 트라이얼 키트 (1세트입)', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 0, leadTime: 0 },
+    { category: 'Sales Aids', code: '800000837', name: '유니앤코어 고무볼', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 0, leadTime: 0 },
+    { category: 'Sales Aids', code: '800000838', name: '유니앤코어 스파츌러', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 0, leadTime: 0 },
+    { category: 'Sales Aids', code: '800000839', name: '유니앤코어 해면', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 0, leadTime: 0 },
+    { category: 'Sales Aids', code: '800000840', name: '유니앤코어 모델링팩 3종 세트', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 17, moq: 0, leadTime: 0 },
+    { category: 'Sales Aids', code: '800000842', name: '유니앤코어 페이스 타올', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 2250, moq: 0, leadTime: 0 },
+    { category: 'Sales Aids', code: '800000843', name: '유니앤코어 바디 타올', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 0, leadTime: 0 },
+    { category: 'Sales Aids', code: '8800000841', name: '유니앤코어 터번', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 0, leadTime: 10 },
+    { category: 'Sales Aids', code: '999999999', name: '박스추가', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 4, moq: 0, leadTime: 0 },
+    { category: 'Health Care', code: '990000000', name: '슬림핏 프로틴 쉐이크_인플루언서용', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 0, leadTime: 10 },
+    { category: 'Sales Aids', code: '300000317', name: '라운지 전용 관리사 가운(상의)', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 0, leadTime: 0 },
+    { category: 'Health Care', code: '200000209', name: '데일리 메가 에너자이저 플러스 10포-단종', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 10 },
+    { category: '트라이얼키트', code: '800000828', name: '비타씨 13.5 수퍼 화이트닝 앰플 7g_단종', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 10 },
+    { category: 'Cosmetic', code: '100000120', name: '(UC) 비타 수퍼 브라이트닝 마스크 5매', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '2026-07-16', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 12 },
+    { category: 'Cosmetic', code: '100000137', name: '[USA]VITA C ENZYME POWDER WASH', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '2028-05-06', safetyStock: 229, avgMonthlyOut: 229, moq: 5000, leadTime: 10 }
 ];
 let editIndex = -1;
 let charts = {};
@@ -914,22 +891,21 @@ function onDiscontinuedToggle() {
 }
 
 // ============ INIT ============
-document.addEventListener('DOMContentLoaded', async () => {
-  // 로그인 상태 확인
-  const savedUser = sessionStorage.getItem('unicore_current_user');
-  if (savedUser) {
-    try {
-      currentUser = JSON.parse(savedUser);
-      onLoginSuccess();
-    } catch(e) {}
-  }
-
+document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('currentDate').textContent = new Date().toLocaleDateString('ko-KR', { year:'numeric', month:'long', day:'numeric', weekday:'long' });
 
-  // Always use embedded sync data (products array from sync script)
-  // localStorage is only used for user-specific data (order actions, settings)
-  loadOrderActionsFromLocal();
-  saveToStorage();
+  // Load from localStorage, fallback to sample data
+  const saved = localStorage.getItem('unicore_products');
+  const dataVersion = localStorage.getItem('unicore_data_version');
+  if (saved && dataVersion === 'v11-april14') {
+    try {
+      const parsed = JSON.parse(saved);
+      if (parsed && parsed.length > 0) { products = parsed; }
+      else { loadSampleData(); }
+    } catch(e) { loadSampleData(); }
+  } else {
+    loadSampleData();
+  }
 
   // Drag & drop
   const ua = document.getElementById('uploadArea');
@@ -943,13 +919,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('f-sellable').value = sellable ? formatDate(sellable) : '';
   });
 
+  loadDismissedFromLocal();
   refreshAll();
   loadSyncSettings();
   loadGitHubSettings();
-  loadSyncToken();
   recordDailyShipment();
 
-  // GitHub에서 공유 발주 액션 자동 불러오기
+  // GitHub에서 공유 발주 액션 자동 불러오기 (삭제 목록 포함)
   if (isGitHubConfigured()) {
     pullOrderActionsFromGitHub().catch(() => {});
   }
@@ -958,51 +934,21 @@ document.addEventListener('DOMContentLoaded', async () => {
 function saveToStorage() {
   try {
     localStorage.setItem('unicore_products', JSON.stringify(products));
-    localStorage.setItem('unicore_data_version', 'v-auto-202604140620');
+    localStorage.setItem('unicore_data_version', 'v11-april14');
   } catch(e) {}
 }
-
-function saveOrderActionsToLocal() {
-  try {
-    const actions = {};
-    products.forEach(p => {
-      const action = getOrderAction(p);
-      if (action) {
-        actions[p.code] = { action: action, remark: p.remark };
-      }
-    });
-    localStorage.setItem('unicore_order_actions_local', JSON.stringify(actions));
-  } catch(e) {}
-}
-
-function loadOrderActionsFromLocal() {
-  try {
-    const saved = localStorage.getItem('unicore_order_actions_local');
-    if (!saved) return;
-    const actions = JSON.parse(saved);
-    Object.keys(actions).forEach(code => {
-      const idx = products.findIndex(p => p.code === code);
-      if (idx >= 0 && actions[code].remark) {
-        // 사용자가 명시적으로 저장한 액션은 항상 우선 적용
-        products[idx].remark = actions[code].remark;
-      }
-    });
-  } catch(e) {}
-}
-
 
 // ============ TAB SWITCHING ============
 function switchTab(tab) {
   document.querySelectorAll('.tab').forEach((t,i) => t.classList.remove('active'));
   document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
   document.getElementById('tab-' + tab).classList.add('active');
-  const tabs = ['inventory','shipment','forecast','orders','risk','data','members'];
+  const tabs = ['inventory','shipment','forecast','orders','risk','data'];
   document.querySelectorAll('.tab')[tabs.indexOf(tab)].classList.add('active');
   if (tab === 'shipment') renderShipment();
   if (tab === 'forecast') renderForecast();
   if (tab === 'orders') renderOrders();
   if (tab === 'risk') renderRiskInventory();
-  if (tab === 'members') renderMembers();
 }
 
 // ============ REFRESH ALL ============
@@ -1134,7 +1080,7 @@ function renderInventoryTable() {
       <td class="num desktop-only" data-label="소비기한" style="font-size:12px;white-space:nowrap;">${getExpiryBadge(p.expiryDate)}</td>
       <td class="num desktop-only" data-label="판매가능기한" style="font-size:12px;white-space:nowrap;">${getExpiryBadge(getSellableDate(p.expiryDate))}</td>
       <td class="mobile-status" data-label="상태"><span class="badge ${badgeClass}">${badgeText}</span></td>
-      <td class="mobile-remark" data-label="REMARK" style="font-size:12px;color:var(--gray-500);" title="${p.remark||''}">${cleanRemark(p.remark)}</td>
+      <td class="mobile-remark" data-label="REMARK" style="font-size:12px;color:var(--gray-500);" title="${p.remark||''}">${p.remark||'-'}</td>
     </tr>`;
   }).join('');
 }
@@ -1192,8 +1138,6 @@ function renderForecast() {
     return { ...p, dailyAvg: Math.round(dailyAvg * 10) / 10, daysLeft, stockoutDate };
   });
 
-  const searchTerm = (document.getElementById('forecastSearch').value || '').trim().toLowerCase();
-  if (searchTerm) items = items.filter(i => i.name.toLowerCase().includes(searchTerm) || i.code.includes(searchTerm));
   if (cat) items = items.filter(i => i.category === cat);
   if (range !== 'all') items = items.filter(i => i.daysLeft <= parseInt(range));
   items.sort((a,b) => a.daysLeft - b.daysLeft);
@@ -1209,14 +1153,12 @@ function renderForecast() {
       <td class="num" data-label="상품코드">${p.code}</td>
       <td class="product-name" data-label="품명">${p.name}</td>
       <td class="text-right num" data-label="현재고">${((p.currentStock||0)+(p.incoming||0)).toLocaleString()}</td>
-      <td class="text-right num" data-label="2M 평균출고">${(p.avgMonthlyOut||0).toLocaleString()}</td>
       <td class="text-right num" data-label="일 평균 출고">${p.dailyAvg}</td>
       <td class="text-right num" data-label="예상 잔여일"><strong>${p.daysLeft >= 9999 ? '-' : p.daysLeft + '일'}</strong></td>
       <td class="num" data-label="예상 품절일">${dateStr}</td>
       <td class="num desktop-only" data-label="소비기한" style="font-size:12px;white-space:nowrap;">${getExpiryBadge(p.expiryDate)}</td>
       <td class="num desktop-only" data-label="판매가능기한" style="font-size:12px;white-space:nowrap;">${getExpiryBadge(getSellableDate(p.expiryDate))}</td>
       <td class="mobile-status" data-label="긴급도"><span class="badge ${urgency}">${urgText}</span></td>
-      <td data-label="Remark" style="font-size:12px;">${cleanRemark(p.remark)}</td>
     </tr>`;
   }).join('');
 
@@ -1270,9 +1212,8 @@ function renderOrders() {
     const recQty = Math.max(moq, Math.ceil((monthlyNeed * 3) / moq) * moq);
     const arrivalDate = new Date();
     arrivalDate.setDate(arrivalDate.getDate() + leadDays);
-    const stockoutDate = new Date(); stockoutDate.setDate(stockoutDate.getDate() + daysLeft);
 
-    return { ...p, dailyAvg, daysLeft, leadDays, needsOrder, recQty, arrivalDate, stockoutDate };
+    return { ...p, dailyAvg, daysLeft, leadDays, needsOrder, recQty, arrivalDate };
   }).filter(p => p.needsOrder || (p.remark && (p.remark.includes('발주') || p.remark.includes('별도조치') || p.remark.includes('단종조치'))));
 
   // 조치완료 후 삭제된 항목 필터링
@@ -1312,22 +1253,18 @@ function renderOrders() {
       <td class="num" data-label="상품코드">${p.code}</td>
       <td class="product-name" data-label="품명">${p.name}</td>
       <td class="text-right num" data-label="현재고">${(p.currentStock||0).toLocaleString()}</td>
-      <td class="text-right num" data-label="2M 평균출고">${(p.avgMonthlyOut||0).toLocaleString()}</td>
-      <td class="text-right num" data-label="예상 잔여일"><strong>${p.daysLeft >= 9999 ? '-' : p.daysLeft + '일'}</strong></td>
-      <td class="num" data-label="예상 품절일">${p.daysLeft >= 9999 ? '-' : p.stockoutDate ? p.stockoutDate.toLocaleDateString('ko-KR') : '-'}</td>
       <td class="text-right num" data-label="MOQ">${(p.moq||5000).toLocaleString()}</td>
       <td class="text-right num" data-label="추천 발주량"><strong>${p.recQty.toLocaleString()}</strong></td>
       <td class="text-right num" data-label="리드타임(주)">${p.leadTime || 10}</td>
       <td class="num" data-label="예상 입고일">${p.arrivalDate.toLocaleDateString('ko-KR')}</td>
-      <td class="mobile-remark" data-label="REMARK" style="font-size:12px;">${cleanRemark(p.remark)}</td>
+      <td class="mobile-remark" data-label="REMARK" style="font-size:12px;">${p.remark||'-'}</td>
       <td data-label="액션">
-        <select class="order-action-select ${actionClass}" onchange="handleOrderAction('${safeCode}', this)" ${canEditOrders() ? '' : 'disabled style="opacity:0.5;cursor:not-allowed;"'}>
+        <select class="order-action-select ${actionClass}" onchange="handleOrderAction('${safeCode}', this)">
           <option value="">-- 선택 --</option>
           <option value="발주완료"${currentAction === '발주완료' ? ' selected' : ''}>발주완료</option>
-          <option value="발주진행중"${currentAction === '발주진행중' ? ' selected' : ''}>발주진행중</option>
-          <option value="대체출고"${currentAction === '대체출고' ? ' selected' : ''}>대체출고</option>
-          <option value="단종조치"${currentAction === '단종조치' ? ' selected' : ''}>단종조치</option>
+          <option value="발주대기"${currentAction === '발주대기' ? ' selected' : ''}>발주대기</option>
           <option value="별도조치"${currentAction === '별도조치' ? ' selected' : ''}>별도조치</option>
+          <option value="단종조치"${currentAction === '단종조치' ? ' selected' : ''}>단종조치</option>
         </select>
       </td>
     </tr>`;
@@ -1338,30 +1275,16 @@ function toggleAllOrders(el) {
   document.querySelectorAll('.order-check').forEach(c => c.checked = el.checked);
 }
 
-function cleanRemark(r) {
-  if (!r) return '-';
-  return r.replace(/\s*\[[^\]]*\]\s*/g, '').trim() || '-';
-}
-
 function getOrderAction(p) {
   if (!p.remark) return '';
-  // 정확한 액션 태그 먼저 체크 (사용자가 직접 선택한 것)
-  if (p.remark.includes('[발주완료'))   return '발주완료';
-  if (p.remark.includes('[발주진행중')) return '발주진행중';
-  if (p.remark.includes('[대체출고'))   return '대체출고';
-  if (p.remark.includes('[단종조치'))   return '단종조치';
-  if (p.remark.includes('[별도조치'))   return '별도조치';
-  // 원본 remark 키워드 기반 매칭 (sync 데이터의 자연어)
+  if (p.remark.includes('단종조치')) return '단종조치';
+  if (p.remark.includes('별도조치')) return '별도조치';
+  if (p.remark.includes('발주대기')) return '발주대기';
   if (p.remark.includes('발주완료') || p.remark.includes('발주요청 완료')) return '발주완료';
-  if (p.remark.includes('발주진행중') || p.remark.includes('발주 진행')) return '발주진행중';
-  if (p.remark.includes('대체출고') || p.remark.includes('대체 출고')) return '대체출고';
-  if (p.remark.includes('단종')) return '단종조치';
-  if (p.remark.includes('별도조치') || p.remark.includes('별도 조치')) return '별도조치';
   return '';
 }
 
 function handleOrderAction(code, selectEl) {
-  if (!canEditOrders()) { showToast('권한이 없습니다. 매니저 이상만 변경 가능합니다.'); selectEl.selectedIndex = 0; return; }
   const idx = products.findIndex(p => p.code === code);
   if (idx < 0) return;
 
@@ -1370,7 +1293,7 @@ function handleOrderAction(code, selectEl) {
   const p = products[idx];
 
   // 기존 remark에서 이전 액션 태그 제거
-  let baseRemark = (p.remark || '').replace(/\s*\[(발주완료|발주진행중|발주대기|대체출고|별도조치|단종조치)\s*[^\]]*\]\s*/g, '').trim();
+  let baseRemark = (p.remark || '').replace(/\s*\[(발주완료|발주대기|별도조치|단종조치)\s*[^\]]*\]\s*/g, '').trim();
   // 기존 '발주요청 완료 (...)' 패턴도 제거
   baseRemark = baseRemark.replace(/\s*발주요청 완료\s*\([^)]*\)\s*/g, '').trim();
 
@@ -1383,8 +1306,7 @@ function handleOrderAction(code, selectEl) {
 
     const actionMessages = {
       '발주완료': '발주완료로 저장되었습니다.',
-      '발주진행중': '발주진행중으로 저장되었습니다.',
-      '대체출고': '대체출고로 저장되었습니다.',
+      '발주대기': '발주대기로 저장되었습니다.',
       '별도조치': '별도조치로 저장되었습니다.',
       '단종조치': '단종조치로 저장되었습니다.'
     };
@@ -1396,20 +1318,20 @@ function handleOrderAction(code, selectEl) {
 
   refreshAll();
   renderOrders();
-  saveOrderActionsToLocal();
+
+  // GitHub 자동 동기화
   schedulePushToGitHub();
 }
 
 // ============ DISMISSED ORDERS (조치완료 삭제) ============
 function dismissCheckedOrders() {
-  if (!canEditOrders()) { showToast('권한이 없습니다. 매니저 이상만 삭제 가능합니다.'); return; }
   const checks = document.querySelectorAll('.order-check:checked');
   if (checks.length === 0) {
     showToast('삭제할 항목을 선택해 주세요.');
     return;
   }
 
-  if (!confirm('선택한 ' + checks.length + '개 항목을 발주추천목록에서 삭제하시겠습니까?\n(삭제 이력에서 복원 가능)')) return;
+  if (!confirm(`선택한 ${checks.length}개 항목을 발주추천목록에서 삭제하시겠습니까?\n(삭제 이력에서 복원 가능)`)) return;
 
   const rows = [];
   checks.forEach(chk => {
@@ -1419,16 +1341,19 @@ function dismissCheckedOrders() {
     if (codeTd) {
       const code = codeTd.textContent.trim();
       if (code && !dismissedOrders.includes(code)) {
+        const nameTd = tr.querySelector('td:nth-child(4)');
         dismissedOrders.push(code);
-        rows.push(code);
+        rows.push({ code, name: nameTd ? nameTd.textContent.trim() : '', dismissedAt: new Date().toISOString() });
       }
     }
   });
 
   if (rows.length > 0) {
+    // localStorage에 삭제 이력 저장 (복원용)
     saveDismissedToLocal();
-    showToast(rows.length + '개 항목이 삭제되었습니다.');
+    showToast(`${rows.length}개 항목이 삭제되었습니다.`);
     renderOrders();
+    // GitHub에 공유 저장
     schedulePushToGitHub();
   }
 }
@@ -1454,10 +1379,10 @@ function showDismissedOrders() {
 
   const items = dismissedOrders.map(code => {
     const p = products.find(pp => pp.code === code);
-    return p ? code + ' - ' + p.name : code;
+    return p ? `${p.code} - ${p.name}` : code;
   });
 
-  const msg = '삭제된 항목 (' + dismissedOrders.length + '개):\n\n' + items.join('\n') + '\n\n복원하시겠습니까?';
+  const msg = `삭제된 항목 (${dismissedOrders.length}개):\n\n${items.join('\n')}\n\n복원하시겠습니까?`;
   if (confirm(msg)) {
     dismissedOrders = [];
     saveDismissedToLocal();
@@ -1901,11 +1826,132 @@ function parseNum(val) {
 
 // ============ SAMPLE DATA ============
 function loadSampleData() {
-  // products already initialized with April 2026 data at declaration
+  // 2026년 4월 14일 동기화 데이터 (폴백)
+  products = [
+    { category: 'Cosmetic', code: '000000101', name: '딥 리페어 액티베이팅 뉴트리션 크림 30ml', currentStock: 4243, incoming: 0, totalStock: 4243, remark: '', expiryDate: '2027-05-12', safetyStock: 976, avgMonthlyOut: 976, moq: 5000, leadTime: 10 },
+    { category: 'Cosmetic', code: '100000117', name: 'NEW 비타 씨 13.5 수퍼 화이트닝 앰플 30g', currentStock: 1177, incoming: 5000, totalStock: 6177, remark: '발주완료, 4월중 입고예정', expiryDate: '2028-02-05', safetyStock: 641, avgMonthlyOut: 641, moq: 5000, leadTime: 10 },
+    { category: 'Cosmetic', code: '100000114', name: '비타 씨 글루타글로우 수퍼 브라이트닝 앰플 30g', currentStock: 2424, incoming: 0, totalStock: 2424, remark: '소진 후 단종', expiryDate: '2027-03-31', safetyStock: 94, avgMonthlyOut: 94, moq: 5000, leadTime: 10 },
+    { category: 'Cosmetic', code: '000000104', name: '하이드레이팅 래디언스 선크림 SPF50 PA+++30ml', currentStock: 1904, incoming: 0, totalStock: 1904, remark: '10ml 대체출고 방안 검토중', expiryDate: '2028-01-15', safetyStock: 743, avgMonthlyOut: 743, moq: 10000, leadTime: 14 },
+    { category: 'Cosmetic', code: '000000106', name: '하이드레이팅 스킨 베리어 세럼 미스트 리필 120ml ', currentStock: 44, incoming: 0, totalStock: 44, remark: '소진 후 단종', expiryDate: '2027-03-27', safetyStock: 360, avgMonthlyOut: 360, moq: 5000, leadTime: 10 },
+    { category: 'Cosmetic', code: '100000107', name: '하이드레이팅 스킨 베리어 세럼 미스트 50ml ', currentStock: 6164, incoming: 0, totalStock: 6164, remark: '', expiryDate: '2027-03-27', safetyStock: 2822, avgMonthlyOut: 822, moq: 5000, leadTime: 10 },
+    { category: 'Cosmetic', code: '100000108', name: '비타씨 수퍼 브라이트닝 마스크 5매', currentStock: 17008, incoming: 0, totalStock: 17008, remark: '', expiryDate: '2028-09-30', safetyStock: 3628, avgMonthlyOut: 3628, moq: 5000, leadTime: 10 },
+    { category: 'Cosmetic', code: '100000146', name: '퓨어 비타 라이스 클렌징 오일 150ml', currentStock: 4276, incoming: 0, totalStock: 4276, remark: '', expiryDate: '2029-02-25', safetyStock: 91, avgMonthlyOut: 91, moq: 5000, leadTime: 10 },
+    { category: 'Cosmetic', code: '100000127', name: '비타씨 엔자임 파우더 워시', currentStock: 5613, incoming: 0, totalStock: 5613, remark: '', expiryDate: '2029-02-01', safetyStock: 472, avgMonthlyOut: 472, moq: 5000, leadTime: 10 },
+    { category: 'Cosmetic', code: '100000112', name: '데일리 카밍 토너 패드 180ml (70매) (구독사은품)', currentStock: 3366, incoming: 0, totalStock: 3366, remark: '', expiryDate: '2029-01-20', safetyStock: 493, avgMonthlyOut: 493, moq: 5000, leadTime: 10 },
+    { category: 'Cosmetic', code: '100000118', name: '(UC) 하이드레이팅 스킨 세럼 미스트 50ml', currentStock: 2391, incoming: 0, totalStock: 2391, remark: '소진 후 단종', expiryDate: '2027-02-11', safetyStock: 268, avgMonthlyOut: 268, moq: 5000, leadTime: 10 },
+    { category: 'Cosmetic', code: '100000119', name: '(UC) 비타 수퍼 브라이트닝 앰플 30g', currentStock: 4845, incoming: 0, totalStock: 4845, remark: '소진 후 단종', expiryDate: '2027-01-23', safetyStock: 852, avgMonthlyOut: 852, moq: 5000, leadTime: 12 },
+    { category: 'Cosmetic', code: '100000121', name: '(UC) 하이드레이팅 스킨 크림 30ml', currentStock: 1899, incoming: 0, totalStock: 1899, remark: '소진 후 단종', expiryDate: '2027-04-01', safetyStock: 471, avgMonthlyOut: 471, moq: 5000, leadTime: 12 },
+    { category: 'Cosmetic', code: '100000122', name: '(UC) 하이드레이팅 래디언스 선크림 30ml', currentStock: 2046, incoming: 0, totalStock: 2046, remark: '소진 후 단종', expiryDate: '2028-01-15', safetyStock: 263, avgMonthlyOut: 263, moq: 5000, leadTime: 10 },
+    { category: 'Cosmetic', code: '100000132', name: '[USA]DEEP HYDRATING SKIN NUTRITION CREAM', currentStock: 2908, incoming: 0, totalStock: 2908, remark: '', expiryDate: '2027-05-12', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 10 },
+    { category: 'Cosmetic', code: '100000133', name: '[USA]VITA C GLUTAGLOW SUPER BRIGHTENING AMPOULE', currentStock: 998, incoming: 0, totalStock: 998, remark: '소진 후 단종', expiryDate: '2027-03-31', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 12 },
+    { category: 'Cosmetic', code: '100000134', name: '[USA]VITA C 13.5 SUPER BRIGHTENING AMPOULE', currentStock: 3418, incoming: 0, totalStock: 3418, remark: '발주완료, 4월중 입고예정', expiryDate: '2028-02-05', safetyStock: 269, avgMonthlyOut: 269, moq: 5000, leadTime: 12 },
+    { category: 'Cosmetic', code: '100000136', name: '[USA]VITA C SUPER BRIGHTENING MASK', currentStock: 2686, incoming: 0, totalStock: 2686, remark: '소진후 국내용 대체출고', expiryDate: '2027-02-19', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 12 },
+    { category: 'Cosmetic', code: '100000138', name: '[USA]HYDRATING SKIN BARRIER SERUM MIST', currentStock: 2493, incoming: 0, totalStock: 2493, remark: '', expiryDate: '2027-03-27', safetyStock: 0, avgMonthlyOut: 0, moq: 10000, leadTime: 14 },
+    { category: 'Cosmetic', code: '100000129', name: '루미너스 레이어 타이트업 쿠션', currentStock: 865, incoming: 0, totalStock: 865, remark: '', expiryDate: '2028-03-29', safetyStock: 282, avgMonthlyOut: 282, moq: 5000, leadTime: 12 },
+    { category: 'Cosmetic', code: '100000130', name: '루미너스 레이어 타이트업 리필', currentStock: 2556, incoming: 0, totalStock: 2556, remark: '', expiryDate: '2028-03-29', safetyStock: 220, avgMonthlyOut: 220, moq: 5000, leadTime: 12 },
+    { category: 'Cosmetic', code: '100000131', name: '시그니처 리바이탈라이징 샴푸 ', currentStock: 396, incoming: -90, totalStock: 306, remark: '발주진행중', expiryDate: '2027-12-10', safetyStock: 254, avgMonthlyOut: 254, moq: 5000, leadTime: 8 },
+    { category: 'Health Care', code: '000000201', name: '데일리 메가 에너자이저 플러스 30포', currentStock: 2757, incoming: 0, totalStock: 2757, remark: '', expiryDate: '2027-11-20', safetyStock: 404, avgMonthlyOut: 404, moq: 5000, leadTime: 10 },
+    { category: 'Health Care', code: '000000202', name: '트리플 메가 익스텐션 60캡슐', currentStock: 2807, incoming: 0, totalStock: 2807, remark: '', expiryDate: '2027-11-18', safetyStock: 202, avgMonthlyOut: 202, moq: 5000, leadTime: 10 },
+    { category: 'Health Care', code: '000000203', name: '데일리 츄어블 프로폴리스 90캡슐', currentStock: 2006, incoming: 0, totalStock: 2006, remark: '', expiryDate: '2028-01-14', safetyStock: 347, avgMonthlyOut: 347, moq: 5000, leadTime: 12 },
+    { category: 'Health Care', code: '200000206', name: '더블 컷 메가 슬림 플러스 (구독사은품)', currentStock: 4014, incoming: 0, totalStock: 4014, remark: '', expiryDate: '2026-10-15', safetyStock: 575, avgMonthlyOut: 575, moq: 5000, leadTime: 10 },
+    { category: 'Health Care', code: '200000207', name: '슬리밍 메가 프로바이오틱스', currentStock: 1581, incoming: 2500, totalStock: 4081, remark: '발주완료, 4월 입고 예정', expiryDate: '2026-07-06', safetyStock: 691, avgMonthlyOut: 691, moq: 5000, leadTime: 12 },
+    { category: 'Health Care', code: '200000210', name: '본 앤 조인트 액티브 메가 포뮬러 60캡슐', currentStock: 5493, incoming: 0, totalStock: 5493, remark: '', expiryDate: '2027-08-21', safetyStock: 173, avgMonthlyOut: 173, moq: 5000, leadTime: 8 },
+    { category: 'Health Care', code: '200000213', name: '이뮨 메가 부스터 AHCC_10병', currentStock: 3214, incoming: 0, totalStock: 3214, remark: '제품변경', expiryDate: '2026-06-19', safetyStock: 1075, avgMonthlyOut: 1075, moq: 10000, leadTime: 10 },
+    { category: 'Health Care', code: '100000135', name: '슬림핏 프로틴 쉐이크 고소한 멀티 그레인 40g X 10', currentStock: 4510, incoming: 0, totalStock: 4510, remark: '', expiryDate: '2027-04-30', safetyStock: 273, avgMonthlyOut: 273, moq: 20000, leadTime: 10 },
+    { category: 'Health Care', code: '200000218', name: '글로우 뷰티 콜라겐 젤리 타트체리 맛 20g X 30포', currentStock: 1358, incoming: 0, totalStock: 1358, remark: '', expiryDate: '2026-10-23', safetyStock: 177, avgMonthlyOut: 177, moq: 3000, leadTime: 10 },
+    { category: 'Health Care', code: '200000220', name: '브이애플 나이트 액션', currentStock: 2265, incoming: 0, totalStock: 2265, remark: '', expiryDate: '2027-03-10', safetyStock: 172, avgMonthlyOut: 172, moq: 0, leadTime: 8 },
+    { category: 'Health Care', code: '100000139', name: '[USA]Daily Chewable Propolis', currentStock: 2414, incoming: 0, totalStock: 2414, remark: '소진후 국내용 대체출고', expiryDate: '2028-01-14', safetyStock: 0, avgMonthlyOut: 0, moq: 0, leadTime: 12 },
+    { category: 'Health Care', code: '100000140', name: ' [USA]Bone & Joint Health Active MEGA FORMULA', currentStock: 1000, incoming: 0, totalStock: 1000, remark: '', expiryDate: '2027-08-21', safetyStock: 0, avgMonthlyOut: 0, moq: 0, leadTime: 8 },
+    { category: 'Health Care', code: '100000141', name: '[USA]Daily Mega Energizer Plus', currentStock: 1000, incoming: 0, totalStock: 1000, remark: '', expiryDate: '2027-11-20', safetyStock: 0, avgMonthlyOut: 0, moq: 0, leadTime: 10 },
+    { category: 'Health Care', code: '100000142', name: '[USA]Slimming Mega Probiotics', currentStock: 112, incoming: 2500, totalStock: 2612, remark: '발주완료, 4월 입고 예정 물류에 확인 필요', expiryDate: '2026-07-06', safetyStock: 0, avgMonthlyOut: 0, moq: 0, leadTime: 12 },
+    { category: 'Health Care', code: '100000143', name: '[USA]SLIM FIT Protein Shake Powder', currentStock: 1000, incoming: 0, totalStock: 1000, remark: '', expiryDate: '2027-04-30', safetyStock: 0, avgMonthlyOut: 0, moq: 0, leadTime: 10 },
+    { category: 'Health Care', code: '100000144', name: '[USA]Triple MEGA Extension', currentStock: 1000, incoming: 0, totalStock: 1000, remark: '', expiryDate: '2027-11-18', safetyStock: 0, avgMonthlyOut: 0, moq: 0, leadTime: 10 },
+    { category: 'Living', code: '000000020', name: '리얼 그린라이프 프리미엄 페이셜 티슈 5입', currentStock: 6315, incoming: 0, totalStock: 6315, remark: '소진시 단종', expiryDate: '', safetyStock: 61, avgMonthlyOut: 61, moq: 0, leadTime: 0 },
+    { category: 'Living', code: '000000037', name: '리얼 그린라이프 프리미엄 페이셜 티슈 케이스', currentStock: 3929, incoming: 0, totalStock: 3929, remark: '소진시 단종', expiryDate: '', safetyStock: 1, avgMonthlyOut: 1, moq: 0, leadTime: 0 },
+    { category: 'Living', code: '000000044', name: '리얼 그린라이프 프리미엄 대나무 압축타올 30입', currentStock: 9126, incoming: 0, totalStock: 9126, remark: '소진시 단종', expiryDate: '', safetyStock: 65, avgMonthlyOut: 65, moq: 0, leadTime: 0 },
+    { category: 'Living', code: '000000051', name: '리얼 그린라이프 프리미엄 토일렛 화장지 12롤', currentStock: 2892, incoming: 0, totalStock: 2892, remark: '소진시 단종', expiryDate: '', safetyStock: 60, avgMonthlyOut: 60, moq: 0, leadTime: 0 },
+    { category: 'Living', code: '000000068', name: '리얼 그린라이프 프리미엄 키친타올 점보롤 4입', currentStock: 796, incoming: 0, totalStock: 796, remark: '소진시 단종', expiryDate: '', safetyStock: 34, avgMonthlyOut: 34, moq: 0, leadTime: 0 },
+    { category: 'Living', code: '000000069', name: '유니앤코어 덴티바이옴 치약', currentStock: 3531, incoming: 0, totalStock: 3531, remark: '', expiryDate: '2027-09-03', safetyStock: 0, avgMonthlyOut: 0, moq: 0, leadTime: 0 },
+    { category: 'Living', code: '600000635', name: '덴티바이옴 치약 출시 기념 패키지', currentStock: 276, incoming: 0, totalStock: 276, remark: '', expiryDate: '', safetyStock: 13, avgMonthlyOut: 13, moq: 0, leadTime: 0 },
+    { category: 'Living', code: '800000829', name: '덴텍트 Dentect 4입', currentStock: 2724, incoming: 0, totalStock: 2724, remark: '', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 0, leadTime: 0 },
+    { category: 'Lounge Item', code: '300000315', name: '하이퍼루프 스칼프 세럼 300ml', currentStock: 605, incoming: 0, totalStock: 605, remark: '', expiryDate: '2028-07-09', safetyStock: 36, avgMonthlyOut: 36, moq: 5000, leadTime: 8 },
+    { category: 'Lounge Item', code: '300000316', name: '하이퍼루프 바디 크림 280g', currentStock: 7, incoming: 0, totalStock: 7, remark: '발주완료, 4월 입고/4월 쿨젤크림', expiryDate: '2027-06-18', safetyStock: 3, avgMonthlyOut: 3, moq: 0, leadTime: 8 },
+    { category: 'Lounge Item', code: '300000318', name: '수딩 앤 모이스트 케어 부스팅 젤 250ml ', currentStock: 2158, incoming: 0, totalStock: 2158, remark: '', expiryDate: '2026-12-04', safetyStock: 184, avgMonthlyOut: 184, moq: 5000, leadTime: 8 },
+    { category: 'Sales Aids', code: '000000801', name: '유니앤코어 코튼 파우치', currentStock: 10542, incoming: 0, totalStock: 10542, remark: '단종', expiryDate: '', safetyStock: 5, avgMonthlyOut: 5, moq: 0, leadTime: 213 },
+    { category: '트라이얼키트', code: '000000805', name: '고급 샤무드 원단 파우치 비매품 (증정용)', currentStock: 1808, incoming: 0, totalStock: 1808, remark: '', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 0 },
+    { category: '트라이얼키트', code: '800000827', name: '하이드레이팅 래디언스 선크림 SPF50 PA+++10ml', currentStock: 8440, incoming: 0, totalStock: 8440, remark: '', expiryDate: '2027-05-27', safetyStock: 518, avgMonthlyOut: 518, moq: 5000, leadTime: 10 },
+    { category: '트라이얼키트', code: '800000826', name: '딥 리페어 액티베이팅 뉴트리션 크림 7ml', currentStock: 901, incoming: 0, totalStock: 901, remark: '단종, opp작업완료', expiryDate: '', safetyStock: 2100, avgMonthlyOut: 100, moq: 5000, leadTime: 10 },
+    { category: 'Sales Aids', code: '800000831', name: '마이크로 버블 클렌징 폼 10ml', currentStock: 7268, incoming: 0, totalStock: 7268, remark: '단종', expiryDate: '2026-05-26', safetyStock: 955, avgMonthlyOut: 955, moq: 0, leadTime: 10 },
+    { category: 'Sales Aids', code: '800000849', name: '유니앤코어 친환경 종이컵 8oz (200개)', currentStock: 11, incoming: 0, totalStock: 11, remark: '', expiryDate: '', safetyStock: 1, avgMonthlyOut: 1, moq: 0, leadTime: 2 },
+    { category: 'Sales Aids', code: '800000852', name: '유니앤코어 친환경 종이컵 8oz (제작용)', currentStock: 15000, incoming: 0, totalStock: 15000, remark: '', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 0, leadTime: 2 },
+    { category: 'Sales Aids', code: '800000845', name: '유니앤코어 기프트 박스', currentStock: 1455, incoming: 0, totalStock: 1455, remark: '', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 0, leadTime: 0 },
+    { category: 'Sales Aids', code: '000000803', name: '아이스 워터보틀', currentStock: 217, incoming: 0, totalStock: 217, remark: '', expiryDate: '', safetyStock: 9, avgMonthlyOut: 9, moq: 0, leadTime: 0 },
+    { category: 'Sales Aids', code: '000000817', name: '유니앤코어 미스트 펌프', currentStock: 158, incoming: 0, totalStock: 158, remark: '', expiryDate: '', safetyStock: 36, avgMonthlyOut: 36, moq: 6000, leadTime: 0 },
+    { category: 'Sales Aids', code: '800000823', name: '유니앤코어 휴대용 미스트 용기', currentStock: 1386, incoming: 0, totalStock: 1386, remark: '', expiryDate: '', safetyStock: 19, avgMonthlyOut: 19, moq: 0, leadTime: 0 },
+    { category: 'Sales Aids', code: '800000824', name: '유니앤코어 쇼핑백', currentStock: 524, incoming: 0, totalStock: 524, remark: '2000개 발주완료', expiryDate: '', safetyStock: 207, avgMonthlyOut: 207, moq: 1000, leadTime: 0 },
+    { category: 'Sales Aids', code: '800000834', name: '유니앤코어 쇼핑백 (소형)', currentStock: 3884, incoming: 0, totalStock: 3884, remark: '', expiryDate: '', safetyStock: 150, avgMonthlyOut: 150, moq: 0, leadTime: 2 },
+    { category: 'Sales Aids', code: '800000855', name: '유니앤코어 V:DAY 보틀', currentStock: 600, incoming: 0, totalStock: 600, remark: '', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 1000, leadTime: 0 },
+    { category: 'Sales Aids', code: '800000860', name: '유니앤코어 탁상거울', currentStock: 695, incoming: 0, totalStock: 695, remark: '', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 0, leadTime: 0 },
+    { category: 'Sales Aids', code: '800000850', name: '유니앤코어 전제품 브로슈어', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 10 },
+    { category: 'Living', code: '800000848', name: '덴텍트 Dentect 1입', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 0, leadTime: 0 },
+    { category: 'Cosmetic', code: '100000113', name: '비타씨 13.5 수퍼 화이트닝 앰플 15g', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 10 },
+    { category: 'Cosmetic', code: '100000126', name: '(CN)유니은커우 비타 수퍼 브라이트닝 마스크 1매', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '2026-07-16', safetyStock: 325, avgMonthlyOut: 325, moq: 10000, leadTime: 14 },
+    { category: 'Sales Aids', code: '000000822', name: '유니앤코어 코튼 파우치 (5매입)', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 0, leadTime: 0 },
+    { category: 'Sales Aids', code: '000000812', name: '유니앤코어 휴대용 파우치', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 0, leadTime: 0 },
+    { category: '챌린지사은품', code: '600000683', name: '챌린지사은품(프로폴리스 30캡슐 15ea)', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 0, leadTime: 10 },
+    { category: 'Cosmetic', code: '100000111', name: '엔자임 스킨 톤 파우더 워시 1g * 30EA-단종', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '2028-01-01', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 10 },
+    { category: 'Cosmetic', code: '000000105', name: '하이드레이팅 스킨 베리어 세럼 미스트 30ml', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 10 },
+    { category: 'Cosmetic', code: '100000128', name: '비타씨 엔자임 파우더 워시(벌크) _new', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 10 },
+    { category: 'Cosmetic', code: '100000110', name: '라이트웨이트 딥 클렌징 오일 200ml', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '2026-02-22', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 10 },
+    { category: 'Cosmetic', code: '000000103', name: '비타씨 수퍼 브라이트닝 마스크 1매 -단종', currentStock: 840, incoming: 0, totalStock: 840, remark: '단종', expiryDate: '2026-05-14', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 10 },
+    { category: 'Health Care', code: '200000204', name: '클렌즈 톡스 샷 1병', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 0, leadTime: 0 },
+    { category: 'Health Care', code: '200000205', name: '클렌즈 톡스 샷 6병', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 10000, leadTime: 10 },
+    { category: 'Health Care', code: '200000208', name: '데일리 츄어블 프로폴리스 30캡슐', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 12 },
+    { category: 'Cosmetic', code: '100000109', name: '마이크로 버블 클렌징 폼 120m', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 10000, leadTime: 14 },
+    { category: 'Sales Aids', code: '000000815', name: '화장품 리플렛', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 10 },
+    { category: 'Health Care', code: '200000216', name: '슬림핏 프로틴 쉐이크 고소한 멀티 그레인 40g X 1', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 10 },
+    { category: 'Cosmetic', code: '800000836', name: '유니앤코어 7DAYS 브라이트닝 트라이얼 키트 ', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 0, leadTime: 0 },
+    { category: 'Cosmetic', code: '000000102', name: '비타씨 13.5 수퍼 화이트닝 앰플 30g', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 0, leadTime: 0 },
+    { category: 'Cosmetic', code: '000000107', name: '비타씨 수퍼 브라이트닝 마스크 4매', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 1000, leadTime: 0 },
+    { category: 'Living', code: '000000052', name: '리얼 그린라이프 프리미엄 토일렛 화장지 1롤', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 0 },
+    { category: 'Sales Aids', code: '800000844', name: '유니앤코어 비즈니스 세미나 입장권', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 0, leadTime: 0 },
+    { category: 'Sales Aids', code: '800000851', name: '본사방문_신규회원 사은품', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 0, leadTime: 0 },
+    { category: 'Sales Aids', code: '000000806', name: '딥 리페어 액티베이팅 뉴트리션 크림 10g 비매품 (증정용)', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 0 },
+    { category: 'Sales Aids', code: '000000807', name: '비타씨 13.5 수퍼 화이트닝 앰플 10g 비매품 (증정용)', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 0, leadTime: 0 },
+    { category: 'Sales Aids', code: '000000808', name: '데일리 메가 에너자이저 플러스 2포 비매품 (증정용)', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 0, leadTime: 0 },
+    { category: 'Sales Aids', code: '000000809', name: '리얼 그린라이프 프리미엄 대나무 압축타올 1개 비매품 (증정용)', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 0, leadTime: 0 },
+    { category: 'Sales Aids', code: '000000810', name: 'M팩 구매용 사은품_트라이얼 키트', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 0, leadTime: 0 },
+    { category: 'Health Care', code: '200000216', name: '슬림핏 프로틴 쉐이크 고소한 멀티 그레인 40g -1포', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 0, leadTime: 0 },
+    { category: 'Sales Aids', code: '000000811', name: '샘플링용_트라이얼 키트', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 0, leadTime: 0 },
+    { category: 'Sales Aids', code: '000000813', name: '비타씨 수퍼 브라이트닝 마스크 1매 비매품 (증정용)', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 0, leadTime: 0 },
+    { category: 'Sales Aids', code: '000000814', name: '화장품 구독 패키지 사은품 (정품용량)', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 0, leadTime: 0 },
+    { category: 'Sales Aids', code: '000000816', name: '건강기능식품 리플렛', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 0, leadTime: 0 },
+    { category: '3300사은품', code: '600000665', name: 'USA Travel kit', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 0, leadTime: 10 },
+    { category: '3300사은품', code: '600000682', name: 'USA Travel kit(single)', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 673, avgMonthlyOut: 673, moq: 0, leadTime: 10 },
+    { category: 'Sales Aids', code: '000000818', name: '유니앤코어 10일분 고급 트라이얼 키트 (4세트입)', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 0, leadTime: 0 },
+    { category: 'Sales Aids', code: '000000819', name: '유니앤코어 리플렛 세트', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 0, leadTime: 0 },
+    { category: 'Sales Aids', code: '000000820', name: '유니앤코어 샤무드 파우치 (5매입)', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 0, leadTime: 0 },
+    { category: 'Sales Aids', code: '000000821', name: '유니앤코어 휴대용 파우치 (5매입)', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 0, leadTime: 0 },
+    { category: 'Sales Aids', code: '000000823', name: '유니앤코어 10일분 고급 트라이얼 키트 (1세트입)', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 0, leadTime: 0 },
+    { category: 'Sales Aids', code: '800000837', name: '유니앤코어 고무볼', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 0, leadTime: 0 },
+    { category: 'Sales Aids', code: '800000838', name: '유니앤코어 스파츌러', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 0, leadTime: 0 },
+    { category: 'Sales Aids', code: '800000839', name: '유니앤코어 해면', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 0, leadTime: 0 },
+    { category: 'Sales Aids', code: '800000840', name: '유니앤코어 모델링팩 3종 세트', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 17, moq: 0, leadTime: 0 },
+    { category: 'Sales Aids', code: '800000842', name: '유니앤코어 페이스 타올', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 2250, moq: 0, leadTime: 0 },
+    { category: 'Sales Aids', code: '800000843', name: '유니앤코어 바디 타올', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 0, leadTime: 0 },
+    { category: 'Sales Aids', code: '8800000841', name: '유니앤코어 터번', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 0, leadTime: 10 },
+    { category: 'Sales Aids', code: '999999999', name: '박스추가', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 4, moq: 0, leadTime: 0 },
+    { category: 'Health Care', code: '990000000', name: '슬림핏 프로틴 쉐이크_인플루언서용', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 0, leadTime: 10 },
+    { category: 'Sales Aids', code: '300000317', name: '라운지 전용 관리사 가운(상의)', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 0, leadTime: 0 },
+    { category: 'Health Care', code: '200000209', name: '데일리 메가 에너자이저 플러스 10포-단종', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 10 },
+    { category: '트라이얼키트', code: '800000828', name: '비타씨 13.5 수퍼 화이트닝 앰플 7g_단종', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 10 },
+    { category: 'Cosmetic', code: '100000120', name: '(UC) 비타 수퍼 브라이트닝 마스크 5매', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '2026-07-16', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 12 },
+    { category: 'Cosmetic', code: '100000137', name: '[USA]VITA C ENZYME POWDER WASH', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '2028-05-06', safetyStock: 229, avgMonthlyOut: 229, moq: 5000, leadTime: 10 }
+  ];
 
   saveToStorage();
   refreshAll();
-  showToast('실시간 데이터 ' + products.length + '개 제품이 로드되었습니다. (2026년 04월 14일 동기화)');
+  showToast('실시간 데이터 ' + products.length + '개 제품이 로드되었습니다. (2026년 4월 14일 동기화)');
 }
 
 // ============ MODAL / CRUD ============
@@ -1979,94 +2025,260 @@ function exportTable() {
 }
 
 function exportOrders() {
-  if (!canEditOrders()) { showToast('권한이 없습니다. 매니저 이상만 내보내기 가능합니다.'); return; }
   const checked = document.querySelectorAll('.order-check:checked');
   if (checked.length === 0) { showToast('발주할 제품을 선택하세요.'); return; }
 
+  const ws_data = [['발주일','상품코드','품명','현재고','MOQ','추천발주량','리드타임(주)','예상입고일','REMARK']];
   const today = new Date().toLocaleDateString('ko-KR');
-  const headers = ['상품코드','품명','현재고','2M 평균출고','예상 잔여일','예상 품절일','MOQ','추천 발주량','리드타임(주)','예상 입고일','REMARK'];
-  const colCount = headers.length;
 
-  const rows = [];
   checked.forEach(el => {
     const row = el.closest('tr');
     const cells = row.querySelectorAll('td');
-    const getText = (i) => (cells[i] ? cells[i].textContent.trim() : '');
-    const getNum = (i) => { const v = getText(i).replace(/[^0-9.-]/g, ''); return v ? Number(v) : 0; };
-    rows.push([
-      getText(2), getText(3), getNum(4), getNum(5), getText(6), getText(7),
-      getNum(8), getNum(9), getNum(10), getText(11), getText(12)
-    ]);
+    ws_data.push([today, cells[2].textContent, cells[3].textContent, cells[4].textContent, cells[5].textContent, cells[6].textContent, cells[7].textContent, cells[8].textContent, cells[9].textContent]);
   });
 
-  const title = 'UNI&CORE 발주 검토서 (' + today + ')';
-  const ws_data = [[title], [], headers, ...rows];
   const ws = XLSX.utils.aoa_to_sheet(ws_data);
-
-  // 스타일 정의
-  const border = {
-    top:    { style: 'thin', color: { rgb: '000000' } },
-    bottom: { style: 'thin', color: { rgb: '000000' } },
-    left:   { style: 'thin', color: { rgb: '000000' } },
-    right:  { style: 'thin', color: { rgb: '000000' } }
-  };
-  const headerStyle = {
-    font: { bold: true, sz: 11, color: { rgb: 'FFFFFF' } },
-    fill: { fgColor: { rgb: '1A5632' } },
-    alignment: { horizontal: 'center', vertical: 'center', wrapText: true },
-    border: border
-  };
-  const titleStyle = {
-    font: { bold: true, sz: 14, color: { rgb: '1A5632' } },
-    alignment: { horizontal: 'left', vertical: 'center' }
-  };
-  const cellStyle = { border: border, alignment: { vertical: 'center' } };
-  const numStyle = { border: border, alignment: { horizontal: 'right', vertical: 'center' }, numFmt: '#,##0' };
-  const centerStyle = { border: border, alignment: { horizontal: 'center', vertical: 'center' } };
-
-  // 타이틀 행 스타일
-  const titleAddr = XLSX.utils.encode_cell({ r: 0, c: 0 });
-  if (ws[titleAddr]) ws[titleAddr].s = titleStyle;
-
-  // 헤더 행 스타일 (3번째 행, index 2)
-  for (let c = 0; c < colCount; c++) {
-    const addr = XLSX.utils.encode_cell({ r: 2, c });
-    if (ws[addr]) ws[addr].s = headerStyle;
-  }
-
-  // 데이터 행 스타일
-  const numColIdx = [2, 3, 6, 7]; // 현재고, 2M평균출고, MOQ, 추천발주량
-  const centerColIdx = [4, 5, 8, 9]; // 예상잔여일, 예상품절일, 리드타임, 예상입고일
-  for (let r = 3; r < 3 + rows.length; r++) {
-    for (let c = 0; c < colCount; c++) {
-      const addr = XLSX.utils.encode_cell({ r, c });
-      if (!ws[addr]) ws[addr] = { v: '', t: 's' };
-      if (numColIdx.includes(c)) {
-        ws[addr].s = numStyle;
-      } else if (centerColIdx.includes(c)) {
-        ws[addr].s = centerStyle;
-      } else {
-        ws[addr].s = cellStyle;
-      }
-    }
-  }
-
-  // 컬럼 너비
-  ws['!cols'] = [
-    { wch: 14 }, { wch: 48 }, { wch: 10 }, { wch: 13 }, { wch: 12 },
-    { wch: 14 }, { wch: 10 }, { wch: 13 }, { wch: 12 }, { wch: 14 }, { wch: 30 }
-  ];
-
-  // 행 높이
-  ws['!rows'] = [{ hpt: 28 }, { hpt: 15 }, { hpt: 22 }];
-
-  // 타이틀 병합
-  ws['!merges'] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: colCount - 1 } }];
-
   const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, '발주검토서');
-  XLSX.writeFile(wb, 'UNI&CORE_발주검토서_' + new Date().toISOString().slice(0,10) + '.xlsx');
-  showToast(rows.length + '개 제품 발주 검토서가 다운로드되었습니다.');
+  XLSX.utils.book_append_sheet(wb, ws, '발주서');
+  XLSX.writeFile(wb, 'UNI&CORE_발주서_' + new Date().toISOString().slice(0,10) + '.xlsx');
+  showToast('발주서가 다운로드되었습니다.');
+}
+
+// ============ GITHUB SHARED ORDER ACTIONS ============
+function getGitHubConfig() {
+  try {
+    return {
+      repo: localStorage.getItem('unicore_gh_repo') || '',
+      token: localStorage.getItem('unicore_gh_token') || '',
+      filePath: localStorage.getItem('unicore_gh_filepath') || 'github-deploy/order_actions.json'
+    };
+  } catch(e) { return { repo: '', token: '', filePath: 'github-deploy/order_actions.json' }; }
+}
+
+function isGitHubConfigured() {
+  const cfg = getGitHubConfig();
+  return cfg.repo && cfg.token;
+}
+
+function saveGitHubSettings() {
+  const repo = document.getElementById('ghRepo').value.trim();
+  const token = document.getElementById('ghToken').value.trim();
+  const filePath = document.getElementById('ghFilePath').value.trim() || 'github-deploy/order_actions.json';
+
+  if (!repo || !token) {
+    showToast('저장소와 토큰을 모두 입력해 주세요.');
+    return;
+  }
+
+  try {
+    localStorage.setItem('unicore_gh_repo', repo);
+    localStorage.setItem('unicore_gh_token', token);
+    localStorage.setItem('unicore_gh_filepath', filePath);
+  } catch(e) {}
+
+  updateGitHubBadge();
+  showToast('GitHub 설정이 저장되었습니다.');
+
+  // 설정 후 자동으로 공유 데이터 불러오기
+  pullOrderActionsFromGitHub();
+}
+
+function loadGitHubSettings() {
+  const cfg = getGitHubConfig();
+  document.getElementById('ghRepo').value = cfg.repo;
+  document.getElementById('ghToken').value = cfg.token;
+  document.getElementById('ghFilePath').value = cfg.filePath;
+  updateGitHubBadge();
+}
+
+function updateGitHubBadge() {
+  const badge = document.getElementById('ghSyncBadge');
+  if (isGitHubConfigured()) {
+    badge.textContent = '연결됨';
+    badge.style.background = 'var(--success-bg)';
+    badge.style.color = 'var(--success)';
+  } else {
+    badge.textContent = '미설정';
+    badge.style.background = 'var(--warning-bg)';
+    badge.style.color = '#b45309';
+  }
+}
+
+// 현재 products에서 order action만 추출
+function extractOrderActions() {
+  const actions = {};
+  products.forEach(p => {
+    const action = getOrderAction(p);
+    if (action) {
+      // remark에서 액션 태그 전체를 저장
+      const match = (p.remark || '').match(/\[(발주완료|발주대기|별도조치|단종조치)\s*([^\]]*)\]/);
+      actions[p.code] = {
+        action: action,
+        date: match ? match[2].trim() : new Date().toLocaleDateString('ko-KR'),
+        name: p.name
+      };
+    }
+  });
+  return actions;
+}
+
+// 서버에서 가져온 order actions를 products에 반영
+function applyOrderActions(actions) {
+  if (!actions || typeof actions !== 'object') return;
+  let changed = false;
+
+  Object.keys(actions).forEach(code => {
+    const idx = products.findIndex(p => p.code === code);
+    if (idx < 0) return;
+
+    const info = actions[code];
+    const currentAction = getOrderAction(products[idx]);
+
+    // 이미 같은 액션이면 스킵
+    if (currentAction === info.action) return;
+
+    // 기존 remark에서 이전 액션 태그 제거
+    let baseRemark = (products[idx].remark || '').replace(/\s*\[(발주완료|발주대기|별도조치|단종조치)\s*[^\]]*\]\s*/g, '').trim();
+    baseRemark = baseRemark.replace(/\s*발주요청 완료\s*\([^)]*\)\s*/g, '').trim();
+
+    const tag = `[${info.action} ${info.date}]`;
+    products[idx].remark = baseRemark ? `${baseRemark} ${tag}` : tag;
+    changed = true;
+  });
+
+  if (changed) {
+    saveToStorage();
+  }
+  return changed;
+}
+
+// GitHub에서 order actions 불러오기
+async function pullOrderActionsFromGitHub() {
+  const cfg = getGitHubConfig();
+  if (!cfg.repo || !cfg.token) {
+    showToast('GitHub 설정을 먼저 완료해 주세요.');
+    return;
+  }
+
+  const statusEl = document.getElementById('ghSyncStatus');
+  statusEl.textContent = '불러오는 중...';
+  statusEl.style.color = 'var(--info)';
+
+  try {
+    const res = await fetch(`https://api.github.com/repos/${cfg.repo}/contents/${cfg.filePath}`, {
+      headers: {
+        'Authorization': `Bearer ${cfg.token}`,
+        'Accept': 'application/vnd.github.v3+json'
+      }
+    });
+
+    if (res.status === 404) {
+      statusEl.textContent = '공유 파일이 없습니다. "현재 액션 공유 저장"을 먼저 실행해 주세요.';
+      statusEl.style.color = 'var(--warning)';
+      return;
+    }
+
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+    const data = await res.json();
+    const content = JSON.parse(atob(data.content));
+    const actions = content.actions || {};
+
+    // 삭제 목록도 동기화
+    if (content.dismissed && Array.isArray(content.dismissed)) {
+      const merged = [...new Set([...dismissedOrders, ...content.dismissed])];
+      dismissedOrders = merged;
+      saveDismissedToLocal();
+    }
+
+    const changed = applyOrderActions(actions);
+    refreshAll();
+    const activeTab = document.querySelector('.tab-content.active');
+    if (activeTab && activeTab.id === 'tab-orders') renderOrders();
+
+    const count = Object.keys(actions).length;
+    const dismissed = dismissedOrders.length;
+    const time = content.updatedAt ? new Date(content.updatedAt).toLocaleString('ko-KR') : '-';
+    statusEl.textContent = `${count}개 액션, ${dismissed}개 삭제 반영 완료 (마지막 저장: ${time})`;
+    statusEl.style.color = 'var(--success)';
+  } catch(e) {
+    statusEl.textContent = '불러오기 실패: ' + e.message;
+    statusEl.style.color = 'var(--danger)';
+  }
+}
+
+// GitHub에 order actions 저장
+async function pushOrderActionsToGitHub() {
+  const cfg = getGitHubConfig();
+  if (!cfg.repo || !cfg.token) return;
+
+  const statusEl = document.getElementById('ghSyncStatus');
+  statusEl.textContent = '저장 중...';
+  statusEl.style.color = 'var(--info)';
+
+  try {
+    const actions = extractOrderActions();
+    const payload = {
+      actions: actions,
+      dismissed: dismissedOrders,
+      updatedAt: new Date().toISOString(),
+      updatedBy: 'dashboard'
+    };
+    const contentBase64 = btoa(unescape(encodeURIComponent(JSON.stringify(payload, null, 2))));
+
+    // 기존 파일의 sha 가져오기 (업데이트용)
+    let sha = '';
+    try {
+      const getRes = await fetch(`https://api.github.com/repos/${cfg.repo}/contents/${cfg.filePath}`, {
+        headers: {
+          'Authorization': `Bearer ${cfg.token}`,
+          'Accept': 'application/vnd.github.v3+json'
+        }
+      });
+      if (getRes.ok) {
+        const existing = await getRes.json();
+        sha = existing.sha;
+      }
+    } catch(e) {}
+
+    const body = {
+      message: `발주 액션 업데이트 (${new Date().toLocaleString('ko-KR')})`,
+      content: contentBase64
+    };
+    if (sha) body.sha = sha;
+
+    const putRes = await fetch(`https://api.github.com/repos/${cfg.repo}/contents/${cfg.filePath}`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${cfg.token}`,
+        'Accept': 'application/vnd.github.v3+json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(body)
+    });
+
+    if (!putRes.ok) {
+      const errData = await putRes.json();
+      throw new Error(errData.message || `HTTP ${putRes.status}`);
+    }
+
+    const count = Object.keys(actions).length;
+    statusEl.textContent = `${count}개 액션 저장 완료 (${new Date().toLocaleString('ko-KR')})`;
+    statusEl.style.color = 'var(--success)';
+  } catch(e) {
+    statusEl.textContent = '저장 실패: ' + e.message;
+    statusEl.style.color = 'var(--danger)';
+  }
+}
+
+// 액션 변경 시 자동 GitHub 동기화 (디바운스 적용)
+let ghPushTimer = null;
+function schedulePushToGitHub() {
+  if (!isGitHubConfigured()) return;
+  if (ghPushTimer) clearTimeout(ghPushTimer);
+  ghPushTimer = setTimeout(() => {
+    pushOrderActionsToGitHub();
+  }, 2000); // 2초 후 자동 저장 (연속 변경 시 마지막 것만)
 }
 
 // ============ SYNC SETTINGS ============
@@ -2115,7 +2327,7 @@ function saveSyncUrl() {
   document.getElementById('syncStatusBadge').textContent = '활성';
   document.getElementById('syncStatusBadge').style.background = 'var(--success-bg)';
   document.getElementById('syncStatusBadge').style.color = 'var(--success)';
-  showToast('실시간 데이터 ' + products.length + '개 제품이 로드되었습니다. (2026년 04월 14일 동기화)');
+  showToast('동기화 URL이 저장되었습니다.');
 }
 
 function saveSyncConfig(url) {
@@ -2134,282 +2346,33 @@ function saveSyncConfig(url) {
   URL.revokeObjectURL(a.href);
 }
 
-
-// ============ GITHUB SHARED ORDER ACTIONS ============
-function getGitHubConfig() {
-  try {
-    return {
-      repo: localStorage.getItem('unicore_gh_repo') || '',
-      token: localStorage.getItem('unicore_gh_token') || '',
-      filePath: localStorage.getItem('unicore_gh_filepath') || 'github-deploy/order_actions.json'
-    };
-  } catch(e) { return { repo: '', token: '', filePath: 'github-deploy/order_actions.json' }; }
-}
-
-function isGitHubConfigured() {
-  const cfg = getGitHubConfig();
-  return cfg.repo && cfg.token;
-}
-
-function saveGitHubSettings() {
-  const repo = document.getElementById('ghRepo').value.trim();
-  const token = document.getElementById('ghToken').value.trim();
-  const filePath = document.getElementById('ghFilePath').value.trim() || 'github-deploy/order_actions.json';
-  if (!repo || !token) { showToast('저장소와 토큰을 모두 입력해 주세요.'); return; }
-  try {
-    localStorage.setItem('unicore_gh_repo', repo);
-    localStorage.setItem('unicore_gh_token', token);
-    localStorage.setItem('unicore_gh_filepath', filePath);
-  } catch(e) {}
-  updateGitHubBadge();
-  showToast('GitHub 설정이 저장되었습니다.');
-  pullOrderActionsFromGitHub();
-}
-
-function loadGitHubSettings() {
-  const cfg = getGitHubConfig();
-  document.getElementById('ghRepo').value = cfg.repo;
-  document.getElementById('ghToken').value = cfg.token;
-  document.getElementById('ghFilePath').value = cfg.filePath;
-  updateGitHubBadge();
-}
-
-function updateGitHubBadge() {
-  const badge = document.getElementById('ghSyncBadge');
-  if (isGitHubConfigured()) {
-    badge.textContent = '연결됨';
-    badge.style.background = 'var(--success-bg)';
-    badge.style.color = 'var(--success)';
-  } else {
-    badge.textContent = '미설정';
-    badge.style.background = 'var(--warning-bg)';
-    badge.style.color = '#b45309';
-  }
-}
-
-function extractOrderActions() {
-  const actions = {};
-  products.forEach(p => {
-    const action = getOrderAction(p);
-    if (action) {
-      const match = (p.remark || '').match(/\[(발주완료|발주진행중|발주대기|대체출고|별도조치|단종조치)\s*([^\]]*)\]/);
-      actions[p.code] = {
-        action: action,
-        date: match ? match[2].trim() : new Date().toLocaleDateString('ko-KR'),
-        name: p.name
-      };
-    }
-  });
-  return actions;
-}
-
-function applyOrderActions(actions) {
-  if (!actions || typeof actions !== 'object') return;
-  let changed = false;
-  Object.keys(actions).forEach(code => {
-    const idx = products.findIndex(p => p.code === code);
-    if (idx < 0) return;
-    const info = actions[code];
-    const currentAction = getOrderAction(products[idx]);
-    if (currentAction === info.action) return;
-    let baseRemark = (products[idx].remark || '').replace(/\s*\[(발주완료|발주진행중|발주대기|대체출고|별도조치|단종조치)\s*[^\]]*\]\s*/g, '').trim();
-    baseRemark = baseRemark.replace(/\s*발주요청 완료\s*\([^)]*\)\s*/g, '').trim();
-    const tag = '[' + info.action + ' ' + info.date + ']';
-    products[idx].remark = baseRemark ? baseRemark + ' ' + tag : tag;
-    changed = true;
-  });
-  if (changed) { saveToStorage(); }
-  return changed;
-}
-
-async function pullOrderActionsFromGitHub() {
-  const cfg = getGitHubConfig();
-  if (!cfg.repo || !cfg.token) { showToast('GitHub 설정을 먼저 완료해 주세요.'); return; }
-  const statusEl = document.getElementById('ghSyncStatus');
-  statusEl.textContent = '불러오는 중...';
-  statusEl.style.color = 'var(--info)';
-  try {
-    const res = await fetch('https://api.github.com/repos/' + cfg.repo + '/contents/' + cfg.filePath, {
-      headers: { 'Authorization': 'Bearer ' + cfg.token, 'Accept': 'application/vnd.github.v3+json' }
-    });
-    if (res.status === 404) {
-      statusEl.textContent = '공유 파일이 없습니다. "현재 액션 공유 저장"을 먼저 실행해 주세요.';
-      statusEl.style.color = 'var(--warning)';
-      return;
-    }
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    const data = await res.json();
-    const cnt = JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(data.content), c => c.charCodeAt(0))));
-    const actions = cnt.actions || {};
-    // 삭제 목록도 동기화
-    if (cnt.dismissed && Array.isArray(cnt.dismissed)) {
-      const merged = [...new Set([...dismissedOrders, ...cnt.dismissed])];
-      dismissedOrders = merged;
-      saveDismissedToLocal();
-    }
-    const changed = applyOrderActions(actions);
-    refreshAll();
-    const activeTab = document.querySelector('.tab-content.active');
-    if (activeTab && activeTab.id === 'tab-orders') renderOrders();
-    const count = Object.keys(actions).length;
-    const dismissed = dismissedOrders.length;
-    const time = cnt.updatedAt ? new Date(content.updatedAt).toLocaleString('ko-KR') : '-';
-    statusEl.textContent = count + '개 액션 반영 완료 (마지막 저장: ' + time + ')';
-    statusEl.style.color = 'var(--success)';
-  } catch(e) {
-    statusEl.textContent = '불러오기 실패: ' + e.message;
-    statusEl.style.color = 'var(--danger)';
-  }
-}
-
-async function pushOrderActionsToGitHub() {
-  const cfg = getGitHubConfig();
-  if (!cfg.repo || !cfg.token) return;
-  const statusEl = document.getElementById('ghSyncStatus');
-  statusEl.textContent = '저장 중...';
-  statusEl.style.color = 'var(--info)';
-  try {
-    const actions = extractOrderActions();
-    const payload = { actions: actions, updatedAt: new Date().toISOString(), updatedBy: 'dashboard' };
-    const contentBase64 = btoa(String.fromCharCode(...new TextEncoder().encode(JSON.stringify(payload, null, 2))));
-    let sha = '';
-    try {
-      const getRes = await fetch('https://api.github.com/repos/' + cfg.repo + '/contents/' + cfg.filePath, {
-        headers: { 'Authorization': 'Bearer ' + cfg.token, 'Accept': 'application/vnd.github.v3+json' }
-      });
-      if (getRes.ok) { const existing = await getRes.json(); sha = existing.sha; }
-    } catch(e) {}
-    const body = { message: '발주 액션 업데이트 (' + new Date().toLocaleString('ko-KR') + ')', content: contentBase64 };
-    if (sha) body.sha = sha;
-    const putRes = await fetch('https://api.github.com/repos/' + cfg.repo + '/contents/' + cfg.filePath, {
-      method: 'PUT',
-      headers: { 'Authorization': 'Bearer ' + cfg.token, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
-    });
-    if (!putRes.ok) { const errData = await putRes.json(); throw new Error(errData.message || 'HTTP ' + putRes.status); }
-    const count = Object.keys(actions).length;
-    statusEl.textContent = count + '개 액션 저장 완료 (' + new Date().toLocaleString('ko-KR') + ')';
-    statusEl.style.color = 'var(--success)';
-  } catch(e) {
-    statusEl.textContent = '저장 실패: ' + e.message;
-    statusEl.style.color = 'var(--danger)';
-  }
-}
-
-let ghPushTimer = null;
-function schedulePushToGitHub() {
-  if (!isGitHubConfigured()) return;
-  if (ghPushTimer) clearTimeout(ghPushTimer);
-  ghPushTimer = setTimeout(() => { pushOrderActionsToGitHub(); }, 2000);
-}
-
-function saveSyncToken() {
-  const token = document.getElementById('syncToken').value.trim();
-  if (!token) { showToast('토큰을 입력해 주세요.'); return; }
-  try {
-    localStorage.setItem('unicore_sync_token', token);
-    // Also share with order actions
-    localStorage.setItem('unicore_gh_token', token);
-    localStorage.setItem('unicore_gh_repo', 'ironchung2010/unicore-inventory');
-  } catch(e) {}
-  showToast('토큰이 저장되었습니다.');
-}
-
-function loadSyncToken() {
-  const token = localStorage.getItem('unicore_sync_token') || localStorage.getItem('unicore_gh_token') || '';
-  if (token) {
-    document.getElementById('syncToken').value = token;
-  }
-}
-
 function triggerManualSync() {
-  const btn = document.getElementById('manualSyncBtn');
-  btn.disabled = true;
-  btn.textContent = '동기화 실행 중...';
-  btn.style.opacity = '0.6';
-
-  const ghRepo = 'ironchung2010/unicore-inventory';
-  const ghToken = document.getElementById('syncToken').value.trim() || localStorage.getItem('unicore_sync_token') || localStorage.getItem('unicore_gh_token') || '';
-
-  if (!ghToken) {
-    showToast('위에 GitHub 토큰을 입력하고 저장해 주세요.');
-    btn.disabled = false;
-    btn.textContent = '수동 동기화 실행';
-    btn.style.opacity = '1';
+  const url = document.getElementById('syncUrl').value.trim();
+  if (!url) {
+    showToast('먼저 SharePoint URL을 등록해 주세요.');
     return;
   }
+  const btn = document.getElementById('manualSyncBtn');
+  btn.disabled = true;
+  btn.textContent = '동기화 중...';
+  btn.style.opacity = '0.6';
 
-  // Auto-save token
-  try { localStorage.setItem('unicore_sync_token', ghToken); } catch(e) {}
-
+  // Record sync attempt
   const now = new Date().toLocaleString('ko-KR', { timeZone:'Asia/Seoul' });
+  try {
+    localStorage.setItem('unicore_last_sync', now);
+  } catch(e) {}
+  document.getElementById('lastSyncTime').textContent = '마지막 동기화 시도: ' + now;
 
-  // Trigger GitHub Actions workflow_dispatch
-  fetch(`https://api.github.com/repos/${ghRepo}/actions/workflows/sync.yml/dispatches`, {
-    method: 'POST',
-    headers: {
-      'Authorization': `token ${ghToken}`,
-      'Accept': 'application/vnd.github+json'
-    },
-    body: JSON.stringify({ ref: 'main' })
-  })
-  .then(resp => {
-    if (resp.status === 204) {
-      document.getElementById('lastSyncTime').textContent = '동기화 트리거: ' + now + ' (약 1-2분 후 반영)';
-      try { localStorage.setItem('unicore_last_sync', now); } catch(e) {}
-      showToast('실시간 데이터 ' + products.length + '개 제품이 로드되었습니다. (2026년 04월 14일 동기화)');
-      // Poll for completion
-      setTimeout(() => pollSyncStatus(ghRepo, ghToken, btn), 15000);
-    } else {
-      resp.text().then(t => {
-        console.error('Sync trigger failed:', t);
-        showToast('실시간 데이터 ' + products.length + '개 제품이 로드되었습니다. (2026년 04월 14일 동기화)');
-        btn.disabled = false;
-        btn.textContent = '수동 동기화 실행';
-        btn.style.opacity = '1';
-      });
-    }
-  })
-  .catch(err => {
-    console.error('Sync error:', err);
-    showToast('실시간 데이터 ' + products.length + '개 제품이 로드되었습니다. (2026년 04월 14일 동기화)');
+  // Open the SharePoint file in a new tab for manual review
+  window.open(url, '_blank');
+
+  setTimeout(() => {
     btn.disabled = false;
     btn.textContent = '수동 동기화 실행';
     btn.style.opacity = '1';
-  });
-}
-
-function pollSyncStatus(ghRepo, ghToken, btn) {
-  fetch(`https://api.github.com/repos/${ghRepo}/actions/runs?per_page=1&event=workflow_dispatch`, {
-    headers: {
-      'Authorization': `token ${ghToken}`,
-      'Accept': 'application/vnd.github+json'
-    }
-  })
-  .then(r => r.json())
-  .then(data => {
-    const run = data.workflow_runs && data.workflow_runs[0];
-    if (run && run.status === 'completed') {
-      if (run.conclusion === 'success') {
-        showToast('실시간 데이터 ' + products.length + '개 제품이 로드되었습니다. (2026년 04월 14일 동기화)');
-        setTimeout(() => location.reload(), 2000);
-      } else {
-        showToast('동기화 실패: ' + (run.conclusion || 'unknown'));
-        btn.disabled = false;
-        btn.textContent = '수동 동기화 실행';
-        btn.style.opacity = '1';
-      }
-    } else {
-      // Still running, poll again
-      document.getElementById('lastSyncTime').textContent = '동기화 진행 중...';
-      setTimeout(() => pollSyncStatus(ghRepo, ghToken, btn), 10000);
-    }
-  })
-  .catch(() => {
-    btn.disabled = false;
-    btn.textContent = '수동 동기화 실행';
-    btn.style.opacity = '1';
-  });
+    showToast('SharePoint 파일이 새 탭에서 열렸습니다. 데이터를 확인 후 Excel 파일을 다운로드하여 위 업로드 영역에 업로드해 주세요.');
+  }, 2000);
 }
 
 // ============ RISK INVENTORY (위험재고) ============
@@ -2555,7 +2518,7 @@ function renderRiskInventory() {
       <td class="text-right num" data-label="남은 판매일수">${remainDaysText}</td>
       <td class="text-right num" data-label="예상 잔여수량"><strong style="color:#dc2626;">${p.surplus.toLocaleString()}</strong></td>
       <td class="mobile-status" data-label="위험도"><span class="badge ${riskBadge}">${riskText}</span></td>
-      <td class="mobile-remark" data-label="REMARK" style="font-size:12px;color:var(--gray-500);" title="${p.remark||''}">${cleanRemark(p.remark)}</td>
+      <td class="mobile-remark" data-label="REMARK" style="font-size:12px;color:var(--gray-500);" title="${p.remark||''}">${p.remark||'-'}</td>
     </tr>`;
   }).join('');
 
@@ -2640,249 +2603,6 @@ function exportRiskInventory() {
   XLSX.writeFile(wb, 'UNI&CORE_위험재고_' + new Date().toISOString().slice(0, 10) + '.xlsx');
   showToast('위험재고 Excel 파일이 다운로드되었습니다.');
 }
-
-
-// ============ AUTH SYSTEM ============
-let currentUser = null;
-let allUsers = [];
-const USERS_FILE = 'users.json';
-const DEFAULT_ADMIN = { id: 'admin', pw: btoa('admin1234'), name: '관리자', dept: '경영지원', role: 'admin', status: 'active', createdAt: '2026-01-01', lastLogin: '' };
-
-async function loadUsersFromGitHub() {
-  const cfg = getGitHubConfig();
-  if (!cfg.repo || !cfg.token) return [DEFAULT_ADMIN];
-  try {
-    const res = await fetch('https://api.github.com/repos/' + cfg.repo + '/contents/' + USERS_FILE, {
-      headers: { 'Authorization': 'Bearer ' + cfg.token, 'Accept': 'application/vnd.github.v3+json' }
-    });
-    if (res.status === 404) return [DEFAULT_ADMIN];
-    if (!res.ok) return [DEFAULT_ADMIN];
-    const data = await res.json();
-    const parsed = JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(data.content), c => c.charCodeAt(0))));
-    allUsers = parsed.users || [DEFAULT_ADMIN];
-    // 기본 admin이 없으면 추가
-    if (!allUsers.find(u => u.id === 'admin')) allUsers.unshift(DEFAULT_ADMIN);
-    return allUsers;
-  } catch(e) { return [DEFAULT_ADMIN]; }
-}
-
-async function saveUsersToGitHub(users) {
-  const cfg = getGitHubConfig();
-  if (!cfg.repo || !cfg.token) { 
-    localStorage.setItem('unicore_users', JSON.stringify(users));
-    return; 
-  }
-  try {
-    let sha = '';
-    try {
-      const getRes = await fetch('https://api.github.com/repos/' + cfg.repo + '/contents/' + USERS_FILE, {
-        headers: { 'Authorization': 'Bearer ' + cfg.token, 'Accept': 'application/vnd.github.v3+json' }
-      });
-      if (getRes.ok) { sha = (await getRes.json()).sha; }
-    } catch(e) {}
-    const payload = { users: users, updatedAt: new Date().toISOString() };
-    const body = { message: '회원 정보 업데이트 (' + new Date().toLocaleString('ko-KR') + ')', content: btoa(String.fromCharCode(...new TextEncoder().encode(JSON.stringify(payload, null, 2)))) };
-    if (sha) body.sha = sha;
-    await fetch('https://api.github.com/repos/' + cfg.repo + '/contents/' + USERS_FILE, {
-      method: 'PUT',
-      headers: { 'Authorization': 'Bearer ' + cfg.token, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
-    });
-  } catch(e) { localStorage.setItem('unicore_users', JSON.stringify(users)); }
-}
-
-function hashPw(pw) { return btoa(pw); }
-
-async function doLogin() {
-  const id = document.getElementById('loginId').value.trim();
-  const pw = document.getElementById('loginPw').value;
-  const errEl = document.getElementById('loginError');
-  errEl.style.display = 'none';
-  if (!id || !pw) { errEl.textContent = '아이디와 비밀번호를 입력하세요.'; errEl.style.display = 'block'; return; }
-
-  // GitHub에서 최신 사용자 목록 로드
-  allUsers = await loadUsersFromGitHub();
-  // localStorage fallback
-  if (allUsers.length <= 1) {
-    try {
-      const local = JSON.parse(localStorage.getItem('unicore_users') || '[]');
-      if (local.length > 0) allUsers = local;
-      if (!allUsers.find(u => u.id === 'admin')) allUsers.unshift(DEFAULT_ADMIN);
-    } catch(e) {}
-  }
-
-  const user = allUsers.find(u => u.id === id);
-  if (!user) { errEl.textContent = '존재하지 않는 아이디입니다.'; errEl.style.display = 'block'; return; }
-  if (user.status === 'pending') { errEl.textContent = '가입 승인 대기 중입니다. 관리자에게 문의하세요.'; errEl.style.display = 'block'; return; }
-  if (user.status === 'blocked') { errEl.textContent = '차단된 계정입니다. 관리자에게 문의하세요.'; errEl.style.display = 'block'; return; }
-  if (user.pw !== hashPw(pw)) { errEl.textContent = '비밀번호가 일치하지 않습니다.'; errEl.style.display = 'block'; return; }
-
-  // 로그인 성공
-  user.lastLogin = new Date().toISOString();
-  currentUser = user;
-  sessionStorage.setItem('unicore_current_user', JSON.stringify(user));
-  saveUsersToGitHub(allUsers);
-  onLoginSuccess();
-}
-
-function onLoginSuccess() {
-  document.getElementById('loginOverlay').classList.add('hidden');
-  document.getElementById('mainHeader').style.display = '';
-  document.querySelector('.tab-bar').style.display = '';
-  document.querySelector('.content').style.display = '';
-
-  // 사용자 정보 표시
-  const roleNames = { admin: '관리자', manager: '매니저', user: '일반' };
-  document.getElementById('userBadge').innerHTML = currentUser.name + ' <span class="role-tag">' + (roleNames[currentUser.role] || '일반') + '</span>';
-
-  // 관리자만 회원관리 탭 표시
-  if (currentUser.role === 'admin') {
-    document.getElementById('tabMembers').style.display = '';
-    document.getElementById('tabData').style.display = '';
-  }
-  // 매니저 이상만 발주 액션 버튼 표시
-  const orderBtns = ['btnExportOrders', 'btnDismissOrders', 'btnDismissHistory'];
-  orderBtns.forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.style.display = canEditOrders() ? '' : 'none';
-  });
-
-  showToast(currentUser.name + '님, 환영합니다!');
-}
-
-function doLogout() {
-  currentUser = null;
-  sessionStorage.removeItem('unicore_current_user');
-  document.getElementById('loginOverlay').classList.remove('hidden');
-  document.getElementById('loginId').value = '';
-  document.getElementById('loginPw').value = '';
-  document.getElementById('loginError').style.display = 'none';
-  showToast('로그아웃되었습니다.');
-}
-
-function showRegister() {
-  document.getElementById('registerOverlay').classList.remove('hidden');
-  document.getElementById('regId').value = '';
-  document.getElementById('regPw').value = '';
-  document.getElementById('regPwConfirm').value = '';
-  document.getElementById('regName').value = '';
-  document.getElementById('regDept').value = '';
-  document.getElementById('regError').style.display = 'none';
-}
-
-function hideRegister() {
-  document.getElementById('registerOverlay').classList.add('hidden');
-}
-
-async function doRegister() {
-  const id = document.getElementById('regId').value.trim();
-  const pw = document.getElementById('regPw').value;
-  const pwConfirm = document.getElementById('regPwConfirm').value;
-  const name = document.getElementById('regName').value.trim();
-  const dept = document.getElementById('regDept').value.trim();
-  const errEl = document.getElementById('regError');
-  errEl.style.display = 'none';
-
-  if (!id || !pw || !name) { errEl.textContent = '필수 항목을 모두 입력하세요.'; errEl.style.display = 'block'; return; }
-  if (!/^[a-zA-Z0-9]{4,20}$/.test(id)) { errEl.textContent = '아이디는 영문/숫자 4~20자여야 합니다.'; errEl.style.display = 'block'; return; }
-  if (pw.length < 6) { errEl.textContent = '비밀번호는 6자 이상이어야 합니다.'; errEl.style.display = 'block'; return; }
-  if (pw !== pwConfirm) { errEl.textContent = '비밀번호가 일치하지 않습니다.'; errEl.style.display = 'block'; return; }
-
-  allUsers = await loadUsersFromGitHub();
-  if (allUsers.find(u => u.id === id)) { errEl.textContent = '이미 사용 중인 아이디입니다.'; errEl.style.display = 'block'; return; }
-
-  allUsers.push({
-    id: id, pw: hashPw(pw), name: name, dept: dept,
-    role: 'user', status: 'pending',
-    createdAt: new Date().toISOString().slice(0, 10), lastLogin: ''
-  });
-
-  await saveUsersToGitHub(allUsers);
-  hideRegister();
-  showToast('가입 신청이 완료되었습니다. 관리자 승인 후 로그인 가능합니다.');
-}
-
-
-// ============ PERMISSION HELPERS ============
-function canEditOrders() {
-  // admin, manager만 발주 액션 변경/삭제 가능
-  return currentUser && (currentUser.role === 'admin' || currentUser.role === 'manager');
-}
-
-// ============ MEMBER MANAGEMENT ============
-function renderMembers() {
-  if (!currentUser || currentUser.role !== 'admin') return;
-  const tbody = document.getElementById('memberTableBody');
-  if (!tbody) return;
-
-  let active = 0, pending = 0, blocked = 0;
-  allUsers.forEach(u => {
-    if (u.status === 'active') active++;
-    else if (u.status === 'pending') pending++;
-    else if (u.status === 'blocked') blocked++;
-  });
-
-  document.getElementById('kpi-total-members').textContent = allUsers.length;
-  document.getElementById('kpi-active-members').textContent = active;
-  document.getElementById('kpi-pending-members').textContent = pending;
-  document.getElementById('kpi-blocked-members').textContent = blocked;
-
-  tbody.innerHTML = allUsers.map((u, i) => {
-    const statusClass = u.status === 'active' ? 'status-active' : u.status === 'pending' ? 'status-pending' : 'status-blocked';
-    const statusText = u.status === 'active' ? '활성' : u.status === 'pending' ? '대기' : '차단';
-    const lastLogin = u.lastLogin ? new Date(u.lastLogin).toLocaleString('ko-KR') : '-';
-    const isAdmin = u.id === 'admin';
-
-    return '<tr>' +
-      '<td>' + u.id + '</td>' +
-      '<td>' + u.name + '</td>' +
-      '<td>' + (u.dept || '-') + '</td>' +
-      '<td><select class="role-select" onchange="changeMemberRole(' + i + ',this.value)"' + (isAdmin ? ' disabled' : '') + '>' +
-        '<option value="admin"' + (u.role === 'admin' ? ' selected' : '') + '>관리자</option>' +
-        '<option value="manager"' + (u.role === 'manager' ? ' selected' : '') + '>매니저</option>' +
-        '<option value="user"' + (u.role === 'user' ? ' selected' : '') + '>일반</option>' +
-      '</select></td>' +
-      '<td><span class="' + statusClass + '">' + statusText + '</span></td>' +
-      '<td>' + (u.createdAt || '-') + '</td>' +
-      '<td style="font-size:11px;">' + lastLogin + '</td>' +
-      '<td>' + (isAdmin ? '-' : 
-        (u.status === 'pending' ? '<button class="btn btn-sm" style="background:var(--success);color:white;font-size:11px;padding:3px 8px;border:none;border-radius:4px;cursor:pointer;margin-right:4px;" onclick="approveMember(' + i + ')">승인</button>' : '') +
-        (u.status !== 'blocked' ? '<button class="btn btn-sm" style="background:var(--danger);color:white;font-size:11px;padding:3px 8px;border:none;border-radius:4px;cursor:pointer;" onclick="blockMember(' + i + ')">차단</button>' : '<button class="btn btn-sm" style="background:var(--success);color:white;font-size:11px;padding:3px 8px;border:none;border-radius:4px;cursor:pointer;" onclick="unblockMember(' + i + ')">해제</button>')
-      ) + '</td>' +
-    '</tr>';
-  }).join('');
-}
-
-function changeMemberRole(idx, role) {
-  if (allUsers[idx].id === 'admin') return;
-  allUsers[idx].role = role;
-  showToast(allUsers[idx].name + '님의 권한이 변경되었습니다.');
-}
-
-function approveMember(idx) {
-  allUsers[idx].status = 'active';
-  renderMembers();
-  showToast(allUsers[idx].name + '님의 가입이 승인되었습니다.');
-}
-
-function blockMember(idx) {
-  if (allUsers[idx].id === 'admin') return;
-  allUsers[idx].status = 'blocked';
-  renderMembers();
-  showToast(allUsers[idx].name + '님이 차단되었습니다.');
-}
-
-function unblockMember(idx) {
-  allUsers[idx].status = 'active';
-  renderMembers();
-  showToast(allUsers[idx].name + '님의 차단이 해제되었습니다.');
-}
-
-async function saveMembersToGitHub() {
-  await saveUsersToGitHub(allUsers);
-  showToast('회원 정보가 저장되었습니다.');
-}
-
 
 // ============ TOAST ============
 function showToast(msg) {
