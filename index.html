@@ -1679,7 +1679,7 @@ function parseNum(val) {
 
 // ============ SAMPLE DATA ============
 function loadSampleData() {
-  // 자동 동기화 폴백 데이터 (2026년 04월 18일 기준)
+  // 자동 동기화 폴백 데이터 (2026년 04월 19일 기준)
   products = [
     { category: 'Cosmetic', code: '000000101', name: '딥 리페어 액티베이팅 뉴트리션 크림 30ml', currentStock: 0, incoming: 0, totalStock: 0, remark: '', expiryDate: '2026-05-26', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 10 },
     { category: 'Cosmetic', code: 'SKU', name: '품명', currentStock: 0, incoming: 0, totalStock: 0, remark: '', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 10 },
@@ -1733,7 +1733,7 @@ function loadSampleData() {
 
   saveToStorage();
   refreshAll();
-  showToast('실시간 데이터 ' + products.length + '개 제품이 로드되었습니다. (2026년 04월 18일 동기화)');
+  showToast('실시간 데이터 ' + products.length + '개 제품이 로드되었습니다. (2026년 04월 19일 동기화)');
 }
 
 // ============ MODAL / CRUD ============
@@ -2102,7 +2102,7 @@ function saveSyncUrl() {
   document.getElementById('syncStatusBadge').textContent = '활성';
   document.getElementById('syncStatusBadge').style.background = 'var(--success-bg)';
   document.getElementById('syncStatusBadge').style.color = 'var(--success)';
-  showToast('실시간 데이터 ' + products.length + '개 제품이 로드되었습니다. (2026년 04월 18일 동기화)');
+  showToast('실시간 데이터 ' + products.length + '개 제품이 로드되었습니다. (2026년 04월 19일 동기화)');
 }
 
 function saveSyncConfig(url) {
