@@ -227,11 +227,13 @@ def get_sheet_names(file_path):
 def parse_excel(file_path):
     """엑셀 파일에서 재고 데이터 추출 (.xlsx 및 .xlsb 지원)
 
-    '소비기한' 시트: 로트별 소비기한/재고 추적
-      구조: 카테고리 섹션 헤더 → 컬럼 헤더 → 데이터 행
-      컬럼: P.O # | SKU | 품명 | 제조일자 | 소비기한 | 로트번호 | 파트너스 | 물류 | 총 | 판매가능 | 잔여개월수 | 유효기한
+    메인 데이터 소스: '2026' 시트 (SKU별 요약 + REMARK)
+      헤더 행 3 (0-based), 데이터 행 5+
+      컬럼: [0]Category [1]상품코드 [2]품명 [4]현재고 [5]입고예정
+            [6]총재고 [7]REMARK [10]소비기한 [12]안전재고(1M)
+            [14]2M평균출고 [15]MOQ [16]리드타임(주)
 
-    'Summary' 시트 (보조): SKU별 집계 재고 데이터
+    '소비기한' 시트는 로트별 상세 데이터용으로, 여기서는 사용하지 않음.
     """
     ext = os.path.splitext(file_path)[1].lower()
     print(f"엑셀 파일 파싱 중... (형식: {ext})")
@@ -239,12 +241,24 @@ def parse_excel(file_path):
     sheet_names = get_sheet_names(file_path)
     print(f"전체 시트: {sheet_names}")
 
-    # 소비기한 시트 찾기
+    # '2026' 시트 찾기 (메인 데이터 소스 - REMARK 포함)
     sheet_name = None
     for name in sheet_names:
-        if '소비기한' == name or ('소비기한' in name and '_c' not in name.lower() and '1220' not in name):
+        if name.strip() == '2026':
             sheet_name = name
             break
+    if not sheet_name:
+        # 폴백: 연도 시트 (2025, 2027 등)
+        for name in sheet_names:
+            if name.strip().isdigit() and len(name.strip()) == 4:
+                sheet_name = name
+                break
+    if not sheet_name:
+        # 최종 폴백: 소비기한 시트
+        for name in sheet_names:
+            if '소비기한' in name:
+                sheet_name = name
+                break
     if not sheet_name:
         sheet_name = sheet_names[0]
 
@@ -292,10 +306,24 @@ def parse_excel(file_path):
             return f"{raw_str[:4]}-{raw_str[4:6]}-{raw_str[6:8]}"
         return ''
 
-    # 디버그: 처음 5행 샘플 출력
-    print("=== 처음 5행 샘플 ===")
-    for i, row in enumerate(rows[:5]):
-        sample = [f"[{j}]{str(c)[:25]}" if c else f"[{j}]None" for j, c in enumerate(row[:25])]
+    def clean_remark(val):
+        """REMARK 값 정리: 빈 값(0, 0.0, None) 필터링"""
+        if val is None:
+            return ''
+        # xlsb에서 빈 셀이 0.0으로 읽히는 경우 처리
+        if isinstance(val, (int, float)):
+            if val == 0 or val == 0.0:
+                return ''
+            return str(val)
+        s = str(val).strip()
+        if s in ('0', '0.0', 'None', 'none', ''):
+            return ''
+        return s
+
+    # 디버그: 처음 8행 샘플 출력 (헤더 행 위치 확인용)
+    print("=== 처음 8행 샘플 ===")
+    for i, row in enumerate(rows[:8]):
+        sample = [f"[{j}]{str(c)[:25]}" if c else f"[{j}]None" for j, c in enumerate(row[:20])]
         print(f"  행 {i}: {sample}")
     print("=== 샘플 끝 ===")
 
@@ -324,7 +352,8 @@ def parse_excel(file_path):
                 # 품명
                 if '품명' in c or c == '제품명': col_map['name'] = j
                 # 재고 관련
-                if c == '총' or c == '현재고' or c == '재고': col_map['stock'] = j
+                if c == '현재고' or (c == '총' and '재고' not in c): col_map.setdefault('stock', j)
+                if '총' in c and '재고' in c: col_map['total_stock'] = j
                 if '파트너스' in c: col_map['partners_stock'] = j
                 if c == '물류': col_map['logistics_stock'] = j
                 if '판매가능' in c: col_map['available'] = j
@@ -332,14 +361,9 @@ def parse_excel(file_path):
                 if '입고' in c: col_map.setdefault('incoming', j)
                 # 날짜/기한
                 if '소비기한' in c or '유통기한' in c: col_map['expiry'] = j
-                if '제조일자' in c: col_map['mfg_date'] = j
-                if '잔여개월수' in c or '잔여' in c: col_map['remaining_months'] = j
-                if '유효기한' in c: col_map['validity_months'] = j
-                # 로트/PO
-                if '로트' in c or 'lot' in c: col_map['lot'] = j
-                if 'p.o' in c: col_map['po'] = j
-                # 기타
+                # REMARK / 비고
                 if c in ('remark', '비고'): col_map['remark'] = j
+                # 안전재고, MOQ, 리드타임
                 if '안전재고' in c: col_map['safety'] = j
                 if c == 'moq' or '발주단위' in c or '최소발주' in c: col_map['moq'] = j
                 if '리드타임' in c or 'l/t' in c: col_map['lead_time'] = j
@@ -351,44 +375,65 @@ def parse_excel(file_path):
             break
 
     if header_row < 0:
-        print("WARNING: 헤더 행을 찾지 못했습니다.")
-        header_row = 2
-        col_map = {'code': 2, 'name': 3, 'expiry': 5, 'stock': 9}
+        # '2026' 시트 기본 컬럼 매핑 (하드코딩 폴백)
+        print("WARNING: 헤더 행을 찾지 못했습니다. '2026' 시트 기본 매핑 사용.")
+        header_row = 3  # 헤더가 보통 행 3에 위치
+        col_map = {
+            'category': 0, 'code': 1, 'name': 2,
+            'stock': 4, 'incoming': 5, 'total_stock': 6,
+            'remark': 7, 'expiry': 10, 'safety': 12,
+            'avg_out': 14, 'moq': 15, 'lead_time': 16
+        }
 
-    # ── 카테고리 추적: 헤더 행 앞의 섹션 헤더에서 초기 카테고리 감지 ──
+    # ── 카테고리 추적 ──
     current_category = 'General'
-    SKIP_KEYWORDS = {'소비기간', '재고현황', 'p.o', 'sku', '품명', '제조', '로트', 'none', ''}
-    for i in range(header_row):
-        val = str(safe_get(rows[i], 1, '') or '').strip()
-        if val and val.lower() not in SKIP_KEYWORDS and not val.startswith('0'):
-            current_category = val
-            print(f"초기 카테고리 (행 {i}): {current_category}")
+    SKIP_KEYWORDS = {'소비기간', '재고현황', 'p.o', 'sku', '품명', '제조', '로트', 'none', '',
+                     'category', '상품코드', '현재고', '입고', '총', 'remark', 'moq'}
 
-    # ── 데이터 행 파싱: SKU별 그룹핑 (로트 통합) ──
-    products_by_sku = {}
+    # 데이터 시작 행 결정: 헤더 행 이후 빈 행을 건너뛰고 데이터 시작
+    data_start = header_row + 1
+    # '2026' 시트는 헤더(행3)와 데이터(행5+) 사이에 빈 행이 있을 수 있음
+    for i in range(header_row + 1, min(header_row + 5, len(rows))):
+        row = rows[i]
+        if row and len(row) > 2:
+            code_val = safe_get(row, col_map.get('code'))
+            name_val = safe_get(row, col_map.get('name'))
+            cat_val = safe_get(row, col_map.get('category', 0))
+            if code_val or name_val or cat_val:
+                data_start = i
+                break
+
+    print(f"데이터 시작 행: {data_start}")
+
+    # ── 데이터 행 파싱 (SKU별 1행 = 1제품, 로트 통합 불필요) ──
+    products = []
     code_col = col_map.get('code')
     name_col = col_map.get('name')
+    cat_col = col_map.get('category', 0)
     skip_names = {'종합계', '합계', 'total', 'Total', '소계'}
+    remark_count = 0
 
-    for i in range(header_row + 1, len(rows)):
+    for i in range(data_start, len(rows)):
         row = rows[i]
         if not row or len(row) < 3:
             continue
 
-        # 카테고리 섹션 헤더 감지:
-        # col 1에 텍스트가 있고, SKU(col 2)가 비어있으면 카테고리 행
-        col1_val = str(safe_get(row, 1, '') or '').strip()
-        sku_val = str(safe_get(row, code_col, '') or '').strip()
-
-        if col1_val and not sku_val and col1_val.lower() not in SKIP_KEYWORDS:
-            # 숫자로만 되어있으면 카테고리가 아님 (PO번호 등)
-            if not col1_val.replace(' ', '').replace('-', '').isdigit():
-                current_category = col1_val
-                print(f"  카테고리 변경 (행 {i}): {current_category}")
-                continue
-
-        code = sku_val
+        # 카테고리 감지: category 컬럼에 값이 있고 SKU는 없으면 카테고리 행
+        cat_val = str(safe_get(row, cat_col, '') or '').strip()
+        code = str(safe_get(row, code_col, '') or '').strip()
         name = str(safe_get(row, name_col, '') or '').strip()
+
+        # 카테고리 행 감지
+        if cat_val and not code and not name:
+            if cat_val.lower() not in SKIP_KEYWORDS and not cat_val.replace(' ', '').replace('-', '').isdigit():
+                current_category = cat_val
+                print(f"  카테고리 변경 (행 {i}): {current_category}")
+            continue
+
+        # 카테고리가 같은 행에 있는 경우
+        if cat_val and cat_val.lower() not in SKIP_KEYWORDS:
+            if not cat_val.replace(' ', '').replace('-', '').isdigit():
+                current_category = cat_val
 
         # 유효한 데이터 행인지 확인
         if not name or not code:
@@ -398,75 +443,41 @@ def parse_excel(file_path):
 
         # 재고 데이터
         stock = safe_num(safe_get(row, col_map.get('stock'), 0))
-        partners = safe_num(safe_get(row, col_map.get('partners_stock'), 0))
-        logistics = safe_num(safe_get(row, col_map.get('logistics_stock'), 0))
-        if stock == 0 and (partners > 0 or logistics > 0):
-            stock = partners + logistics
+        incoming = safe_num(safe_get(row, col_map.get('incoming'), 0))
+        total_stock = safe_num(safe_get(row, col_map.get('total_stock'), 0))
+        # total_stock이 있으면 그대로 사용, 없으면 계산
+        if total_stock == 0 and stock > 0:
+            total_stock = stock + incoming
 
-        # 소비기한 처리 (YYYYMMDD.0 형식)
+        # 소비기한 처리 (Excel serial date)
         expiry_date = parse_date(safe_get(row, col_map.get('expiry')))
 
-        # 잔여개월수
-        remaining_months = 0
-        rm_val = safe_get(row, col_map.get('remaining_months'))
-        if rm_val is not None:
-            try:
-                remaining_months = round(float(rm_val), 1)
-            except:
-                pass
+        # REMARK 처리 (0.0 필터링)
+        remark = clean_remark(safe_get(row, col_map.get('remark')))
+        if remark:
+            remark_count += 1
 
-        # SKU별 그룹핑 (같은 제품의 여러 로트를 하나로 통합)
-        if code not in products_by_sku:
-            products_by_sku[code] = {
-                'category': current_category,
-                'code': code,
-                'name': name,
-                'currentStock': stock,
-                'incoming': safe_num(safe_get(row, col_map.get('incoming'), 0)),
-                'safetyStock': safe_num(safe_get(row, col_map.get('safety'), 0)),
-                'avgMonthlyOut': safe_num(safe_get(row, col_map.get('avg_out'), 0)),
-                'moq': safe_num(safe_get(row, col_map.get('moq'), 0)) or 5000,
-                'leadTime': safe_num(safe_get(row, col_map.get('lead_time'), 0)) or 10,
-                'expiryDate': expiry_date,
-                'remainingMonths': remaining_months,
-                'remark': str(safe_get(row, col_map.get('remark'), '') or '').strip(),
-                'lotCount': 1
-            }
-        else:
-            p = products_by_sku[code]
-            p['currentStock'] += stock
-            p['lotCount'] += 1
-            # 가장 가까운 소비기한 유지
-            if expiry_date and (not p['expiryDate'] or expiry_date < p['expiryDate']):
-                p['expiryDate'] = expiry_date
-                p['remainingMonths'] = remaining_months
+        product = {
+            'category': current_category,
+            'code': code,
+            'name': name,
+            'currentStock': stock,
+            'incoming': incoming,
+            'totalStock': total_stock,
+            'safetyStock': safe_num(safe_get(row, col_map.get('safety'), 0)),
+            'avgMonthlyOut': safe_num(safe_get(row, col_map.get('avg_out'), 0)),
+            'moq': safe_num(safe_get(row, col_map.get('moq'), 0)) or 5000,
+            'leadTime': safe_num(safe_get(row, col_map.get('lead_time'), 0)) or 10,
+            'expiryDate': expiry_date,
+            'remark': remark,
+        }
+        products.append(product)
 
-    # ── Summary 시트에서 추가 재고 데이터 병합 시도 ──
-    summary_sheet = None
-    for name in sheet_names:
-        if name.lower() == 'summary':
-            summary_sheet = name
-            break
-
-    if summary_sheet:
-        try:
-            print(f"\nSummary 시트 읽기 중: {summary_sheet}")
-            sum_rows = read_sheet_rows(file_path, summary_sheet)
-            print(f"Summary 행 수: {len(sum_rows)}")
-            # 디버그: Summary 시트 처음 5행
-            for i, row in enumerate(sum_rows[:5]):
-                sample = [f"[{j}]{str(c)[:25]}" if c else f"[{j}]None" for j, c in enumerate(row[:20])]
-                print(f"  Summary 행 {i}: {sample}")
-        except Exception as e:
-            print(f"Summary 시트 읽기 실패: {e}")
-
-    products = list(products_by_sku.values())
-
-    # 로트 수 정보 출력
+    # 디버그: 처음 5개 제품 출력
     for p in products[:5]:
-        print(f"  {p['code']} {p['name'][:20]} - 로트:{p['lotCount']}개, 재고:{p['currentStock']}, 소비기한:{p['expiryDate']}")
+        print(f"  {p['code']} {p['name'][:20]} - 재고:{p['currentStock']}, 소비기한:{p['expiryDate']}, REMARK:{p['remark'][:30] if p['remark'] else '없음'}")
 
-    print(f"\n파싱 완료: {len(products)}개 제품 ({sum(p['lotCount'] for p in products)}개 로트)")
+    print(f"\n파싱 완료: {len(products)}개 제품, REMARK 있는 제품: {remark_count}개")
     return products
 
 
