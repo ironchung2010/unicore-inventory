@@ -320,6 +320,16 @@ def parse_excel(file_path):
             return ''
         return s
 
+    def clean_str(val):
+        """문자열에서 줄바꿈/탭 제거 (엑셀 셀 내 줄바꿈 → 공백 변환)"""
+        if val is None:
+            return ''
+        s = str(val).strip()
+        s = s.replace('\n', ' ').replace('\r', ' ').replace('\t', ' ')
+        import re as _re
+        s = _re.sub(r'\s+', ' ', s)
+        return s.strip()
+
     # 디버그: 처음 8행 샘플 출력 (헤더 행 위치 확인용)
     print("=== 처음 8행 샘플 ===")
     for i, row in enumerate(rows[:8]):
@@ -419,9 +429,9 @@ def parse_excel(file_path):
             continue
 
         # 카테고리 감지: category 컬럼에 값이 있고 SKU는 없으면 카테고리 행
-        cat_val = str(safe_get(row, cat_col, '') or '').strip()
+        cat_val = clean_str(safe_get(row, cat_col, ''))
         code = str(safe_get(row, code_col, '') or '').strip()
-        name = str(safe_get(row, name_col, '') or '').strip()
+        name = clean_str(safe_get(row, name_col, ''))
 
         # 카테고리 행 감지
         if cat_val and not code and not name:
@@ -453,7 +463,7 @@ def parse_excel(file_path):
         expiry_date = parse_date(safe_get(row, col_map.get('expiry')))
 
         # REMARK 처리 (0.0 필터링)
-        remark = clean_remark(safe_get(row, col_map.get('remark')))
+        remark = clean_str(clean_remark(safe_get(row, col_map.get('remark'))))
         if remark:
             remark_count += 1
 
