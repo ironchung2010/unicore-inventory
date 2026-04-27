@@ -763,7 +763,7 @@ let products = [
     { category: 'Cosmetic', code: '100000132', name: '[USA]DEEP HYDRATING SKIN NUTRITION CREAM', currentStock: 2893, incoming: 0, totalStock: 2893, remark: '', expiryDate: '2027-05-12', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 10 },
     { category: 'Cosmetic', code: '100000133', name: '[USA]VITA C GLUTAGLOW SUPER BRIGHTENING AMPOULE', currentStock: 998, incoming: 0, totalStock: 998, remark: '소진 후 단종', expiryDate: '2027-03-31', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 12 },
     { category: 'Cosmetic', code: '100000134', name: '[USA]VITA C 13.5 SUPER BRIGHTENING AMPOULE', currentStock: 8070, incoming: 0, totalStock: 8070, remark: '', expiryDate: '2028-10-12', safetyStock: 268, avgMonthlyOut: 268, moq: 5000, leadTime: 12 },
-    { category: 'Cosmetic', code: '100000136', name: '[USA]VITA C SUPER BRIGHTENING MASK', currentStock: 2337, incoming: 0, totalStock: 2337, remark: '소진후 국내용 대체출고', expiryDate: '2027-02-19', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 12 },
+    { category: 'Cosmetic', code: '100000136', name: '[USA]VITA C SUPER BRIGHTENING MASK', currentStock: 2337, incoming: 0, totalStock: 2337, remark: '소진후 국내용 대체출고', expiryDate: '2028-09-30', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 12 },
     { category: 'Cosmetic', code: '100000138', name: '[USA]HYDRATING SKIN BARRIER SERUM MIST', currentStock: 2493, incoming: 0, totalStock: 2493, remark: '', expiryDate: '2027-03-27', safetyStock: 0, avgMonthlyOut: 0, moq: 10000, leadTime: 14 },
     { category: 'Cosmetic', code: '100000129.0', name: '루미너스 레이어 타이트업 쿠션', currentStock: 712, incoming: 0, totalStock: 712, remark: '발주완료', expiryDate: '2028-03-29', safetyStock: 282, avgMonthlyOut: 282, moq: 5000, leadTime: 12 },
     { category: 'Cosmetic', code: '100000130.0', name: '루미너스 레이어 타이트업 리필', currentStock: 2399, incoming: 0, totalStock: 2399, remark: '발주완료', expiryDate: '2028-03-29', safetyStock: 220, avgMonthlyOut: 220, moq: 5000, leadTime: 12 },
@@ -777,7 +777,7 @@ let products = [
     { category: 'Health Care', code: '200000213', name: '이뮨 메가 부스터 AHCC_10병', currentStock: 2062, incoming: 0, totalStock: 2062, remark: '소진 후 제품변경예정', expiryDate: '2026-06-19', safetyStock: 1075, avgMonthlyOut: 1075, moq: 10000, leadTime: 10 },
     { category: 'Health Care', code: '100000135', name: '슬림핏 프로틴 쉐이크 고소한 멀티 그레인 40g X 10', currentStock: 4388, incoming: 0, totalStock: 4388, remark: '', expiryDate: '2027-04-30', safetyStock: 272, avgMonthlyOut: 272, moq: 20000, leadTime: 10 },
     { category: 'Health Care', code: '200000218', name: '글로우 뷰티 콜라겐 젤리 타트체리 맛 20g X 30포', currentStock: 1160, incoming: 0, totalStock: 1160, remark: '', expiryDate: '2026-10-23', safetyStock: 177, avgMonthlyOut: 177, moq: 3000, leadTime: 10 },
-    { category: 'Health Care', code: '200000220', name: '브이애플 나이트 액션', currentStock: 2153, incoming: 0, totalStock: 2153, remark: '', expiryDate: '2027-03-10', safetyStock: 172, avgMonthlyOut: 172, moq: 5000, leadTime: 8 },
+    { category: 'Health Care', code: '200000220.0', name: '브이애플 나이트 액션', currentStock: 2153, incoming: 0, totalStock: 2153, remark: '', expiryDate: '2027-03-10', safetyStock: 172, avgMonthlyOut: 172, moq: 5000, leadTime: 8 },
     { category: 'Health Care', code: '100000139.0', name: '[USA]Daily Chewable Propolis', currentStock: 2429, incoming: 0, totalStock: 2429, remark: '소진후 국내용 대체출고', expiryDate: '2028-01-14', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 12 },
     { category: 'Health Care', code: '100000140', name: '[USA]Bone & Joint Health Active MEGA FORMULA', currentStock: 1000, incoming: 0, totalStock: 1000, remark: '', expiryDate: '2027-08-21', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 8 },
     { category: 'Health Care', code: '100000141', name: '[USA]Daily Mega Energizer Plus', currentStock: 1000, incoming: 0, totalStock: 1000, remark: '', expiryDate: '2027-11-20', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 10 },
@@ -903,7 +903,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Load from localStorage, fallback to sample data
   const saved = localStorage.getItem('unicore_products');
   const dataVersion = localStorage.getItem('unicore_data_version');
-  if (saved && dataVersion === 'v-auto-202604262309') {
+  if (saved && dataVersion === 'v-auto-202604270758') {
     try {
       const parsed = JSON.parse(saved);
       if (parsed && parsed.length > 0) { products = parsed; }
@@ -939,7 +939,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function saveToStorage() {
   try {
     localStorage.setItem('unicore_products', JSON.stringify(products));
-    localStorage.setItem('unicore_data_version', 'v-auto-202604262309');
+    localStorage.setItem('unicore_data_version', 'v-auto-202604270758');
   } catch(e) {}
 }
 
@@ -1751,7 +1751,7 @@ function parseNum(val) {
 
 // ============ SAMPLE DATA ============
 function loadSampleData() {
-  // 자동 동기화 폴백 데이터 (2026년 04월 26일 기준)
+  // 자동 동기화 폴백 데이터 (2026년 04월 27일 기준)
   products = [
     { category: 'Cosmetic', code: '000000101', name: '딥 리페어 액티베이팅 뉴트리션 크림 30ml', currentStock: 3836, incoming: 0, totalStock: 3836, remark: '', expiryDate: '2027-05-12', safetyStock: 976, avgMonthlyOut: 976, moq: 5000, leadTime: 10 },
     { category: 'Cosmetic', code: '100000117', name: 'NEW 비타 씨 13.5 수퍼 화이트닝 앰플 30g', currentStock: 6069, incoming: 0, totalStock: 6069, remark: '', expiryDate: '2028-10-12', safetyStock: 641, avgMonthlyOut: 641, moq: 5000, leadTime: 10 },
@@ -1771,7 +1771,7 @@ function loadSampleData() {
     { category: 'Cosmetic', code: '100000132', name: '[USA]DEEP HYDRATING SKIN NUTRITION CREAM', currentStock: 2893, incoming: 0, totalStock: 2893, remark: '', expiryDate: '2027-05-12', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 10 },
     { category: 'Cosmetic', code: '100000133', name: '[USA]VITA C GLUTAGLOW SUPER BRIGHTENING AMPOULE', currentStock: 998, incoming: 0, totalStock: 998, remark: '소진 후 단종', expiryDate: '2027-03-31', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 12 },
     { category: 'Cosmetic', code: '100000134', name: '[USA]VITA C 13.5 SUPER BRIGHTENING AMPOULE', currentStock: 8070, incoming: 0, totalStock: 8070, remark: '', expiryDate: '2028-10-12', safetyStock: 268, avgMonthlyOut: 268, moq: 5000, leadTime: 12 },
-    { category: 'Cosmetic', code: '100000136', name: '[USA]VITA C SUPER BRIGHTENING MASK', currentStock: 2337, incoming: 0, totalStock: 2337, remark: '소진후 국내용 대체출고', expiryDate: '2027-02-19', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 12 },
+    { category: 'Cosmetic', code: '100000136', name: '[USA]VITA C SUPER BRIGHTENING MASK', currentStock: 2337, incoming: 0, totalStock: 2337, remark: '소진후 국내용 대체출고', expiryDate: '2028-09-30', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 12 },
     { category: 'Cosmetic', code: '100000138', name: '[USA]HYDRATING SKIN BARRIER SERUM MIST', currentStock: 2493, incoming: 0, totalStock: 2493, remark: '', expiryDate: '2027-03-27', safetyStock: 0, avgMonthlyOut: 0, moq: 10000, leadTime: 14 },
     { category: 'Cosmetic', code: '100000129.0', name: '루미너스 레이어 타이트업 쿠션', currentStock: 712, incoming: 0, totalStock: 712, remark: '발주완료', expiryDate: '2028-03-29', safetyStock: 282, avgMonthlyOut: 282, moq: 5000, leadTime: 12 },
     { category: 'Cosmetic', code: '100000130.0', name: '루미너스 레이어 타이트업 리필', currentStock: 2399, incoming: 0, totalStock: 2399, remark: '발주완료', expiryDate: '2028-03-29', safetyStock: 220, avgMonthlyOut: 220, moq: 5000, leadTime: 12 },
@@ -1785,7 +1785,7 @@ function loadSampleData() {
     { category: 'Health Care', code: '200000213', name: '이뮨 메가 부스터 AHCC_10병', currentStock: 2062, incoming: 0, totalStock: 2062, remark: '소진 후 제품변경예정', expiryDate: '2026-06-19', safetyStock: 1075, avgMonthlyOut: 1075, moq: 10000, leadTime: 10 },
     { category: 'Health Care', code: '100000135', name: '슬림핏 프로틴 쉐이크 고소한 멀티 그레인 40g X 10', currentStock: 4388, incoming: 0, totalStock: 4388, remark: '', expiryDate: '2027-04-30', safetyStock: 272, avgMonthlyOut: 272, moq: 20000, leadTime: 10 },
     { category: 'Health Care', code: '200000218', name: '글로우 뷰티 콜라겐 젤리 타트체리 맛 20g X 30포', currentStock: 1160, incoming: 0, totalStock: 1160, remark: '', expiryDate: '2026-10-23', safetyStock: 177, avgMonthlyOut: 177, moq: 3000, leadTime: 10 },
-    { category: 'Health Care', code: '200000220', name: '브이애플 나이트 액션', currentStock: 2153, incoming: 0, totalStock: 2153, remark: '', expiryDate: '2027-03-10', safetyStock: 172, avgMonthlyOut: 172, moq: 5000, leadTime: 8 },
+    { category: 'Health Care', code: '200000220.0', name: '브이애플 나이트 액션', currentStock: 2153, incoming: 0, totalStock: 2153, remark: '', expiryDate: '2027-03-10', safetyStock: 172, avgMonthlyOut: 172, moq: 5000, leadTime: 8 },
     { category: 'Health Care', code: '100000139.0', name: '[USA]Daily Chewable Propolis', currentStock: 2429, incoming: 0, totalStock: 2429, remark: '소진후 국내용 대체출고', expiryDate: '2028-01-14', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 12 },
     { category: 'Health Care', code: '100000140', name: '[USA]Bone & Joint Health Active MEGA FORMULA', currentStock: 1000, incoming: 0, totalStock: 1000, remark: '', expiryDate: '2027-08-21', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 8 },
     { category: 'Health Care', code: '100000141', name: '[USA]Daily Mega Energizer Plus', currentStock: 1000, incoming: 0, totalStock: 1000, remark: '', expiryDate: '2027-11-20', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 10 },
@@ -1876,7 +1876,7 @@ function loadSampleData() {
 
   saveToStorage();
   refreshAll();
-  showToast('실시간 데이터 ' + products.length + '개 제품이 로드되었습니다. (2026년 04월 26일 동기화)');
+  showToast('실시간 데이터 ' + products.length + '개 제품이 로드되었습니다. (2026년 04월 27일 동기화)');
 }
 
 // ============ MODAL / CRUD ============
@@ -2245,7 +2245,7 @@ function saveSyncUrl() {
   document.getElementById('syncStatusBadge').textContent = '활성';
   document.getElementById('syncStatusBadge').style.background = 'var(--success-bg)';
   document.getElementById('syncStatusBadge').style.color = 'var(--success)';
-  showToast('실시간 데이터 ' + products.length + '개 제품이 로드되었습니다. (2026년 04월 26일 동기화)');
+  showToast('실시간 데이터 ' + products.length + '개 제품이 로드되었습니다. (2026년 04월 27일 동기화)');
 }
 
 function saveSyncConfig(url) {
