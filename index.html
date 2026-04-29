@@ -764,7 +764,7 @@ let products = [
     { category: 'Cosmetic', code: '100000133', name: '[USA]VITA C GLUTAGLOW SUPER BRIGHTENING AMPOULE', currentStock: 998, incoming: 0, totalStock: 998, remark: '소진 후 단종', expiryDate: '2027-03-31', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 12 },
     { category: 'Cosmetic', code: '100000134', name: '[USA]VITA C 13.5 SUPER BRIGHTENING AMPOULE', currentStock: 7061, incoming: 0, totalStock: 7061, remark: '', expiryDate: '2028-10-12', safetyStock: 268, avgMonthlyOut: 268, moq: 5000, leadTime: 12 },
     { category: 'Cosmetic', code: '100000136', name: '[USA]VITA C SUPER BRIGHTENING MASK', currentStock: 2332, incoming: 0, totalStock: 2332, remark: '소진후 국내용 대체출고', expiryDate: '2027-02-19', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 12 },
-    { category: 'Cosmetic', code: '100000138', name: '[USA]HYDRATING SKIN BARRIER SERUM MIST', currentStock: 1493, incoming: 0, totalStock: 1493, remark: '', expiryDate: '2027-03-27', safetyStock: 0, avgMonthlyOut: 0, moq: 10000, leadTime: 14 },
+    { category: 'Cosmetic', code: '.', name: '[USA]HYDRATING SKIN BARRIER SERUM MIST', currentStock: 0, incoming: 0, totalStock: 0, remark: '', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 10000, leadTime: 14 },
     { category: 'Cosmetic', code: '100000129.0', name: '루미너스 레이어 타이트업 쿠션', currentStock: 678, incoming: 0, totalStock: 678, remark: '발주완료', expiryDate: '2028-03-29', safetyStock: 282, avgMonthlyOut: 282, moq: 5000, leadTime: 12 },
     { category: 'Cosmetic', code: '100000130.0', name: '루미너스 레이어 타이트업 리필', currentStock: 2371, incoming: 0, totalStock: 2371, remark: '발주완료', expiryDate: '2028-03-29', safetyStock: 220, avgMonthlyOut: 220, moq: 5000, leadTime: 12 },
     { category: 'Cosmetic', code: '100000131', name: '시그니처 리바이탈라이징 샴푸', currentStock: 125, incoming: -90, totalStock: 35, remark: '발주완료, 5월초 입고예정', expiryDate: '2027-12-10', safetyStock: 254, avgMonthlyOut: 254, moq: 5000, leadTime: 8 },
@@ -903,7 +903,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Load from localStorage, fallback to sample data
   const saved = localStorage.getItem('unicore_products');
   const dataVersion = localStorage.getItem('unicore_data_version');
-  if (saved && dataVersion === 'v-auto-202604282140') {
+  if (saved && dataVersion === 'v-auto-202604290752') {
     try {
       const parsed = JSON.parse(saved);
       if (parsed && parsed.length > 0) { products = parsed; }
@@ -939,7 +939,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function saveToStorage() {
   try {
     localStorage.setItem('unicore_products', JSON.stringify(products));
-    localStorage.setItem('unicore_data_version', 'v-auto-202604282140');
+    localStorage.setItem('unicore_data_version', 'v-auto-202604290752');
   } catch(e) {}
 }
 
@@ -1751,7 +1751,7 @@ function parseNum(val) {
 
 // ============ SAMPLE DATA ============
 function loadSampleData() {
-  // 자동 동기화 폴백 데이터 (2026년 04월 28일 기준)
+  // 자동 동기화 폴백 데이터 (2026년 04월 29일 기준)
   products = [
     { category: 'Cosmetic', code: '000000101', name: '딥 리페어 액티베이팅 뉴트리션 크림 30ml', currentStock: 3733, incoming: 0, totalStock: 3733, remark: '', expiryDate: '2027-05-12', safetyStock: 976, avgMonthlyOut: 976, moq: 5000, leadTime: 10 },
     { category: 'Cosmetic', code: '100000117', name: 'NEW 비타 씨 13.5 수퍼 화이트닝 앰플 30g', currentStock: 6000, incoming: 0, totalStock: 6000, remark: '', expiryDate: '2028-10-12', safetyStock: 641, avgMonthlyOut: 641, moq: 5000, leadTime: 10 },
@@ -1772,7 +1772,7 @@ function loadSampleData() {
     { category: 'Cosmetic', code: '100000133', name: '[USA]VITA C GLUTAGLOW SUPER BRIGHTENING AMPOULE', currentStock: 998, incoming: 0, totalStock: 998, remark: '소진 후 단종', expiryDate: '2027-03-31', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 12 },
     { category: 'Cosmetic', code: '100000134', name: '[USA]VITA C 13.5 SUPER BRIGHTENING AMPOULE', currentStock: 7061, incoming: 0, totalStock: 7061, remark: '', expiryDate: '2028-10-12', safetyStock: 268, avgMonthlyOut: 268, moq: 5000, leadTime: 12 },
     { category: 'Cosmetic', code: '100000136', name: '[USA]VITA C SUPER BRIGHTENING MASK', currentStock: 2332, incoming: 0, totalStock: 2332, remark: '소진후 국내용 대체출고', expiryDate: '2027-02-19', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 12 },
-    { category: 'Cosmetic', code: '100000138', name: '[USA]HYDRATING SKIN BARRIER SERUM MIST', currentStock: 1493, incoming: 0, totalStock: 1493, remark: '', expiryDate: '2027-03-27', safetyStock: 0, avgMonthlyOut: 0, moq: 10000, leadTime: 14 },
+    { category: 'Cosmetic', code: '.', name: '[USA]HYDRATING SKIN BARRIER SERUM MIST', currentStock: 0, incoming: 0, totalStock: 0, remark: '', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 10000, leadTime: 14 },
     { category: 'Cosmetic', code: '100000129.0', name: '루미너스 레이어 타이트업 쿠션', currentStock: 678, incoming: 0, totalStock: 678, remark: '발주완료', expiryDate: '2028-03-29', safetyStock: 282, avgMonthlyOut: 282, moq: 5000, leadTime: 12 },
     { category: 'Cosmetic', code: '100000130.0', name: '루미너스 레이어 타이트업 리필', currentStock: 2371, incoming: 0, totalStock: 2371, remark: '발주완료', expiryDate: '2028-03-29', safetyStock: 220, avgMonthlyOut: 220, moq: 5000, leadTime: 12 },
     { category: 'Cosmetic', code: '100000131', name: '시그니처 리바이탈라이징 샴푸', currentStock: 125, incoming: -90, totalStock: 35, remark: '발주완료, 5월초 입고예정', expiryDate: '2027-12-10', safetyStock: 254, avgMonthlyOut: 254, moq: 5000, leadTime: 8 },
@@ -1876,7 +1876,7 @@ function loadSampleData() {
 
   saveToStorage();
   refreshAll();
-  showToast('실시간 데이터 ' + products.length + '개 제품이 로드되었습니다. (2026년 04월 28일 동기화)');
+  showToast('실시간 데이터 ' + products.length + '개 제품이 로드되었습니다. (2026년 04월 29일 동기화)');
 }
 
 // ============ MODAL / CRUD ============
@@ -2245,7 +2245,7 @@ function saveSyncUrl() {
   document.getElementById('syncStatusBadge').textContent = '활성';
   document.getElementById('syncStatusBadge').style.background = 'var(--success-bg)';
   document.getElementById('syncStatusBadge').style.color = 'var(--success)';
-  showToast('실시간 데이터 ' + products.length + '개 제품이 로드되었습니다. (2026년 04월 28일 동기화)');
+  showToast('실시간 데이터 ' + products.length + '개 제품이 로드되었습니다. (2026년 04월 29일 동기화)');
 }
 
 function saveSyncConfig(url) {
