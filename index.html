@@ -903,7 +903,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Load from localStorage, fallback to sample data
   const saved = localStorage.getItem('unicore_products');
   const dataVersion = localStorage.getItem('unicore_data_version');
-  if (saved && dataVersion === 'v-auto-202605022131') {
+  if (saved && dataVersion === 'v-auto-202605030550') {
     try {
       const parsed = JSON.parse(saved);
       if (parsed && parsed.length > 0) { products = parsed; }
@@ -939,7 +939,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function saveToStorage() {
   try {
     localStorage.setItem('unicore_products', JSON.stringify(products));
-    localStorage.setItem('unicore_data_version', 'v-auto-202605022131');
+    localStorage.setItem('unicore_data_version', 'v-auto-202605030550');
   } catch(e) {}
 }
 
@@ -1751,7 +1751,7 @@ function parseNum(val) {
 
 // ============ SAMPLE DATA ============
 function loadSampleData() {
-  // 자동 동기화 폴백 데이터 (2026년 05월 02일 기준)
+  // 자동 동기화 폴백 데이터 (2026년 05월 03일 기준)
   products = [
     { category: 'Cosmetic', code: '000000101', name: '딥 리페어 액티베이팅 뉴트리션 크림 30ml', currentStock: 3671, incoming: 0, totalStock: 3671, remark: '', expiryDate: '2027-05-12', safetyStock: 976, avgMonthlyOut: 976, moq: 5000, leadTime: 10 },
     { category: 'Cosmetic', code: '100000117', name: 'NEW 비타 씨 13.5 수퍼 화이트닝 앰플 30g', currentStock: 5956, incoming: 0, totalStock: 5956, remark: '', expiryDate: '2028-10-12', safetyStock: 641, avgMonthlyOut: 641, moq: 5000, leadTime: 10 },
@@ -1876,7 +1876,7 @@ function loadSampleData() {
 
   saveToStorage();
   refreshAll();
-  showToast('실시간 데이터 ' + products.length + '개 제품이 로드되었습니다. (2026년 05월 02일 동기화)');
+  showToast('실시간 데이터 ' + products.length + '개 제품이 로드되었습니다. (2026년 05월 03일 동기화)');
 }
 
 // ============ MODAL / CRUD ============
@@ -2245,7 +2245,7 @@ function saveSyncUrl() {
   document.getElementById('syncStatusBadge').textContent = '활성';
   document.getElementById('syncStatusBadge').style.background = 'var(--success-bg)';
   document.getElementById('syncStatusBadge').style.color = 'var(--success)';
-  showToast('실시간 데이터 ' + products.length + '개 제품이 로드되었습니다. (2026년 05월 02일 동기화)');
+  showToast('실시간 데이터 ' + products.length + '개 제품이 로드되었습니다. (2026년 05월 03일 동기화)');
 }
 
 function saveSyncConfig(url) {
