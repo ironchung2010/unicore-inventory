@@ -767,7 +767,7 @@ let products = [
     { category: 'Cosmetic', code: '100000138.0', name: '[USA]HYDRATING SKIN BARRIER SERUM MIST', currentStock: 1488, incoming: 0, totalStock: 1488, remark: '', expiryDate: '2027-03-27', safetyStock: 0, avgMonthlyOut: 0, moq: 10000, leadTime: 14 },
     { category: 'Cosmetic', code: '100000129.0', name: '루미너스 레이어 타이트업 쿠션', currentStock: 329, incoming: 0, totalStock: 329, remark: '발주완료', expiryDate: '2028-03-29', safetyStock: 282, avgMonthlyOut: 282, moq: 5000, leadTime: 12 },
     { category: 'Cosmetic', code: '100000130.0', name: '루미너스 레이어 타이트업 리필', currentStock: 2029, incoming: 0, totalStock: 2029, remark: '발주완료', expiryDate: '2028-03-29', safetyStock: 220, avgMonthlyOut: 220, moq: 5000, leadTime: 12 },
-    { category: 'Cosmetic', code: '100000131', name: '시그니처 리바이탈라이징 샴푸', currentStock: 0, incoming: 4810, totalStock: 4810, remark: '5월 13일 입고 예정', expiryDate: '2027-12-10', safetyStock: 254, avgMonthlyOut: 254, moq: 5000, leadTime: 8 },
+    { category: 'Cosmetic', code: '100000131', name: '시그니처 리바이탈라이징 샴푸', currentStock: 0, incoming: 4810, totalStock: 4810, remark: '5월 13일 입고 예정', expiryDate: '2028-11-07', safetyStock: 254, avgMonthlyOut: 254, moq: 5000, leadTime: 8 },
     { category: 'Health Care', code: '000000201', name: '데일리 메가 에너자이저 플러스 30포', currentStock: 2318, incoming: 0, totalStock: 2318, remark: '', expiryDate: '2027-11-20', safetyStock: 404, avgMonthlyOut: 404, moq: 5000, leadTime: 10 },
     { category: 'Health Care', code: '000000202', name: '트리플 메가 익스텐션 60캡슐', currentStock: 2389, incoming: 0, totalStock: 2389, remark: '', expiryDate: '2027-11-18', safetyStock: 202, avgMonthlyOut: 202, moq: 5000, leadTime: 10 },
     { category: 'Health Care', code: '000000203', name: '데일리 츄어블 프로폴리스 90캡슐', currentStock: 1447, incoming: 0, totalStock: 1447, remark: '', expiryDate: '2028-01-14', safetyStock: 346, avgMonthlyOut: 346, moq: 5000, leadTime: 12 },
@@ -903,7 +903,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Load from localStorage, fallback to sample data
   const saved = localStorage.getItem('unicore_products');
   const dataVersion = localStorage.getItem('unicore_data_version');
-  if (saved && dataVersion === 'v-auto-202605122208') {
+  if (saved && dataVersion === 'v-auto-202605130237') {
     try {
       const parsed = JSON.parse(saved);
       if (parsed && parsed.length > 0) { products = parsed; }
@@ -939,7 +939,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function saveToStorage() {
   try {
     localStorage.setItem('unicore_products', JSON.stringify(products));
-    localStorage.setItem('unicore_data_version', 'v-auto-202605122208');
+    localStorage.setItem('unicore_data_version', 'v-auto-202605130237');
   } catch(e) {}
 }
 
@@ -1751,7 +1751,7 @@ function parseNum(val) {
 
 // ============ SAMPLE DATA ============
 function loadSampleData() {
-  // 자동 동기화 폴백 데이터 (2026년 05월 12일 기준)
+  // 자동 동기화 폴백 데이터 (2026년 05월 13일 기준)
   products = [
     { category: 'Cosmetic', code: '000000101', name: '딥 리페어 액티베이팅 뉴트리션 크림 30ml', currentStock: 2805, incoming: 0, totalStock: 2805, remark: '', expiryDate: '2027-05-12', safetyStock: 976, avgMonthlyOut: 976, moq: 5000, leadTime: 10 },
     { category: 'Cosmetic', code: '100000117', name: 'NEW 비타 씨 13.5 수퍼 화이트닝 앰플 30g', currentStock: 5371, incoming: 0, totalStock: 5371, remark: '', expiryDate: '2028-10-12', safetyStock: 641, avgMonthlyOut: 641, moq: 5000, leadTime: 10 },
@@ -1775,7 +1775,7 @@ function loadSampleData() {
     { category: 'Cosmetic', code: '100000138.0', name: '[USA]HYDRATING SKIN BARRIER SERUM MIST', currentStock: 1488, incoming: 0, totalStock: 1488, remark: '', expiryDate: '2027-03-27', safetyStock: 0, avgMonthlyOut: 0, moq: 10000, leadTime: 14 },
     { category: 'Cosmetic', code: '100000129.0', name: '루미너스 레이어 타이트업 쿠션', currentStock: 329, incoming: 0, totalStock: 329, remark: '발주완료', expiryDate: '2028-03-29', safetyStock: 282, avgMonthlyOut: 282, moq: 5000, leadTime: 12 },
     { category: 'Cosmetic', code: '100000130.0', name: '루미너스 레이어 타이트업 리필', currentStock: 2029, incoming: 0, totalStock: 2029, remark: '발주완료', expiryDate: '2028-03-29', safetyStock: 220, avgMonthlyOut: 220, moq: 5000, leadTime: 12 },
-    { category: 'Cosmetic', code: '100000131', name: '시그니처 리바이탈라이징 샴푸', currentStock: 0, incoming: 4810, totalStock: 4810, remark: '5월 13일 입고 예정', expiryDate: '2027-12-10', safetyStock: 254, avgMonthlyOut: 254, moq: 5000, leadTime: 8 },
+    { category: 'Cosmetic', code: '100000131', name: '시그니처 리바이탈라이징 샴푸', currentStock: 0, incoming: 4810, totalStock: 4810, remark: '5월 13일 입고 예정', expiryDate: '2028-11-07', safetyStock: 254, avgMonthlyOut: 254, moq: 5000, leadTime: 8 },
     { category: 'Health Care', code: '000000201', name: '데일리 메가 에너자이저 플러스 30포', currentStock: 2318, incoming: 0, totalStock: 2318, remark: '', expiryDate: '2027-11-20', safetyStock: 404, avgMonthlyOut: 404, moq: 5000, leadTime: 10 },
     { category: 'Health Care', code: '000000202', name: '트리플 메가 익스텐션 60캡슐', currentStock: 2389, incoming: 0, totalStock: 2389, remark: '', expiryDate: '2027-11-18', safetyStock: 202, avgMonthlyOut: 202, moq: 5000, leadTime: 10 },
     { category: 'Health Care', code: '000000203', name: '데일리 츄어블 프로폴리스 90캡슐', currentStock: 1447, incoming: 0, totalStock: 1447, remark: '', expiryDate: '2028-01-14', safetyStock: 346, avgMonthlyOut: 346, moq: 5000, leadTime: 12 },
@@ -1876,7 +1876,7 @@ function loadSampleData() {
 
   saveToStorage();
   refreshAll();
-  showToast('실시간 데이터 ' + products.length + '개 제품이 로드되었습니다. (2026년 05월 12일 동기화)');
+  showToast('실시간 데이터 ' + products.length + '개 제품이 로드되었습니다. (2026년 05월 13일 동기화)');
 }
 
 // ============ MODAL / CRUD ============
@@ -2245,7 +2245,7 @@ function saveSyncUrl() {
   document.getElementById('syncStatusBadge').textContent = '활성';
   document.getElementById('syncStatusBadge').style.background = 'var(--success-bg)';
   document.getElementById('syncStatusBadge').style.color = 'var(--success)';
-  showToast('실시간 데이터 ' + products.length + '개 제품이 로드되었습니다. (2026년 05월 12일 동기화)');
+  showToast('실시간 데이터 ' + products.length + '개 제품이 로드되었습니다. (2026년 05월 13일 동기화)');
 }
 
 function saveSyncConfig(url) {
