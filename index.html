@@ -767,7 +767,7 @@ let products = [
     { category: 'Cosmetic', code: '100000138.0', name: '[USA]HYDRATING SKIN BARRIER SERUM MIST', currentStock: 1488, incoming: 0, totalStock: 1488, remark: '', expiryDate: '2027-03-27', safetyStock: 0, avgMonthlyOut: 0, moq: 10000, leadTime: 14 },
     { category: 'Cosmetic', code: '100000129.0', name: '루미너스 레이어 타이트업 쿠션', currentStock: 325, incoming: 0, totalStock: 325, remark: '발주완료', expiryDate: '2028-03-29', safetyStock: 282, avgMonthlyOut: 282, moq: 5000, leadTime: 12 },
     { category: 'Cosmetic', code: '100000130.0', name: '루미너스 레이어 타이트업 리필', currentStock: 2025, incoming: 0, totalStock: 2025, remark: '발주완료', expiryDate: '2028-03-29', safetyStock: 220, avgMonthlyOut: 220, moq: 5000, leadTime: 12 },
-    { category: 'Cosmetic', code: '100000131', name: '시그니처 리바이탈라이징 샴푸', currentStock: 4675, incoming: 4810, totalStock: 9485, remark: '5월 13일 입고 예정', expiryDate: '2028-11-07', safetyStock: 254, avgMonthlyOut: 254, moq: 5000, leadTime: 8 },
+    { category: 'Cosmetic', code: '100000131', name: '시그니처 리바이탈라이징 샴푸', currentStock: 4675, incoming: 0, totalStock: 4675, remark: '5월 13일 입고 예정', expiryDate: '2028-11-07', safetyStock: 254, avgMonthlyOut: 254, moq: 5000, leadTime: 8 },
     { category: 'Health Care', code: '000000201', name: '데일리 메가 에너자이저 플러스 30포', currentStock: 2310, incoming: 0, totalStock: 2310, remark: '', expiryDate: '2027-11-20', safetyStock: 404, avgMonthlyOut: 404, moq: 5000, leadTime: 10 },
     { category: 'Health Care', code: '000000202', name: '트리플 메가 익스텐션 60캡슐', currentStock: 2381, incoming: 0, totalStock: 2381, remark: '', expiryDate: '2027-11-18', safetyStock: 202, avgMonthlyOut: 202, moq: 5000, leadTime: 10 },
     { category: 'Health Care', code: '000000203', name: '데일리 츄어블 프로폴리스 90캡슐', currentStock: 1424, incoming: 0, totalStock: 1424, remark: '', expiryDate: '2028-01-14', safetyStock: 346, avgMonthlyOut: 346, moq: 5000, leadTime: 12 },
@@ -903,7 +903,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Load from localStorage, fallback to sample data
   const saved = localStorage.getItem('unicore_products');
   const dataVersion = localStorage.getItem('unicore_data_version');
-  if (saved && dataVersion === 'v-auto-202605140237') {
+  if (saved && dataVersion === 'v-auto-202605140619') {
     try {
       const parsed = JSON.parse(saved);
       if (parsed && parsed.length > 0) { products = parsed; }
@@ -939,7 +939,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function saveToStorage() {
   try {
     localStorage.setItem('unicore_products', JSON.stringify(products));
-    localStorage.setItem('unicore_data_version', 'v-auto-202605140237');
+    localStorage.setItem('unicore_data_version', 'v-auto-202605140619');
   } catch(e) {}
 }
 
@@ -1775,7 +1775,7 @@ function loadSampleData() {
     { category: 'Cosmetic', code: '100000138.0', name: '[USA]HYDRATING SKIN BARRIER SERUM MIST', currentStock: 1488, incoming: 0, totalStock: 1488, remark: '', expiryDate: '2027-03-27', safetyStock: 0, avgMonthlyOut: 0, moq: 10000, leadTime: 14 },
     { category: 'Cosmetic', code: '100000129.0', name: '루미너스 레이어 타이트업 쿠션', currentStock: 325, incoming: 0, totalStock: 325, remark: '발주완료', expiryDate: '2028-03-29', safetyStock: 282, avgMonthlyOut: 282, moq: 5000, leadTime: 12 },
     { category: 'Cosmetic', code: '100000130.0', name: '루미너스 레이어 타이트업 리필', currentStock: 2025, incoming: 0, totalStock: 2025, remark: '발주완료', expiryDate: '2028-03-29', safetyStock: 220, avgMonthlyOut: 220, moq: 5000, leadTime: 12 },
-    { category: 'Cosmetic', code: '100000131', name: '시그니처 리바이탈라이징 샴푸', currentStock: 4675, incoming: 4810, totalStock: 9485, remark: '5월 13일 입고 예정', expiryDate: '2028-11-07', safetyStock: 254, avgMonthlyOut: 254, moq: 5000, leadTime: 8 },
+    { category: 'Cosmetic', code: '100000131', name: '시그니처 리바이탈라이징 샴푸', currentStock: 4675, incoming: 0, totalStock: 4675, remark: '5월 13일 입고 예정', expiryDate: '2028-11-07', safetyStock: 254, avgMonthlyOut: 254, moq: 5000, leadTime: 8 },
     { category: 'Health Care', code: '000000201', name: '데일리 메가 에너자이저 플러스 30포', currentStock: 2310, incoming: 0, totalStock: 2310, remark: '', expiryDate: '2027-11-20', safetyStock: 404, avgMonthlyOut: 404, moq: 5000, leadTime: 10 },
     { category: 'Health Care', code: '000000202', name: '트리플 메가 익스텐션 60캡슐', currentStock: 2381, incoming: 0, totalStock: 2381, remark: '', expiryDate: '2027-11-18', safetyStock: 202, avgMonthlyOut: 202, moq: 5000, leadTime: 10 },
     { category: 'Health Care', code: '000000203', name: '데일리 츄어블 프로폴리스 90캡슐', currentStock: 1424, incoming: 0, totalStock: 1424, remark: '', expiryDate: '2028-01-14', safetyStock: 346, avgMonthlyOut: 346, moq: 5000, leadTime: 12 },
