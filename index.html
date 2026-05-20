@@ -752,7 +752,7 @@ let products = [
     { category: 'Cosmetic', code: '000000106', name: '하이드레이팅 스킨 베리어 세럼 미스트 리필 120ml', currentStock: 2, incoming: 0, totalStock: 2, remark: '소진 후 단종', expiryDate: '2027-03-27', safetyStock: 360, avgMonthlyOut: 360, moq: 5000, leadTime: 10 },
     { category: 'Cosmetic', code: '100000107', name: '하이드레이팅 스킨 베리어 세럼 미스트 50ml', currentStock: 4750, incoming: 0, totalStock: 4750, remark: '', expiryDate: '2027-03-27', safetyStock: 2822, avgMonthlyOut: 822, moq: 5000, leadTime: 10 },
     { category: 'Cosmetic', code: '100000108', name: '비타씨 수퍼 브라이트닝 마스크 5매', currentStock: 11094, incoming: 0, totalStock: 11094, remark: '', expiryDate: '2028-09-30', safetyStock: 3542, avgMonthlyOut: 3542, moq: 5000, leadTime: 10 },
-    { category: 'Cosmetic', code: '000000103', name: '비타씨 수퍼 브라이트닝 마스크 1매 -단종', currentStock: 840, incoming: 0, totalStock: 840, remark: '단종', expiryDate: '2026-05-14', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 10 },
+    { category: 'Cosmetic', code: '000000103', name: '비타씨 수퍼 브라이트닝 마스크 1매 -단종', currentStock: 840, incoming: 0, totalStock: 840, remark: '4월 6일 입고', expiryDate: '2028-09-30', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 10 },
     { category: 'Cosmetic', code: '100000146.0', name: '퓨어 비타 라이스 클렌징 오일 150ml', currentStock: 3149, incoming: 0, totalStock: 3149, remark: '', expiryDate: '2029-02-25', safetyStock: 90, avgMonthlyOut: 90, moq: 5000, leadTime: 10 },
     { category: 'Cosmetic', code: '100000127', name: '비타씨 엔자임 파우더 워시', currentStock: 3102, incoming: 0, totalStock: 3102, remark: '', expiryDate: '2029-02-01', safetyStock: 472, avgMonthlyOut: 472, moq: 5000, leadTime: 10 },
     { category: 'Cosmetic', code: '100000112', name: '데일리 카밍 토너 패드 180ml (70매) (구독사은품)', currentStock: 2399, incoming: 0, totalStock: 2399, remark: '', expiryDate: '2029-01-20', safetyStock: 493, avgMonthlyOut: 493, moq: 5000, leadTime: 10 },
@@ -903,7 +903,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Load from localStorage, fallback to sample data
   const saved = localStorage.getItem('unicore_products');
   const dataVersion = localStorage.getItem('unicore_data_version');
-  if (saved && dataVersion === 'v-auto-202605200243') {
+  if (saved && dataVersion === 'v-auto-202605200644') {
     try {
       const parsed = JSON.parse(saved);
       if (parsed && parsed.length > 0) { products = parsed; }
@@ -939,7 +939,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function saveToStorage() {
   try {
     localStorage.setItem('unicore_products', JSON.stringify(products));
-    localStorage.setItem('unicore_data_version', 'v-auto-202605200243');
+    localStorage.setItem('unicore_data_version', 'v-auto-202605200644');
   } catch(e) {}
 }
 
@@ -1760,7 +1760,7 @@ function loadSampleData() {
     { category: 'Cosmetic', code: '000000106', name: '하이드레이팅 스킨 베리어 세럼 미스트 리필 120ml', currentStock: 2, incoming: 0, totalStock: 2, remark: '소진 후 단종', expiryDate: '2027-03-27', safetyStock: 360, avgMonthlyOut: 360, moq: 5000, leadTime: 10 },
     { category: 'Cosmetic', code: '100000107', name: '하이드레이팅 스킨 베리어 세럼 미스트 50ml', currentStock: 4750, incoming: 0, totalStock: 4750, remark: '', expiryDate: '2027-03-27', safetyStock: 2822, avgMonthlyOut: 822, moq: 5000, leadTime: 10 },
     { category: 'Cosmetic', code: '100000108', name: '비타씨 수퍼 브라이트닝 마스크 5매', currentStock: 11094, incoming: 0, totalStock: 11094, remark: '', expiryDate: '2028-09-30', safetyStock: 3542, avgMonthlyOut: 3542, moq: 5000, leadTime: 10 },
-    { category: 'Cosmetic', code: '000000103', name: '비타씨 수퍼 브라이트닝 마스크 1매 -단종', currentStock: 840, incoming: 0, totalStock: 840, remark: '단종', expiryDate: '2026-05-14', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 10 },
+    { category: 'Cosmetic', code: '000000103', name: '비타씨 수퍼 브라이트닝 마스크 1매 -단종', currentStock: 840, incoming: 0, totalStock: 840, remark: '4월 6일 입고', expiryDate: '2028-09-30', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 10 },
     { category: 'Cosmetic', code: '100000146.0', name: '퓨어 비타 라이스 클렌징 오일 150ml', currentStock: 3149, incoming: 0, totalStock: 3149, remark: '', expiryDate: '2029-02-25', safetyStock: 90, avgMonthlyOut: 90, moq: 5000, leadTime: 10 },
     { category: 'Cosmetic', code: '100000127', name: '비타씨 엔자임 파우더 워시', currentStock: 3102, incoming: 0, totalStock: 3102, remark: '', expiryDate: '2029-02-01', safetyStock: 472, avgMonthlyOut: 472, moq: 5000, leadTime: 10 },
     { category: 'Cosmetic', code: '100000112', name: '데일리 카밍 토너 패드 180ml (70매) (구독사은품)', currentStock: 2399, incoming: 0, totalStock: 2399, remark: '', expiryDate: '2029-01-20', safetyStock: 493, avgMonthlyOut: 493, moq: 5000, leadTime: 10 },
