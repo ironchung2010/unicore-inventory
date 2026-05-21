@@ -748,7 +748,7 @@ let products = [
     { category: 'Cosmetic', code: '000000101', name: '딥 리페어 액티베이팅 뉴트리션 크림 30ml', currentStock: 2418, incoming: 0, totalStock: 2418, remark: '', expiryDate: '2027-05-12', safetyStock: 976, avgMonthlyOut: 976, moq: 5000, leadTime: 10 },
     { category: 'Cosmetic', code: '100000117', name: 'NEW 비타 씨 13.5 수퍼 화이트닝 앰플 30g', currentStock: 5188, incoming: 0, totalStock: 5188, remark: '', expiryDate: '2028-10-12', safetyStock: 641, avgMonthlyOut: 641, moq: 5000, leadTime: 10 },
     { category: 'Cosmetic', code: '100000114', name: '비타 씨 글루타글로우 수퍼 브라이트닝 앰플 30g', currentStock: 1926, incoming: 0, totalStock: 1926, remark: '소진 후 단종', expiryDate: '2027-03-31', safetyStock: 94, avgMonthlyOut: 94, moq: 5000, leadTime: 10 },
-    { category: 'Cosmetic', code: '000000104', name: '하이드레이팅 래디언스 선크림 SPF50 PA+++30ml', currentStock: 994, incoming: 0, totalStock: 994, remark: '단품 판매 시 10ml 대체출고중', expiryDate: '2028-01-15', safetyStock: 742, avgMonthlyOut: 742, moq: 10000, leadTime: 14 },
+    { category: 'Cosmetic', code: '104.0', name: '하이드레이팅 래디언스 선크림 SPF50 PA+++30ml', currentStock: 994, incoming: 0, totalStock: 994, remark: '단품 판매 시 10ml 대체출고중', expiryDate: '2028-01-15', safetyStock: 742, avgMonthlyOut: 742, moq: 10000, leadTime: 14 },
     { category: 'Cosmetic', code: '000000106', name: '하이드레이팅 스킨 베리어 세럼 미스트 리필 120ml', currentStock: 2, incoming: 0, totalStock: 2, remark: '소진 후 단종', expiryDate: '2027-03-27', safetyStock: 360, avgMonthlyOut: 360, moq: 5000, leadTime: 10 },
     { category: 'Cosmetic', code: '100000107', name: '하이드레이팅 스킨 베리어 세럼 미스트 50ml', currentStock: 4738, incoming: 0, totalStock: 4738, remark: '', expiryDate: '2027-03-27', safetyStock: 2822, avgMonthlyOut: 822, moq: 5000, leadTime: 10 },
     { category: 'Cosmetic', code: '100000108', name: '비타씨 수퍼 브라이트닝 마스크 5매', currentStock: 11012, incoming: 0, totalStock: 11012, remark: '', expiryDate: '2028-09-30', safetyStock: 3542, avgMonthlyOut: 3542, moq: 5000, leadTime: 10 },
@@ -903,7 +903,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Load from localStorage, fallback to sample data
   const saved = localStorage.getItem('unicore_products');
   const dataVersion = localStorage.getItem('unicore_data_version');
-  if (saved && dataVersion === 'v-auto-202605210246') {
+  if (saved && dataVersion === 'v-auto-202605210649') {
     try {
       const parsed = JSON.parse(saved);
       if (parsed && parsed.length > 0) { products = parsed; }
@@ -939,7 +939,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function saveToStorage() {
   try {
     localStorage.setItem('unicore_products', JSON.stringify(products));
-    localStorage.setItem('unicore_data_version', 'v-auto-202605210246');
+    localStorage.setItem('unicore_data_version', 'v-auto-202605210649');
   } catch(e) {}
 }
 
@@ -1756,7 +1756,7 @@ function loadSampleData() {
     { category: 'Cosmetic', code: '000000101', name: '딥 리페어 액티베이팅 뉴트리션 크림 30ml', currentStock: 2418, incoming: 0, totalStock: 2418, remark: '', expiryDate: '2027-05-12', safetyStock: 976, avgMonthlyOut: 976, moq: 5000, leadTime: 10 },
     { category: 'Cosmetic', code: '100000117', name: 'NEW 비타 씨 13.5 수퍼 화이트닝 앰플 30g', currentStock: 5188, incoming: 0, totalStock: 5188, remark: '', expiryDate: '2028-10-12', safetyStock: 641, avgMonthlyOut: 641, moq: 5000, leadTime: 10 },
     { category: 'Cosmetic', code: '100000114', name: '비타 씨 글루타글로우 수퍼 브라이트닝 앰플 30g', currentStock: 1926, incoming: 0, totalStock: 1926, remark: '소진 후 단종', expiryDate: '2027-03-31', safetyStock: 94, avgMonthlyOut: 94, moq: 5000, leadTime: 10 },
-    { category: 'Cosmetic', code: '000000104', name: '하이드레이팅 래디언스 선크림 SPF50 PA+++30ml', currentStock: 994, incoming: 0, totalStock: 994, remark: '단품 판매 시 10ml 대체출고중', expiryDate: '2028-01-15', safetyStock: 742, avgMonthlyOut: 742, moq: 10000, leadTime: 14 },
+    { category: 'Cosmetic', code: '104.0', name: '하이드레이팅 래디언스 선크림 SPF50 PA+++30ml', currentStock: 994, incoming: 0, totalStock: 994, remark: '단품 판매 시 10ml 대체출고중', expiryDate: '2028-01-15', safetyStock: 742, avgMonthlyOut: 742, moq: 10000, leadTime: 14 },
     { category: 'Cosmetic', code: '000000106', name: '하이드레이팅 스킨 베리어 세럼 미스트 리필 120ml', currentStock: 2, incoming: 0, totalStock: 2, remark: '소진 후 단종', expiryDate: '2027-03-27', safetyStock: 360, avgMonthlyOut: 360, moq: 5000, leadTime: 10 },
     { category: 'Cosmetic', code: '100000107', name: '하이드레이팅 스킨 베리어 세럼 미스트 50ml', currentStock: 4738, incoming: 0, totalStock: 4738, remark: '', expiryDate: '2027-03-27', safetyStock: 2822, avgMonthlyOut: 822, moq: 5000, leadTime: 10 },
     { category: 'Cosmetic', code: '100000108', name: '비타씨 수퍼 브라이트닝 마스크 5매', currentStock: 11012, incoming: 0, totalStock: 11012, remark: '', expiryDate: '2028-09-30', safetyStock: 3542, avgMonthlyOut: 3542, moq: 5000, leadTime: 10 },
