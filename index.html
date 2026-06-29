@@ -800,7 +800,7 @@ let products = [
     { category: 'Sales Aids', code: '000000801', name: '유니앤코어 코튼 파우치', currentStock: 10438, incoming: 0, totalStock: 10438, remark: '단종', expiryDate: '', safetyStock: 5, avgMonthlyOut: 5, moq: 5000, leadTime: 213 },
     { category: '트라이얼키트', code: '000000805', name: '고급 샤무드 원단 파우치 비매품 (증정용)', currentStock: 1808, incoming: 0, totalStock: 1808, remark: '', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 10 },
     { category: '트라이얼키트', code: '800000827.0', name: '하이드레이팅 래디언스 선크림 SPF50 PA+++10ml', currentStock: 3515, incoming: 0, totalStock: 3515, remark: '', expiryDate: '2027-05-27', safetyStock: 418, avgMonthlyOut: 418, moq: 5000, leadTime: 10 },
-    { category: '트라이얼키트', code: '800000826', name: '딥 리페어 액티베이팅 뉴트리션 크림 7ml', currentStock: 901, incoming: 0, totalStock: 901, remark: '단종, opp작업완료', expiryDate: '', safetyStock: 2000, avgMonthlyOut: 0, moq: 5000, leadTime: 10 },
+    { category: '트라이얼키트', code: '800000826.0', name: '딥 리페어 액티베이팅 뉴트리션 크림 7ml', currentStock: 901, incoming: 0, totalStock: 901, remark: '단종, opp작업완료', expiryDate: '', safetyStock: 2000, avgMonthlyOut: 0, moq: 5000, leadTime: 10 },
     { category: 'Sales Aids', code: '800000831', name: '마이크로 버블 클렌징 폼 10ml', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '2026-05-26', safetyStock: 855, avgMonthlyOut: 855, moq: 5000, leadTime: 10 },
     { category: 'Sales Aids', code: '800000849', name: '유니앤코어 친환경 종이컵 8oz (200개)', currentStock: 7, incoming: 0, totalStock: 7, remark: '', expiryDate: '', safetyStock: 766, avgMonthlyOut: 766, moq: 5000, leadTime: 2 },
     { category: 'Sales Aids', code: '800000852', name: '유니앤코어 친환경 종이컵 8oz (제작용)', currentStock: 12000, incoming: 0, totalStock: 12000, remark: '', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 2 },
@@ -905,7 +905,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Load from localStorage, fallback to sample data
   const saved = localStorage.getItem('unicore_products');
   const dataVersion = localStorage.getItem('unicore_data_version');
-  if (saved && dataVersion === 'v-auto-202606290725') {
+  if (saved && dataVersion === 'v-auto-202606291300') {
     try {
       const parsed = JSON.parse(saved);
       if (parsed && parsed.length > 0) { products = parsed; }
@@ -941,7 +941,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function saveToStorage() {
   try {
     localStorage.setItem('unicore_products', JSON.stringify(products));
-    localStorage.setItem('unicore_data_version', 'v-auto-202606290725');
+    localStorage.setItem('unicore_data_version', 'v-auto-202606291300');
   } catch(e) {}
 }
 
@@ -1810,7 +1810,7 @@ function loadSampleData() {
     { category: 'Sales Aids', code: '000000801', name: '유니앤코어 코튼 파우치', currentStock: 10438, incoming: 0, totalStock: 10438, remark: '단종', expiryDate: '', safetyStock: 5, avgMonthlyOut: 5, moq: 5000, leadTime: 213 },
     { category: '트라이얼키트', code: '000000805', name: '고급 샤무드 원단 파우치 비매품 (증정용)', currentStock: 1808, incoming: 0, totalStock: 1808, remark: '', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 10 },
     { category: '트라이얼키트', code: '800000827.0', name: '하이드레이팅 래디언스 선크림 SPF50 PA+++10ml', currentStock: 3515, incoming: 0, totalStock: 3515, remark: '', expiryDate: '2027-05-27', safetyStock: 418, avgMonthlyOut: 418, moq: 5000, leadTime: 10 },
-    { category: '트라이얼키트', code: '800000826', name: '딥 리페어 액티베이팅 뉴트리션 크림 7ml', currentStock: 901, incoming: 0, totalStock: 901, remark: '단종, opp작업완료', expiryDate: '', safetyStock: 2000, avgMonthlyOut: 0, moq: 5000, leadTime: 10 },
+    { category: '트라이얼키트', code: '800000826.0', name: '딥 리페어 액티베이팅 뉴트리션 크림 7ml', currentStock: 901, incoming: 0, totalStock: 901, remark: '단종, opp작업완료', expiryDate: '', safetyStock: 2000, avgMonthlyOut: 0, moq: 5000, leadTime: 10 },
     { category: 'Sales Aids', code: '800000831', name: '마이크로 버블 클렌징 폼 10ml', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '2026-05-26', safetyStock: 855, avgMonthlyOut: 855, moq: 5000, leadTime: 10 },
     { category: 'Sales Aids', code: '800000849', name: '유니앤코어 친환경 종이컵 8oz (200개)', currentStock: 7, incoming: 0, totalStock: 7, remark: '', expiryDate: '', safetyStock: 766, avgMonthlyOut: 766, moq: 5000, leadTime: 2 },
     { category: 'Sales Aids', code: '800000852', name: '유니앤코어 친환경 종이컵 8oz (제작용)', currentStock: 12000, incoming: 0, totalStock: 12000, remark: '', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 2 },
