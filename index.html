@@ -765,7 +765,7 @@ let products = [
     { category: 'Cosmetic', code: '100000134', name: '[USA]VITA C 13.5 SUPER BRIGHTENING AMPOULE', currentStock: 6473, incoming: 0, totalStock: 6473, remark: '', expiryDate: '2028-10-12', safetyStock: 268, avgMonthlyOut: 268, moq: 5000, leadTime: 12 },
     { category: 'Cosmetic', code: '100000136.0', name: '[USA]VITA C SUPER BRIGHTENING MASK', currentStock: 1307, incoming: 0, totalStock: 1307, remark: '소진후 국내용 대체출고', expiryDate: '2027-02-19', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 12 },
     { category: 'Cosmetic', code: '100000138.0', name: '[USA]HYDRATING SKIN BARRIER SERUM MIST', currentStock: 1448, incoming: 0, totalStock: 1448, remark: '', expiryDate: '2027-03-27', safetyStock: 0, avgMonthlyOut: 0, moq: 10000, leadTime: 14 },
-    { category: 'Cosmetic', code: '100000129.0', name: '루미너스 레이어 타이트업 쿠션', currentStock: 220, incoming: 0, totalStock: 220, remark: '6월말 입고에서 부자재이슈로 7월중 입고변경', expiryDate: '2028-03-29', safetyStock: 282, avgMonthlyOut: 282, moq: 5000, leadTime: 12 },
+    { category: 'Cosmetic', code: '100000129.0', name: '루미너스 레이어 타이트업 쿠션', currentStock: 220, incoming: 0, totalStock: 220, remark: '', expiryDate: '2028-03-29', safetyStock: 282, avgMonthlyOut: 282, moq: 5000, leadTime: 12 },
     { category: 'Cosmetic', code: '100000130.0', name: '루미너스 레이어 타이트업 쿠션 리필', currentStock: 1697, incoming: 0, totalStock: 1697, remark: '', expiryDate: '2028-03-29', safetyStock: 220, avgMonthlyOut: 220, moq: 5000, leadTime: 12 },
     { category: 'Cosmetic', code: '100000131.0', name: '시그니처 리바이탈라이징 샴푸', currentStock: 4219, incoming: 0, totalStock: 4219, remark: '', expiryDate: '2028-11-07', safetyStock: 254, avgMonthlyOut: 254, moq: 5000, leadTime: 8 },
     { category: 'Health Care', code: '000000201', name: '데일리 메가 에너자이저 플러스 30포', currentStock: 1704, incoming: 0, totalStock: 1704, remark: '', expiryDate: '2027-11-20', safetyStock: 404, avgMonthlyOut: 404, moq: 5000, leadTime: 10 },
@@ -793,7 +793,7 @@ let products = [
     { category: 'Living', code: '600000635', name: '덴티바이옴 치약 출시 기념 패키지', currentStock: 276, incoming: 0, totalStock: 276, remark: '', expiryDate: '', safetyStock: 12, avgMonthlyOut: 12, moq: 5000, leadTime: 10 },
     { category: 'Living', code: '800000829.0', name: '덴텍트 Dentect 4입', currentStock: 2667, incoming: 0, totalStock: 2667, remark: '', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 10 },
     { category: 'Lounge Item', code: '300000315', name: '하이퍼루프 스칼프 세럼 300ml', currentStock: 538, incoming: 0, totalStock: 538, remark: '', expiryDate: '2028-07-09', safetyStock: 36, avgMonthlyOut: 36, moq: 5000, leadTime: 8 },
-    { category: 'Lounge Item', code: '300000316', name: '하이퍼루프 바디 크림 280g', currentStock: 4, incoming: 0, totalStock: 4, remark: '발주완료, 4월 입고/4월 쿨젤크림', expiryDate: '2027-06-18', safetyStock: 3, avgMonthlyOut: 3, moq: 5000, leadTime: 8 },
+    { category: 'Lounge Item', code: '300000316', name: '하이퍼루프 바디 크림 280g', currentStock: 4, incoming: 0, totalStock: 4, remark: '', expiryDate: '2027-06-18', safetyStock: 3, avgMonthlyOut: 3, moq: 5000, leadTime: 8 },
     { category: 'Lounge Item', code: '300000328.0', name: '하이퍼루프 바디 크림 150g', currentStock: 2714, incoming: 0, totalStock: 2714, remark: '', expiryDate: '2029-05-27', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 9 },
     { category: 'Lounge Item', code: '300000318', name: '수딩 앤 모이스트 케어 부스팅 젤 250ml', currentStock: 1794, incoming: 0, totalStock: 1794, remark: '', expiryDate: '2026-12-04', safetyStock: 184, avgMonthlyOut: 184, moq: 5000, leadTime: 8 },
     { category: 'Lounge Item', code: '300000327.0', name: '액티브 리커버 쿨 젤 150ml', currentStock: 2688, incoming: 0, totalStock: 2688, remark: '', expiryDate: '2029-05-26', safetyStock: 0, avgMonthlyOut: 0, moq: 5001, leadTime: 9 },
@@ -905,7 +905,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Load from localStorage, fallback to sample data
   const saved = localStorage.getItem('unicore_products');
   const dataVersion = localStorage.getItem('unicore_data_version');
-  if (saved && dataVersion === 'v-auto-202607090642') {
+  if (saved && dataVersion === 'v-auto-202607091151') {
     try {
       const parsed = JSON.parse(saved);
       if (parsed && parsed.length > 0) { products = parsed; }
@@ -941,7 +941,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function saveToStorage() {
   try {
     localStorage.setItem('unicore_products', JSON.stringify(products));
-    localStorage.setItem('unicore_data_version', 'v-auto-202607090642');
+    localStorage.setItem('unicore_data_version', 'v-auto-202607091151');
   } catch(e) {}
 }
 
@@ -1775,7 +1775,7 @@ function loadSampleData() {
     { category: 'Cosmetic', code: '100000134', name: '[USA]VITA C 13.5 SUPER BRIGHTENING AMPOULE', currentStock: 6473, incoming: 0, totalStock: 6473, remark: '', expiryDate: '2028-10-12', safetyStock: 268, avgMonthlyOut: 268, moq: 5000, leadTime: 12 },
     { category: 'Cosmetic', code: '100000136.0', name: '[USA]VITA C SUPER BRIGHTENING MASK', currentStock: 1307, incoming: 0, totalStock: 1307, remark: '소진후 국내용 대체출고', expiryDate: '2027-02-19', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 12 },
     { category: 'Cosmetic', code: '100000138.0', name: '[USA]HYDRATING SKIN BARRIER SERUM MIST', currentStock: 1448, incoming: 0, totalStock: 1448, remark: '', expiryDate: '2027-03-27', safetyStock: 0, avgMonthlyOut: 0, moq: 10000, leadTime: 14 },
-    { category: 'Cosmetic', code: '100000129.0', name: '루미너스 레이어 타이트업 쿠션', currentStock: 220, incoming: 0, totalStock: 220, remark: '6월말 입고에서 부자재이슈로 7월중 입고변경', expiryDate: '2028-03-29', safetyStock: 282, avgMonthlyOut: 282, moq: 5000, leadTime: 12 },
+    { category: 'Cosmetic', code: '100000129.0', name: '루미너스 레이어 타이트업 쿠션', currentStock: 220, incoming: 0, totalStock: 220, remark: '', expiryDate: '2028-03-29', safetyStock: 282, avgMonthlyOut: 282, moq: 5000, leadTime: 12 },
     { category: 'Cosmetic', code: '100000130.0', name: '루미너스 레이어 타이트업 쿠션 리필', currentStock: 1697, incoming: 0, totalStock: 1697, remark: '', expiryDate: '2028-03-29', safetyStock: 220, avgMonthlyOut: 220, moq: 5000, leadTime: 12 },
     { category: 'Cosmetic', code: '100000131.0', name: '시그니처 리바이탈라이징 샴푸', currentStock: 4219, incoming: 0, totalStock: 4219, remark: '', expiryDate: '2028-11-07', safetyStock: 254, avgMonthlyOut: 254, moq: 5000, leadTime: 8 },
     { category: 'Health Care', code: '000000201', name: '데일리 메가 에너자이저 플러스 30포', currentStock: 1704, incoming: 0, totalStock: 1704, remark: '', expiryDate: '2027-11-20', safetyStock: 404, avgMonthlyOut: 404, moq: 5000, leadTime: 10 },
@@ -1803,7 +1803,7 @@ function loadSampleData() {
     { category: 'Living', code: '600000635', name: '덴티바이옴 치약 출시 기념 패키지', currentStock: 276, incoming: 0, totalStock: 276, remark: '', expiryDate: '', safetyStock: 12, avgMonthlyOut: 12, moq: 5000, leadTime: 10 },
     { category: 'Living', code: '800000829.0', name: '덴텍트 Dentect 4입', currentStock: 2667, incoming: 0, totalStock: 2667, remark: '', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 10 },
     { category: 'Lounge Item', code: '300000315', name: '하이퍼루프 스칼프 세럼 300ml', currentStock: 538, incoming: 0, totalStock: 538, remark: '', expiryDate: '2028-07-09', safetyStock: 36, avgMonthlyOut: 36, moq: 5000, leadTime: 8 },
-    { category: 'Lounge Item', code: '300000316', name: '하이퍼루프 바디 크림 280g', currentStock: 4, incoming: 0, totalStock: 4, remark: '발주완료, 4월 입고/4월 쿨젤크림', expiryDate: '2027-06-18', safetyStock: 3, avgMonthlyOut: 3, moq: 5000, leadTime: 8 },
+    { category: 'Lounge Item', code: '300000316', name: '하이퍼루프 바디 크림 280g', currentStock: 4, incoming: 0, totalStock: 4, remark: '', expiryDate: '2027-06-18', safetyStock: 3, avgMonthlyOut: 3, moq: 5000, leadTime: 8 },
     { category: 'Lounge Item', code: '300000328.0', name: '하이퍼루프 바디 크림 150g', currentStock: 2714, incoming: 0, totalStock: 2714, remark: '', expiryDate: '2029-05-27', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 9 },
     { category: 'Lounge Item', code: '300000318', name: '수딩 앤 모이스트 케어 부스팅 젤 250ml', currentStock: 1794, incoming: 0, totalStock: 1794, remark: '', expiryDate: '2026-12-04', safetyStock: 184, avgMonthlyOut: 184, moq: 5000, leadTime: 8 },
     { category: 'Lounge Item', code: '300000327.0', name: '액티브 리커버 쿨 젤 150ml', currentStock: 2688, incoming: 0, totalStock: 2688, remark: '', expiryDate: '2029-05-26', safetyStock: 0, avgMonthlyOut: 0, moq: 5001, leadTime: 9 },
