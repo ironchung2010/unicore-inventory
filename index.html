@@ -770,7 +770,7 @@ let products = [
     { category: 'Cosmetic', code: '100000131.0', name: '시그니처 리바이탈라이징 샴푸', currentStock: 4198, incoming: 0, totalStock: 4198, remark: '', expiryDate: '2028-11-07', safetyStock: 254, avgMonthlyOut: 254, moq: 5000, leadTime: 8 },
     { category: 'Health Care', code: '000000201', name: '데일리 메가 에너자이저 플러스 30포', currentStock: 1640, incoming: 0, totalStock: 1640, remark: '', expiryDate: '2027-11-20', safetyStock: 404, avgMonthlyOut: 404, moq: 5000, leadTime: 10 },
     { category: 'Health Care', code: '000000202', name: '트리플 메가 익스텐션 60캡슐', currentStock: 1854, incoming: 0, totalStock: 1854, remark: '', expiryDate: '2027-11-18', safetyStock: 202, avgMonthlyOut: 202, moq: 5000, leadTime: 10 },
-    { category: 'Health Care', code: '203.0', name: '데일리 츄어블 프로폴리스 90캡슐', currentStock: 472, incoming: 0, totalStock: 472, remark: '', expiryDate: '2028-01-14', safetyStock: 346, avgMonthlyOut: 346, moq: 5000, leadTime: 12 },
+    { category: 'Health Care', code: '000000203', name: '데일리 츄어블 프로폴리스 90캡슐', currentStock: 472, incoming: 0, totalStock: 472, remark: '', expiryDate: '2028-01-14', safetyStock: 346, avgMonthlyOut: 346, moq: 5000, leadTime: 12 },
     { category: 'Health Care', code: '200000206.0', name: '더블 컷 메가 슬림 플러스 (구독사은품)', currentStock: 2745, incoming: 0, totalStock: 2745, remark: '', expiryDate: '2026-10-15', safetyStock: 575, avgMonthlyOut: 575, moq: 5000, leadTime: 10 },
     { category: 'Health Care', code: '200000207.0', name: '슬리밍 메가 프로바이오틱스', currentStock: 1839, incoming: 0, totalStock: 1839, remark: '', expiryDate: '2027-10-23', safetyStock: 691, avgMonthlyOut: 691, moq: 5000, leadTime: 12 },
     { category: 'Health Care', code: '200000210', name: '본 앤 조인트 액티브 메가 포뮬러 60캡슐', currentStock: 4732, incoming: 0, totalStock: 4732, remark: '', expiryDate: '2027-08-21', safetyStock: 172, avgMonthlyOut: 172, moq: 5000, leadTime: 8 },
@@ -907,7 +907,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Load from localStorage, fallback to sample data
   const saved = localStorage.getItem('unicore_products');
   const dataVersion = localStorage.getItem('unicore_data_version');
-  if (saved && dataVersion === 'v-auto-202607150151') {
+  if (saved && dataVersion === 'v-auto-202607150524') {
     try {
       const parsed = JSON.parse(saved);
       if (parsed && parsed.length > 0) { products = parsed; }
@@ -943,7 +943,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function saveToStorage() {
   try {
     localStorage.setItem('unicore_products', JSON.stringify(products));
-    localStorage.setItem('unicore_data_version', 'v-auto-202607150151');
+    localStorage.setItem('unicore_data_version', 'v-auto-202607150524');
   } catch(e) {}
 }
 
@@ -1782,7 +1782,7 @@ function loadSampleData() {
     { category: 'Cosmetic', code: '100000131.0', name: '시그니처 리바이탈라이징 샴푸', currentStock: 4198, incoming: 0, totalStock: 4198, remark: '', expiryDate: '2028-11-07', safetyStock: 254, avgMonthlyOut: 254, moq: 5000, leadTime: 8 },
     { category: 'Health Care', code: '000000201', name: '데일리 메가 에너자이저 플러스 30포', currentStock: 1640, incoming: 0, totalStock: 1640, remark: '', expiryDate: '2027-11-20', safetyStock: 404, avgMonthlyOut: 404, moq: 5000, leadTime: 10 },
     { category: 'Health Care', code: '000000202', name: '트리플 메가 익스텐션 60캡슐', currentStock: 1854, incoming: 0, totalStock: 1854, remark: '', expiryDate: '2027-11-18', safetyStock: 202, avgMonthlyOut: 202, moq: 5000, leadTime: 10 },
-    { category: 'Health Care', code: '203.0', name: '데일리 츄어블 프로폴리스 90캡슐', currentStock: 472, incoming: 0, totalStock: 472, remark: '', expiryDate: '2028-01-14', safetyStock: 346, avgMonthlyOut: 346, moq: 5000, leadTime: 12 },
+    { category: 'Health Care', code: '000000203', name: '데일리 츄어블 프로폴리스 90캡슐', currentStock: 472, incoming: 0, totalStock: 472, remark: '', expiryDate: '2028-01-14', safetyStock: 346, avgMonthlyOut: 346, moq: 5000, leadTime: 12 },
     { category: 'Health Care', code: '200000206.0', name: '더블 컷 메가 슬림 플러스 (구독사은품)', currentStock: 2745, incoming: 0, totalStock: 2745, remark: '', expiryDate: '2026-10-15', safetyStock: 575, avgMonthlyOut: 575, moq: 5000, leadTime: 10 },
     { category: 'Health Care', code: '200000207.0', name: '슬리밍 메가 프로바이오틱스', currentStock: 1839, incoming: 0, totalStock: 1839, remark: '', expiryDate: '2027-10-23', safetyStock: 691, avgMonthlyOut: 691, moq: 5000, leadTime: 12 },
     { category: 'Health Care', code: '200000210', name: '본 앤 조인트 액티브 메가 포뮬러 60캡슐', currentStock: 4732, incoming: 0, totalStock: 4732, remark: '', expiryDate: '2027-08-21', safetyStock: 172, avgMonthlyOut: 172, moq: 5000, leadTime: 8 },
