@@ -761,7 +761,7 @@ let products = [
     { category: 'Cosmetic', code: '100000121.0', name: '(UC) 하이드레이팅 스킨 크림 30ml', currentStock: 112, incoming: 0, totalStock: 112, remark: '소진 후 단종', expiryDate: '2027-04-01', safetyStock: 470, avgMonthlyOut: 470, moq: 5000, leadTime: 12 },
     { category: 'Cosmetic', code: '100000122.0', name: '(UC) 하이드레이팅 래디언스 선크림 30ml', currentStock: 1131, incoming: 0, totalStock: 1131, remark: '소진 후 단종', expiryDate: '2028-01-15', safetyStock: 263, avgMonthlyOut: 263, moq: 5000, leadTime: 10 },
     { category: 'Cosmetic', code: '100000132.0', name: '[USA]DEEP HYDRATING SKIN NUTRITION CREAM', currentStock: 3893, incoming: 0, totalStock: 3893, remark: '', expiryDate: '2029-07-06', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 10 },
-    { category: 'Cosmetic', code: '100000133', name: '[USA]VITA C GLUTAGLOW SUPER BRIGHTENING AMPOULE', currentStock: 994, incoming: 0, totalStock: 994, remark: '소진 후 단종', expiryDate: '2027-03-31', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 12 },
+    { category: 'Cosmetic', code: '100000133', name: '[USA]VITA C GLUTAGLOW SUPER BRIGHTENING AMPOULE', currentStock: 994, incoming: 0, totalStock: 994, remark: '소진 후 단종', expiryDate: '2027-03-31', safetyStock: 5000, avgMonthlyOut: 0, moq: 5000, leadTime: 12 },
     { category: 'Cosmetic', code: '100000134', name: '[USA]VITA C 13.5 SUPER BRIGHTENING AMPOULE', currentStock: 6350, incoming: 0, totalStock: 6350, remark: '', expiryDate: '2028-10-12', safetyStock: 268, avgMonthlyOut: 268, moq: 5000, leadTime: 12 },
     { category: 'Cosmetic', code: '100000136.0', name: '[USA]VITA C SUPER BRIGHTENING MASK', currentStock: 1046, incoming: 0, totalStock: 1046, remark: '소진후 국내용 대체출고', expiryDate: '2027-02-19', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 12 },
     { category: 'Cosmetic', code: '100000138.0', name: '[USA]HYDRATING SKIN BARRIER SERUM MIST', currentStock: 1448, incoming: 0, totalStock: 1448, remark: '', expiryDate: '2027-03-27', safetyStock: 0, avgMonthlyOut: 0, moq: 10000, leadTime: 14 },
@@ -907,7 +907,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Load from localStorage, fallback to sample data
   const saved = localStorage.getItem('unicore_products');
   const dataVersion = localStorage.getItem('unicore_data_version');
-  if (saved && dataVersion === 'v-auto-202608040541') {
+  if (saved && dataVersion === 'v-auto-202608040827') {
     try {
       const parsed = JSON.parse(saved);
       if (parsed && parsed.length > 0) { products = parsed; }
@@ -943,7 +943,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function saveToStorage() {
   try {
     localStorage.setItem('unicore_products', JSON.stringify(products));
-    localStorage.setItem('unicore_data_version', 'v-auto-202608040541');
+    localStorage.setItem('unicore_data_version', 'v-auto-202608040827');
   } catch(e) {}
 }
 
@@ -1773,7 +1773,7 @@ function loadSampleData() {
     { category: 'Cosmetic', code: '100000121.0', name: '(UC) 하이드레이팅 스킨 크림 30ml', currentStock: 112, incoming: 0, totalStock: 112, remark: '소진 후 단종', expiryDate: '2027-04-01', safetyStock: 470, avgMonthlyOut: 470, moq: 5000, leadTime: 12 },
     { category: 'Cosmetic', code: '100000122.0', name: '(UC) 하이드레이팅 래디언스 선크림 30ml', currentStock: 1131, incoming: 0, totalStock: 1131, remark: '소진 후 단종', expiryDate: '2028-01-15', safetyStock: 263, avgMonthlyOut: 263, moq: 5000, leadTime: 10 },
     { category: 'Cosmetic', code: '100000132.0', name: '[USA]DEEP HYDRATING SKIN NUTRITION CREAM', currentStock: 3893, incoming: 0, totalStock: 3893, remark: '', expiryDate: '2029-07-06', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 10 },
-    { category: 'Cosmetic', code: '100000133', name: '[USA]VITA C GLUTAGLOW SUPER BRIGHTENING AMPOULE', currentStock: 994, incoming: 0, totalStock: 994, remark: '소진 후 단종', expiryDate: '2027-03-31', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 12 },
+    { category: 'Cosmetic', code: '100000133', name: '[USA]VITA C GLUTAGLOW SUPER BRIGHTENING AMPOULE', currentStock: 994, incoming: 0, totalStock: 994, remark: '소진 후 단종', expiryDate: '2027-03-31', safetyStock: 5000, avgMonthlyOut: 0, moq: 5000, leadTime: 12 },
     { category: 'Cosmetic', code: '100000134', name: '[USA]VITA C 13.5 SUPER BRIGHTENING AMPOULE', currentStock: 6350, incoming: 0, totalStock: 6350, remark: '', expiryDate: '2028-10-12', safetyStock: 268, avgMonthlyOut: 268, moq: 5000, leadTime: 12 },
     { category: 'Cosmetic', code: '100000136.0', name: '[USA]VITA C SUPER BRIGHTENING MASK', currentStock: 1046, incoming: 0, totalStock: 1046, remark: '소진후 국내용 대체출고', expiryDate: '2027-02-19', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 12 },
     { category: 'Cosmetic', code: '100000138.0', name: '[USA]HYDRATING SKIN BARRIER SERUM MIST', currentStock: 1448, incoming: 0, totalStock: 1448, remark: '', expiryDate: '2027-03-27', safetyStock: 0, avgMonthlyOut: 0, moq: 10000, leadTime: 14 },
