@@ -784,7 +784,7 @@ let products = [
     { category: 'Health Care', code: '100000142.0', name: '[USA]Slimming Mega Probiotics', currentStock: 2375, incoming: 0, totalStock: 2375, remark: '', expiryDate: '2027-10-23', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 12 },
     { category: 'Health Care', code: '100000143.0', name: '[USA]SLIM FIT Protein Shake Powder', currentStock: 843, incoming: 0, totalStock: 843, remark: '', expiryDate: '2027-04-30', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 10 },
     { category: 'Health Care', code: '100000144.0', name: '[USA]Triple MEGA Extension', currentStock: 961, incoming: 0, totalStock: 961, remark: '', expiryDate: '2027-11-18', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 10 },
-    { category: 'Health Care', code: '100000149', name: '[USA]Double Cut Mega Slim Plus', currentStock: 5000, incoming: 0, totalStock: 5000, remark: '', expiryDate: '2028-01-06', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 12 },
+    { category: 'Health Care', code: '100000149', name: '[USA]Double Cut Mega Slim Plus', currentStock: 5000, incoming: 0, totalStock: 5000, remark: '', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 12 },
     { category: 'Living', code: '000000020', name: '리얼 그린라이프 프리미엄 페이셜 티슈 5입', currentStock: 6072, incoming: 0, totalStock: 6072, remark: '소진시 단종', expiryDate: '', safetyStock: 60, avgMonthlyOut: 60, moq: 5000, leadTime: 10 },
     { category: 'Living', code: '000000037', name: '리얼 그린라이프 프리미엄 페이셜 티슈 케이스', currentStock: 3913, incoming: 0, totalStock: 3913, remark: '소진시 단종', expiryDate: '', safetyStock: 1, avgMonthlyOut: 1, moq: 5000, leadTime: 10 },
     { category: 'Living', code: '000000044', name: '리얼 그린라이프 프리미엄 대나무 압축타올 30입', currentStock: 8749, incoming: 0, totalStock: 8749, remark: '소진시 단종', expiryDate: '', safetyStock: 64, avgMonthlyOut: 64, moq: 5000, leadTime: 10 },
@@ -908,7 +908,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Load from localStorage, fallback to sample data
   const saved = localStorage.getItem('unicore_products');
   const dataVersion = localStorage.getItem('unicore_data_version');
-  if (saved && dataVersion === 'v-auto-202608250342') {
+  if (saved && dataVersion === 'v-auto-202608250634') {
     try {
       const parsed = JSON.parse(saved);
       if (parsed && parsed.length > 0) { products = parsed; }
@@ -944,7 +944,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function saveToStorage() {
   try {
     localStorage.setItem('unicore_products', JSON.stringify(products));
-    localStorage.setItem('unicore_data_version', 'v-auto-202608250342');
+    localStorage.setItem('unicore_data_version', 'v-auto-202608250634');
   } catch(e) {}
 }
 
@@ -1797,7 +1797,7 @@ function loadSampleData() {
     { category: 'Health Care', code: '100000142.0', name: '[USA]Slimming Mega Probiotics', currentStock: 2375, incoming: 0, totalStock: 2375, remark: '', expiryDate: '2027-10-23', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 12 },
     { category: 'Health Care', code: '100000143.0', name: '[USA]SLIM FIT Protein Shake Powder', currentStock: 843, incoming: 0, totalStock: 843, remark: '', expiryDate: '2027-04-30', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 10 },
     { category: 'Health Care', code: '100000144.0', name: '[USA]Triple MEGA Extension', currentStock: 961, incoming: 0, totalStock: 961, remark: '', expiryDate: '2027-11-18', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 10 },
-    { category: 'Health Care', code: '100000149', name: '[USA]Double Cut Mega Slim Plus', currentStock: 5000, incoming: 0, totalStock: 5000, remark: '', expiryDate: '2028-01-06', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 12 },
+    { category: 'Health Care', code: '100000149', name: '[USA]Double Cut Mega Slim Plus', currentStock: 5000, incoming: 0, totalStock: 5000, remark: '', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 12 },
     { category: 'Living', code: '000000020', name: '리얼 그린라이프 프리미엄 페이셜 티슈 5입', currentStock: 6072, incoming: 0, totalStock: 6072, remark: '소진시 단종', expiryDate: '', safetyStock: 60, avgMonthlyOut: 60, moq: 5000, leadTime: 10 },
     { category: 'Living', code: '000000037', name: '리얼 그린라이프 프리미엄 페이셜 티슈 케이스', currentStock: 3913, incoming: 0, totalStock: 3913, remark: '소진시 단종', expiryDate: '', safetyStock: 1, avgMonthlyOut: 1, moq: 5000, leadTime: 10 },
     { category: 'Living', code: '000000044', name: '리얼 그린라이프 프리미엄 대나무 압축타올 30입', currentStock: 8749, incoming: 0, totalStock: 8749, remark: '소진시 단종', expiryDate: '', safetyStock: 64, avgMonthlyOut: 64, moq: 5000, leadTime: 10 },
