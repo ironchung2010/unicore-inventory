@@ -796,7 +796,7 @@ let products = [
     { category: 'Lounge Item', code: '300000315', name: '하이퍼루프 스칼프 세럼 300ml', currentStock: 510, incoming: 0, totalStock: 510, remark: '', expiryDate: '2028-07-09', safetyStock: 36, avgMonthlyOut: 36, moq: 5000, leadTime: 8 },
     { category: 'Lounge Item', code: '300000316', name: '하이퍼루프 바디 크림 280g', currentStock: 0, incoming: 0, totalStock: 0, remark: '', expiryDate: '2027-06-18', safetyStock: 3, avgMonthlyOut: 3, moq: 5000, leadTime: 8 },
     { category: 'Lounge Item', code: '300000328.0', name: '하이퍼루프 바디 크림 150g', currentStock: 2595, incoming: 0, totalStock: 2595, remark: '', expiryDate: '2029-05-27', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 9 },
-    { category: 'Lounge Item', code: '300000318', name: '수딩 앤 모이스트 케어 부스팅 젤 250ml', currentStock: 1568, incoming: 0, totalStock: 1568, remark: '', expiryDate: '2026-12-04', safetyStock: 184, avgMonthlyOut: 184, moq: 5000, leadTime: 8 },
+    { category: 'Lounge Item', code: '300000318.0', name: '수딩 앤 모이스트 케어 부스팅 젤 250ml', currentStock: 1568, incoming: 0, totalStock: 1568, remark: '', expiryDate: '2026-12-04', safetyStock: 184, avgMonthlyOut: 184, moq: 5000, leadTime: 8 },
     { category: 'Lounge Item', code: '300000327.0', name: '액티브 리커버 쿨 젤 150ml', currentStock: 2475, incoming: 0, totalStock: 2475, remark: '', expiryDate: '2029-05-26', safetyStock: 0, avgMonthlyOut: 0, moq: 5001, leadTime: 9 },
     { category: 'Sales Aids', code: '000000801', name: '유니앤코어 코튼 파우치', currentStock: 10436, incoming: 0, totalStock: 10436, remark: '단종', expiryDate: '', safetyStock: 5, avgMonthlyOut: 5, moq: 5000, leadTime: 213 },
     { category: '트라이얼키트', code: '000000805', name: '고급 샤무드 원단 파우치 비매품', currentStock: 1775, incoming: 0, totalStock: 1775, remark: '', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 10 },
@@ -908,7 +908,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Load from localStorage, fallback to sample data
   const saved = localStorage.getItem('unicore_products');
   const dataVersion = localStorage.getItem('unicore_data_version');
-  if (saved && dataVersion === 'v-auto-202609020224') {
+  if (saved && dataVersion === 'v-auto-202609020730') {
     try {
       const parsed = JSON.parse(saved);
       if (parsed && parsed.length > 0) { products = parsed; }
@@ -944,7 +944,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function saveToStorage() {
   try {
     localStorage.setItem('unicore_products', JSON.stringify(products));
-    localStorage.setItem('unicore_data_version', 'v-auto-202609020224');
+    localStorage.setItem('unicore_data_version', 'v-auto-202609020730');
   } catch(e) {}
 }
 
@@ -1809,7 +1809,7 @@ function loadSampleData() {
     { category: 'Lounge Item', code: '300000315', name: '하이퍼루프 스칼프 세럼 300ml', currentStock: 510, incoming: 0, totalStock: 510, remark: '', expiryDate: '2028-07-09', safetyStock: 36, avgMonthlyOut: 36, moq: 5000, leadTime: 8 },
     { category: 'Lounge Item', code: '300000316', name: '하이퍼루프 바디 크림 280g', currentStock: 0, incoming: 0, totalStock: 0, remark: '', expiryDate: '2027-06-18', safetyStock: 3, avgMonthlyOut: 3, moq: 5000, leadTime: 8 },
     { category: 'Lounge Item', code: '300000328.0', name: '하이퍼루프 바디 크림 150g', currentStock: 2595, incoming: 0, totalStock: 2595, remark: '', expiryDate: '2029-05-27', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 9 },
-    { category: 'Lounge Item', code: '300000318', name: '수딩 앤 모이스트 케어 부스팅 젤 250ml', currentStock: 1568, incoming: 0, totalStock: 1568, remark: '', expiryDate: '2026-12-04', safetyStock: 184, avgMonthlyOut: 184, moq: 5000, leadTime: 8 },
+    { category: 'Lounge Item', code: '300000318.0', name: '수딩 앤 모이스트 케어 부스팅 젤 250ml', currentStock: 1568, incoming: 0, totalStock: 1568, remark: '', expiryDate: '2026-12-04', safetyStock: 184, avgMonthlyOut: 184, moq: 5000, leadTime: 8 },
     { category: 'Lounge Item', code: '300000327.0', name: '액티브 리커버 쿨 젤 150ml', currentStock: 2475, incoming: 0, totalStock: 2475, remark: '', expiryDate: '2029-05-26', safetyStock: 0, avgMonthlyOut: 0, moq: 5001, leadTime: 9 },
     { category: 'Sales Aids', code: '000000801', name: '유니앤코어 코튼 파우치', currentStock: 10436, incoming: 0, totalStock: 10436, remark: '단종', expiryDate: '', safetyStock: 5, avgMonthlyOut: 5, moq: 5000, leadTime: 213 },
     { category: '트라이얼키트', code: '000000805', name: '고급 샤무드 원단 파우치 비매품', currentStock: 1775, incoming: 0, totalStock: 1775, remark: '', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 10 },
