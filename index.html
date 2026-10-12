@@ -774,7 +774,6 @@ let products = [
     { category: 'Health Care', code: '200000206.0', name: '더블 컷 메가 슬림 플러스', currentStock: 4767, incoming: 0, totalStock: 4767, remark: '', expiryDate: '2028-01-06', safetyStock: 1668, avgMonthlyOut: 1668, moq: 5000, leadTime: 10 },
     { category: 'Health Care', code: '200000207.0', name: '슬리밍 메가 프로바이오틱스', currentStock: 1323, incoming: 0, totalStock: 1323, remark: '', expiryDate: '2027-10-23', safetyStock: 150, avgMonthlyOut: 150, moq: 5000, leadTime: 12 },
     { category: 'Health Care', code: '200000210', name: '본 앤 조인트 액티브 메가 포뮬러 60캡슐', currentStock: 4161, incoming: 0, totalStock: 4161, remark: '', expiryDate: '2027-08-21', safetyStock: 159, avgMonthlyOut: 159, moq: 5000, leadTime: 8 },
-    { category: 'Health Care', code: '200000213.0', name: '이뮨 메가 부스터 AHCC_10병', currentStock: 0, incoming: 0, totalStock: 0, remark: '소진 후 제품변경예정', expiryDate: '2026-06-19', safetyStock: 0, avgMonthlyOut: 0, moq: 10000, leadTime: 10 },
     { category: 'Health Care', code: '100000150', name: '이뮨 메가 플러스 AHCC', currentStock: 3245, incoming: 0, totalStock: 3245, remark: '', expiryDate: '2028-08-10', safetyStock: 0, avgMonthlyOut: 0, moq: 3245, leadTime: 11 },
     { category: 'Health Care', code: '100000135.0', name: '슬림핏 프로틴 쉐이크 고소한 멀티 그레인 40g X 10', currentStock: 2775, incoming: 0, totalStock: 2775, remark: '200000217 토파츠 반영 상품코드(같은 상품)', expiryDate: '2027-04-30', safetyStock: 193, avgMonthlyOut: 193, moq: 20000, leadTime: 10 },
     { category: 'Health Care', code: '200000218.0', name: '글로우 뷰티 콜라겐 젤리 타트체리 맛 20g X 30포', currentStock: 43, incoming: 0, totalStock: 43, remark: '', expiryDate: '2026-10-23', safetyStock: 98, avgMonthlyOut: 98, moq: 3000, leadTime: 10 },
@@ -817,6 +816,7 @@ let products = [
     { category: 'Sales Aids', code: '800000863', name: '유니앤코어 회원등록 신청노트', currentStock: 788, incoming: 0, totalStock: 788, remark: '', expiryDate: '', safetyStock: 4, avgMonthlyOut: 4, moq: 5000, leadTime: 4 },
     { category: 'Sales Aids', code: '800000855', name: '유니앤코어 V:DAY 보틀', currentStock: 487, incoming: 0, totalStock: 487, remark: '', expiryDate: '', safetyStock: 6, avgMonthlyOut: 6, moq: 1000, leadTime: 10 },
     { category: 'Sales Aids', code: '800000860.0', name: '유니앤코어 탁상거울', currentStock: 579, incoming: 0, totalStock: 579, remark: '', expiryDate: '', safetyStock: 6, avgMonthlyOut: 6, moq: 5000, leadTime: 10 },
+    { category: 'Health Care', code: '200000213.0', name: '이뮨 메가 부스터 AHCC_10병', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '2026-06-19', safetyStock: 0, avgMonthlyOut: 0, moq: 10000, leadTime: 10 },
     { category: 'Sales Aids', code: '800000850', name: '유니앤코어 전제품 브로슈어', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 10 },
     { category: 'Living', code: '800000848.0', name: '덴텍트 Dentect 1입', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 10 },
     { category: 'Cosmetic', code: '100000113', name: '비타씨 13.5 수퍼 화이트닝 앰플 15g', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 10 },
@@ -910,7 +910,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Load from localStorage, fallback to sample data
   const saved = localStorage.getItem('unicore_products');
   const dataVersion = localStorage.getItem('unicore_data_version');
-  if (saved && dataVersion === 'v-auto-202610112121') {
+  if (saved && dataVersion === 'v-auto-202610120348') {
     try {
       const parsed = JSON.parse(saved);
       if (parsed && parsed.length > 0) { products = parsed; }
@@ -946,7 +946,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function saveToStorage() {
   try {
     localStorage.setItem('unicore_products', JSON.stringify(products));
-    localStorage.setItem('unicore_data_version', 'v-auto-202610112121');
+    localStorage.setItem('unicore_data_version', 'v-auto-202610120348');
   } catch(e) {}
 }
 
@@ -1758,7 +1758,7 @@ function parseNum(val) {
 
 // ============ SAMPLE DATA ============
 function loadSampleData() {
-  // 자동 동기화 폴백 데이터 (2026년 10월 11일 기준)
+  // 자동 동기화 폴백 데이터 (2026년 10월 12일 기준)
   products = [
     { category: 'Cosmetic', code: '000000101', name: '딥 리페어 액티베이팅 뉴트리션 크림 30ml', currentStock: 1495, incoming: 0, totalStock: 1495, remark: '', expiryDate: '2029-07-06', safetyStock: 536, avgMonthlyOut: 536, moq: 5000, leadTime: 10 },
     { category: 'Cosmetic', code: '100000117.0', name: 'NEW 비타 씨 13.5 수퍼 화이트닝 앰플 30g', currentStock: 2380, incoming: 0, totalStock: 2380, remark: '', expiryDate: '2028-10-12', safetyStock: 394, avgMonthlyOut: 394, moq: 5000, leadTime: 10 },
@@ -1789,7 +1789,6 @@ function loadSampleData() {
     { category: 'Health Care', code: '200000206.0', name: '더블 컷 메가 슬림 플러스', currentStock: 4767, incoming: 0, totalStock: 4767, remark: '', expiryDate: '2028-01-06', safetyStock: 1668, avgMonthlyOut: 1668, moq: 5000, leadTime: 10 },
     { category: 'Health Care', code: '200000207.0', name: '슬리밍 메가 프로바이오틱스', currentStock: 1323, incoming: 0, totalStock: 1323, remark: '', expiryDate: '2027-10-23', safetyStock: 150, avgMonthlyOut: 150, moq: 5000, leadTime: 12 },
     { category: 'Health Care', code: '200000210', name: '본 앤 조인트 액티브 메가 포뮬러 60캡슐', currentStock: 4161, incoming: 0, totalStock: 4161, remark: '', expiryDate: '2027-08-21', safetyStock: 159, avgMonthlyOut: 159, moq: 5000, leadTime: 8 },
-    { category: 'Health Care', code: '200000213.0', name: '이뮨 메가 부스터 AHCC_10병', currentStock: 0, incoming: 0, totalStock: 0, remark: '소진 후 제품변경예정', expiryDate: '2026-06-19', safetyStock: 0, avgMonthlyOut: 0, moq: 10000, leadTime: 10 },
     { category: 'Health Care', code: '100000150', name: '이뮨 메가 플러스 AHCC', currentStock: 3245, incoming: 0, totalStock: 3245, remark: '', expiryDate: '2028-08-10', safetyStock: 0, avgMonthlyOut: 0, moq: 3245, leadTime: 11 },
     { category: 'Health Care', code: '100000135.0', name: '슬림핏 프로틴 쉐이크 고소한 멀티 그레인 40g X 10', currentStock: 2775, incoming: 0, totalStock: 2775, remark: '200000217 토파츠 반영 상품코드(같은 상품)', expiryDate: '2027-04-30', safetyStock: 193, avgMonthlyOut: 193, moq: 20000, leadTime: 10 },
     { category: 'Health Care', code: '200000218.0', name: '글로우 뷰티 콜라겐 젤리 타트체리 맛 20g X 30포', currentStock: 43, incoming: 0, totalStock: 43, remark: '', expiryDate: '2026-10-23', safetyStock: 98, avgMonthlyOut: 98, moq: 3000, leadTime: 10 },
@@ -1832,6 +1831,7 @@ function loadSampleData() {
     { category: 'Sales Aids', code: '800000863', name: '유니앤코어 회원등록 신청노트', currentStock: 788, incoming: 0, totalStock: 788, remark: '', expiryDate: '', safetyStock: 4, avgMonthlyOut: 4, moq: 5000, leadTime: 4 },
     { category: 'Sales Aids', code: '800000855', name: '유니앤코어 V:DAY 보틀', currentStock: 487, incoming: 0, totalStock: 487, remark: '', expiryDate: '', safetyStock: 6, avgMonthlyOut: 6, moq: 1000, leadTime: 10 },
     { category: 'Sales Aids', code: '800000860.0', name: '유니앤코어 탁상거울', currentStock: 579, incoming: 0, totalStock: 579, remark: '', expiryDate: '', safetyStock: 6, avgMonthlyOut: 6, moq: 5000, leadTime: 10 },
+    { category: 'Health Care', code: '200000213.0', name: '이뮨 메가 부스터 AHCC_10병', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '2026-06-19', safetyStock: 0, avgMonthlyOut: 0, moq: 10000, leadTime: 10 },
     { category: 'Sales Aids', code: '800000850', name: '유니앤코어 전제품 브로슈어', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 10 },
     { category: 'Living', code: '800000848.0', name: '덴텍트 Dentect 1입', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 10 },
     { category: 'Cosmetic', code: '100000113', name: '비타씨 13.5 수퍼 화이트닝 앰플 15g', currentStock: 0, incoming: 0, totalStock: 0, remark: '단종', expiryDate: '', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 10 },
@@ -1890,7 +1890,7 @@ function loadSampleData() {
 
   saveToStorage();
   refreshAll();
-  showToast('실시간 데이터 ' + products.length + '개 제품이 로드되었습니다. (2026년 10월 11일 동기화)');
+  showToast('실시간 데이터 ' + products.length + '개 제품이 로드되었습니다. (2026년 10월 12일 동기화)');
 }
 
 // ============ MODAL / CRUD ============
@@ -2259,7 +2259,7 @@ function saveSyncUrl() {
   document.getElementById('syncStatusBadge').textContent = '활성';
   document.getElementById('syncStatusBadge').style.background = 'var(--success-bg)';
   document.getElementById('syncStatusBadge').style.color = 'var(--success)';
-  showToast('실시간 데이터 ' + products.length + '개 제품이 로드되었습니다. (2026년 10월 11일 동기화)');
+  showToast('실시간 데이터 ' + products.length + '개 제품이 로드되었습니다. (2026년 10월 12일 동기화)');
 }
 
 function saveSyncConfig(url) {
