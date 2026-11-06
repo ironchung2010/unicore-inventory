@@ -745,7 +745,7 @@
 <script>
 // ============ DATA STORE ============
 let products = [
-    { category: 'Cosmetic', code: '000000101', name: '딥 리페어 액티베이팅 뉴트리션 크림 30ml', currentStock: 5825, incoming: 0, totalStock: 5825, remark: '', expiryDate: '2029-07-06', safetyStock: 976, avgMonthlyOut: 976, moq: 5000, leadTime: 10 },
+    { category: 'Cosmetic', code: '000000101', name: '딥 리페어 액티베이팅 뉴트리션 크림 30ml', currentStock: 5825, incoming: 0, totalStock: 5825, remark: '', expiryDate: '2030-07-05', safetyStock: 976, avgMonthlyOut: 976, moq: 5000, leadTime: 10 },
     { category: 'Cosmetic', code: '100000117.0', name: 'NEW 비타 씨 13.5 수퍼 화이트닝 앰플 30g', currentStock: 1847, incoming: 0, totalStock: 1847, remark: '', expiryDate: '2028-10-12', safetyStock: 641, avgMonthlyOut: 641, moq: 5000, leadTime: 10 },
     { category: 'Cosmetic', code: '100000114', name: '비타 씨 글루타글로우 수퍼 브라이트닝 앰플 30g', currentStock: 925, incoming: 0, totalStock: 925, remark: '소진 후 단종', expiryDate: '2027-03-31', safetyStock: 94, avgMonthlyOut: 94, moq: 5000, leadTime: 10 },
     { category: 'Cosmetic', code: '000000104', name: '하이드레이팅 래디언스 선크림 SPF50 PA+++30ml', currentStock: 9013, incoming: 0, totalStock: 9013, remark: '', expiryDate: '2029-07-27', safetyStock: 742, avgMonthlyOut: 742, moq: 10000, leadTime: 14 },
@@ -910,7 +910,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Load from localStorage, fallback to sample data
   const saved = localStorage.getItem('unicore_products');
   const dataVersion = localStorage.getItem('unicore_data_version');
-  if (saved && dataVersion === 'v-auto-202611060118') {
+  if (saved && dataVersion === 'v-auto-202611061015') {
     try {
       const parsed = JSON.parse(saved);
       if (parsed && parsed.length > 0) { products = parsed; }
@@ -946,7 +946,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function saveToStorage() {
   try {
     localStorage.setItem('unicore_products', JSON.stringify(products));
-    localStorage.setItem('unicore_data_version', 'v-auto-202611060118');
+    localStorage.setItem('unicore_data_version', 'v-auto-202611061015');
   } catch(e) {}
 }
 
@@ -1760,7 +1760,7 @@ function parseNum(val) {
 function loadSampleData() {
   // 자동 동기화 폴백 데이터 (2026년 11월 06일 기준)
   products = [
-    { category: 'Cosmetic', code: '000000101', name: '딥 리페어 액티베이팅 뉴트리션 크림 30ml', currentStock: 5825, incoming: 0, totalStock: 5825, remark: '', expiryDate: '2029-07-06', safetyStock: 976, avgMonthlyOut: 976, moq: 5000, leadTime: 10 },
+    { category: 'Cosmetic', code: '000000101', name: '딥 리페어 액티베이팅 뉴트리션 크림 30ml', currentStock: 5825, incoming: 0, totalStock: 5825, remark: '', expiryDate: '2030-07-05', safetyStock: 976, avgMonthlyOut: 976, moq: 5000, leadTime: 10 },
     { category: 'Cosmetic', code: '100000117.0', name: 'NEW 비타 씨 13.5 수퍼 화이트닝 앰플 30g', currentStock: 1847, incoming: 0, totalStock: 1847, remark: '', expiryDate: '2028-10-12', safetyStock: 641, avgMonthlyOut: 641, moq: 5000, leadTime: 10 },
     { category: 'Cosmetic', code: '100000114', name: '비타 씨 글루타글로우 수퍼 브라이트닝 앰플 30g', currentStock: 925, incoming: 0, totalStock: 925, remark: '소진 후 단종', expiryDate: '2027-03-31', safetyStock: 94, avgMonthlyOut: 94, moq: 5000, leadTime: 10 },
     { category: 'Cosmetic', code: '000000104', name: '하이드레이팅 래디언스 선크림 SPF50 PA+++30ml', currentStock: 9013, incoming: 0, totalStock: 9013, remark: '', expiryDate: '2029-07-27', safetyStock: 742, avgMonthlyOut: 742, moq: 10000, leadTime: 14 },
