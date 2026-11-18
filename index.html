@@ -764,7 +764,7 @@ let products = [
     { category: 'Cosmetic', code: '100000133', name: '[USA]VITA C GLUTAGLOW SUPER BRIGHTENING AMPOULE', currentStock: 991, incoming: 0, totalStock: 991, remark: '소진 후 단종', expiryDate: '2027-03-31', safetyStock: 5000, avgMonthlyOut: 0, moq: 5000, leadTime: 12 },
     { category: 'Cosmetic', code: '100000134.0', name: '[USA]VITA C 13.5 SUPER BRIGHTENING AMPOULE', currentStock: 5882, incoming: 0, totalStock: 5882, remark: '', expiryDate: '2028-10-12', safetyStock: 268, avgMonthlyOut: 268, moq: 5000, leadTime: 12 },
     { category: 'Cosmetic', code: '100000136.0', name: '[USA]VITA C SUPER BRIGHTENING MASK', currentStock: 4809, incoming: 0, totalStock: 4809, remark: '', expiryDate: '2029-03-15', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 12 },
-    { category: 'Cosmetic', code: '100000138.0', name: '[USA]HYDRATING SKIN BARRIER SERUM MIST', currentStock: 0, incoming: 0, totalStock: 0, remark: '', expiryDate: '2027-03-27', safetyStock: 0, avgMonthlyOut: 0, moq: 10000, leadTime: 14 },
+    { category: 'Cosmetic', code: '100000138.0', name: '[USA]HYDRATING SKIN BARRIER SERUM MIST', currentStock: 0, incoming: 0, totalStock: 0, remark: '', expiryDate: '2029-05-11', safetyStock: 0, avgMonthlyOut: 0, moq: 10000, leadTime: 14 },
     { category: 'Cosmetic', code: '100000129.0', name: '루미너스 레이어 타이트업 쿠션', currentStock: 6360, incoming: 0, totalStock: 6360, remark: '', expiryDate: '2028-03-29', safetyStock: 282, avgMonthlyOut: 282, moq: 5000, leadTime: 12 },
     { category: 'Cosmetic', code: '100000130.0', name: '루미너스 레이어 타이트업 쿠션 리필', currentStock: 4546, incoming: 0, totalStock: 4546, remark: '', expiryDate: '2028-03-29', safetyStock: 220, avgMonthlyOut: 220, moq: 5000, leadTime: 12 },
     { category: 'Cosmetic', code: '100000145', name: '퍼스트 벌스데이 크림 50g', currentStock: 4331, incoming: 0, totalStock: 4331, remark: '', expiryDate: '2029-05-03', safetyStock: 0, avgMonthlyOut: 0, moq: 5001, leadTime: 13 },
@@ -911,7 +911,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Load from localStorage, fallback to sample data
   const saved = localStorage.getItem('unicore_products');
   const dataVersion = localStorage.getItem('unicore_data_version');
-  if (saved && dataVersion === 'v-auto-202611180241') {
+  if (saved && dataVersion === 'v-auto-202611181057') {
     try {
       const parsed = JSON.parse(saved);
       if (parsed && parsed.length > 0) { products = parsed; }
@@ -947,7 +947,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function saveToStorage() {
   try {
     localStorage.setItem('unicore_products', JSON.stringify(products));
-    localStorage.setItem('unicore_data_version', 'v-auto-202611180241');
+    localStorage.setItem('unicore_data_version', 'v-auto-202611181057');
   } catch(e) {}
 }
 
@@ -1780,7 +1780,7 @@ function loadSampleData() {
     { category: 'Cosmetic', code: '100000133', name: '[USA]VITA C GLUTAGLOW SUPER BRIGHTENING AMPOULE', currentStock: 991, incoming: 0, totalStock: 991, remark: '소진 후 단종', expiryDate: '2027-03-31', safetyStock: 5000, avgMonthlyOut: 0, moq: 5000, leadTime: 12 },
     { category: 'Cosmetic', code: '100000134.0', name: '[USA]VITA C 13.5 SUPER BRIGHTENING AMPOULE', currentStock: 5882, incoming: 0, totalStock: 5882, remark: '', expiryDate: '2028-10-12', safetyStock: 268, avgMonthlyOut: 268, moq: 5000, leadTime: 12 },
     { category: 'Cosmetic', code: '100000136.0', name: '[USA]VITA C SUPER BRIGHTENING MASK', currentStock: 4809, incoming: 0, totalStock: 4809, remark: '', expiryDate: '2029-03-15', safetyStock: 0, avgMonthlyOut: 0, moq: 5000, leadTime: 12 },
-    { category: 'Cosmetic', code: '100000138.0', name: '[USA]HYDRATING SKIN BARRIER SERUM MIST', currentStock: 0, incoming: 0, totalStock: 0, remark: '', expiryDate: '2027-03-27', safetyStock: 0, avgMonthlyOut: 0, moq: 10000, leadTime: 14 },
+    { category: 'Cosmetic', code: '100000138.0', name: '[USA]HYDRATING SKIN BARRIER SERUM MIST', currentStock: 0, incoming: 0, totalStock: 0, remark: '', expiryDate: '2029-05-11', safetyStock: 0, avgMonthlyOut: 0, moq: 10000, leadTime: 14 },
     { category: 'Cosmetic', code: '100000129.0', name: '루미너스 레이어 타이트업 쿠션', currentStock: 6360, incoming: 0, totalStock: 6360, remark: '', expiryDate: '2028-03-29', safetyStock: 282, avgMonthlyOut: 282, moq: 5000, leadTime: 12 },
     { category: 'Cosmetic', code: '100000130.0', name: '루미너스 레이어 타이트업 쿠션 리필', currentStock: 4546, incoming: 0, totalStock: 4546, remark: '', expiryDate: '2028-03-29', safetyStock: 220, avgMonthlyOut: 220, moq: 5000, leadTime: 12 },
     { category: 'Cosmetic', code: '100000145', name: '퍼스트 벌스데이 크림 50g', currentStock: 4331, incoming: 0, totalStock: 4331, remark: '', expiryDate: '2029-05-03', safetyStock: 0, avgMonthlyOut: 0, moq: 5001, leadTime: 13 },
